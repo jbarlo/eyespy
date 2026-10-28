@@ -1,8 +1,8 @@
 # Building the SAM 3 detectors (tools/models)
 
-The web app serves two SAM 3 detector graphs derived from Meta's weights, `detector_fp32_nosign.onnx` and
-`detector_fp16_nosign.onnx` (`models/onnx/`, pinned in `web/src/engine/manifest.ts`). The vision and text encoders
-are Card Anvil's files, fetched unmodified. The commands below rebuild both detectors bit for bit.
+The web app uses two SAM 3 detector graphs derived from Meta's weights, `detector_fp32_nosign.onnx` and
+`detector_fp16_nosign.onnx` (`models/onnx/` locally, `sam3/` in the Hugging Face repo `jbarlo/eyespy-models`). The
+vision and text encoders are Card Anvil's files, unmodified. The commands below rebuild both detectors bit for bit.
 
 | File | What it does |
 |---|---|
