@@ -183,7 +183,8 @@ test("start, for real: two calls racing with no server running both connect to t
     assert.ok(a.isOk() && b.isOk(), JSON.stringify([a, b]));
     const log = readFileSync(proc.log(root), "utf8");
     assert.equal(log.match(/listening on/g)?.length, 1, log);
-    assert.equal(log.match(/already running/g)?.length, 1, log);
+    // the second call either finds the first server listening or spawns one that gives way
+    assert.ok((log.match(/already running/g)?.length ?? 0) <= 1, log);
   } finally {
     const pid = Number(readFileSync(path.join(root, ".eyespy", "server.lock"), "utf8"));
     if (pid > 0) process.kill(pid, "SIGTERM");
