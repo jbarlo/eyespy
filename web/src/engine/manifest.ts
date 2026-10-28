@@ -18,40 +18,40 @@ export type RuntimeAssets = {
   ortWasm: ModelEntry;
 };
 
-// CardAnvilModels/sam3-ONNX pinned to a commit
-const HF = "https://huggingface.co/CardAnvilModels/sam3-ONNX/resolve/7eee2d79268e794e433b6e49467c5340525ac228";
+// jbarlo/eyespy-models on Hugging Face, pinned to a commit
+const HF = "https://huggingface.co/jbarlo/eyespy-models/resolve/7d55bf5697d2d229e72aef402ddbf921c3a74110";
 
-/** Production layout. The detectors and DINOv2 come from the site, the SAM 3 encoders and tokenizer from HF. */
+/** Production layout: every model file comes from the pinned Hugging Face repo. */
 export const PRODUCTION_MODELS: ModelManifest = {
   "vision_fp16.onnx": {
-    url: `${HF}/onnx/vision_fp16.onnx`,
+    url: `${HF}/sam3/vision_fp16.onnx`,
     sha256: "02e1573a208a702dfbed03349fcbcf0b9bc228ee1ce24a6809b871f0cb1564fa",
     bytes: 914738433,
   },
   "text_fp16.onnx": {
-    url: `${HF}/onnx/text_fp16.onnx`,
+    url: `${HF}/sam3/text_fp16.onnx`,
     sha256: "a2dfb1755d2c821451657b998d095b00727e8b400e706e95165c59039aca15b3",
     bytes: 709242464,
   },
   "tokenizer.json": {
-    url: `${HF}/tokenizer.json`,
+    url: `${HF}/sam3/tokenizer.json`,
     sha256: "6d9109cc838977f3ca94a379eec36aecc7c807e1785cd729660ca2fc0171fb35",
     bytes: 3642073,
   },
   // The detectors have their Sign ops rewritten and their metadata stripped.
   "detector_fp32_nosign.onnx": {
-    url: "models/detector_fp32_nosign.onnx",
+    url: `${HF}/sam3/detector_fp32_nosign.onnx`,
     sha256: "58668cc33539a82f297c194e12b90c2bfccfb649f77a048c15dea84d1d6d3564",
     bytes: 102036400,
   },
   "detector_fp16_nosign.onnx": {
-    url: "models/detector_fp16_nosign.onnx",
+    url: `${HF}/sam3/detector_fp16_nosign.onnx`,
     sha256: "d7d8796f9dabffadd3af2a157413dd8a39a5a12e9e04190410e693699baf7d91",
     bytes: 51125743,
   },
   // onnx-community/dinov2-small fp32 with a Gather of the CLS token appended to its output
   "dinov2-small/model_cls.onnx": {
-    url: "models/dinov2-small/model_cls.onnx",
+    url: `${HF}/dinov2-small/model_cls.onnx`,
     sha256: "1dba083dc0347706ff10aec6b9ed7d7580743ccbda728c2e137252a1bbaccd26",
     bytes: 88532979,
   },
