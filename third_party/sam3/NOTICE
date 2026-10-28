@@ -4,8 +4,7 @@ The SAM 3 model files are SAM Materials (or derivative works of them) and are li
 not under this project's Apache-2.0 licence. The full text is in LICENSE-SAM.txt next to this file (from
 https://github.com/facebookresearch/sam3/blob/main/LICENSE, "Last Updated: November 19, 2025"; the same text is
 the LICENSE of https://huggingface.co/facebook/sam3 and https://huggingface.co/CardAnvilModels/sam3-ONNX). By using
-or distributing any portion of the SAM Materials you agree to be bound by it, including its use restrictions
-(section 1.b.iii-v: applicable laws, trade controls, no military/ITAR/weapons end uses, no reverse engineering).
+or distributing any portion of the SAM Materials you agree to be bound by it.
 
 SAM 3: Segment Anything with Concepts. Meta, 2025. https://github.com/facebookresearch/sam3,
 https://arxiv.org/abs/2511.16719

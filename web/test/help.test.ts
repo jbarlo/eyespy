@@ -92,14 +92,12 @@ test("sizes keep the number and its unit together (no line break inside 2.80 GB)
   assert.equal(fmtBytes(464 * 2 ** 10), "464 KB");
 });
 
-test("SAM License dialog: short, says what and why, the key restrictions, the two answers", () => {
+test("SAM License dialog: short, says what and why, links the full text, the two answers", () => {
   const T = SAM_LICENCE_TEXT;
-  const body = `${T.intro} ${T.points}`;
+  const body = T.intro;
   assert.ok(body.length <= 400, `dialog text is ${body.length} chars (keep it curt)`);
   for (const must of ["open source", "Apache-2.0", "SAM 3", "1.8 GB", "SAM License", "not an open-source"])
     assert.ok(T.intro.includes(must), `intro mentions ${must}`);
-  for (const must of ["military", "weapons", "ITAR", "reverse engineering", "change the terms"])
-    assert.ok(T.points.includes(must), `key points mention ${must}`);
   assert.match(T.links.between, /DINOv2.*Apache-2\.0/, "DINOv2 only in the notices line");
   assert.ok(!body.includes("DINOv2"), "DINOv2 needs no agreement");
   assert.equal(T.agree, "I agree");

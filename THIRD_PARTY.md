@@ -67,19 +67,15 @@ test clips and fixtures.
   split is `sam3_graphs.py` at `7eee2d79`, which we fetch and hash-check but don't vendor, because it carries no
   licence. fp16 is CardAnvil's `detector_fp16.onnx` at `7eee2d79` with `patch_sign.py` applied.
 
-What the licence requires of a public deploy, and what we do:
+What we do for a public deploy:
 
-- §1.b.i allows distribution, including of derivative works, only under the licence and with a copy of it. We
-  distribute every SAM 3 file from `jbarlo/eyespy-models` with `sam3/LICENSE-SAM.txt` and `sam3/NOTICE-SAM.txt`
+- We distribute every SAM 3 file from `jbarlo/eyespy-models` with `sam3/LICENSE-SAM.txt` and `sam3/NOTICE-SAM.txt`
   beside them, and the model card names the licence. The site ships the licence and notice as
   `models/LICENSE-SAM.txt` and `models/NOTICE-SAM.txt`, puts them in `THIRD_PARTY_NOTICES.txt`, and links the licence
   before the download and in Settings. Our Apache-2.0 covers our code only.
-- Use or distribution means accepting the licence, so every user whose browser downloads the models is a licensee.
-  They inherit §1.b.ii (acknowledge SAM in publications), §1.b.iii and §1.b.v (applicable law, trade controls, no
-  ITAR or military, nuclear, espionage or weapons uses) and §1.b.iv (no reverse engineering). §5.b indemnity and §6
-  termination (delete the materials) apply.
-- Under §8, Meta may change the terms at any time, effective immediately, so we re-check the licence before each deploy.
-- The licence asks for no attribution text beyond the licence copy, no fee and no user-count limits.
+- Everyone whose browser downloads the models uses them under the SAM License, so the app asks them to agree to
+  the full text first (below).
+- Meta can change the licence text, so we re-check it before each deploy.
 
 The web app asks for explicit acceptance. Before any engine start, so before the first SAM 3 download or any use of
 cached models, it shows a licence dialog ("I agree" or "Cancel") that links `models/LICENSE-SAM.txt` and the notices.

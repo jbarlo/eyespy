@@ -320,9 +320,6 @@ export const SAM_LICENCE_TEXT = {
   intro:
     `eyespy is open source (Apache-2.0). To find objects it downloads Meta's SAM 3 models (about ${DOWNLOAD_GB} GB with the ` +
     "other models), which are licensed under the SAM License, not an open-source licence.",
-  points:
-    "In short: no military, warfare, nuclear, espionage, weapons or ITAR uses; comply with trade controls; no " +
-    "reverse engineering of the models. Meta may change the terms at any time.",
   links: {
     before: "Full text: ",
     sam: "SAM License",

@@ -14,7 +14,6 @@ export function LicenceDialog() {
         <div className="dialog licence">
           <h3>{T.title}</h3>
           <p>{T.intro}</p>
-          <p>{T.points}</p>
           <p className="small">
             {T.links.before}
             <a href={SAM_LICENSE_URL} target="_blank" rel="noreferrer">
