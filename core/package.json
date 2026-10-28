@@ -1,0 +1,47 @@
+{
+  "name": "eyespy-core",
+  "version": "0.1.0",
+  "private": true,
+  "license": "Apache-2.0",
+  "type": "module",
+  "description": "Host-independent eyespy engine: modules, session, api, compose. No Node or DOM imports; hosts implement ports/.",
+  "//exports": "Module entry points; internal/ is never exported.",
+  "exports": {
+    "./compose": "./src/compose.ts",
+    "./ports": "./src/ports/index.ts",
+    "./pixels": "./src/pixels/index.ts",
+    "./invariant": "./src/invariant/index.ts",
+    "./storage/marker": "./src/storage/marker.ts",
+    "./storage": "./src/storage/index.ts",
+    "./storage/pure": "./src/storage/pure.ts",
+    "./video": "./src/video/index.ts",
+    "./video/pure": "./src/video/pure.ts",
+    "./perception": "./src/perception/index.ts",
+    "./perception/pure": "./src/perception/pure.ts",
+    "./detections": "./src/detections/index.ts",
+    "./detections/pure": "./src/detections/pure.ts",
+    "./labelling": "./src/labelling/index.ts",
+    "./labelling/pure": "./src/labelling/pure.ts",
+    "./render": "./src/render/index.ts",
+    "./render/pure": "./src/render/pure.ts",
+    "./session": "./src/session/index.ts",
+    "./session/pure": "./src/session/pure.ts",
+    "./api": "./src/api/index.ts",
+    "./api/pure": "./src/api/pure.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit && tsc --noEmit -p test",
+    "test": "node --import tsx --test 'test/**/*.test.ts'"
+  },
+  "dependencies": {
+    "@trpc/server": "catalog:",
+    "fflate": "^0.8.2",
+    "neverthrow": "catalog:",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:",
+    "tsx": "catalog:",
+    "typescript": "catalog:"
+  }
+}

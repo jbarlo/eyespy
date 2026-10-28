@@ -1,0 +1,34 @@
+{
+  "//": "Read by tools/licenses/check.js. allow: SPDX ids that are permissive and compatible with the project's Apache-2.0 licence and with bundling into the web app (notices: THIRD_PARTY_NOTICES.txt). exceptions: reviewed packages whose licence isn't on the allowlist; each matches a package name or `*` pattern and its exact licence string, so a licence change fails again. Reasons and context: THIRD_PARTY.md.",
+  "allow": [
+    "MIT",
+    "MIT-0",
+    "ISC",
+    "BSD-2-Clause",
+    "BSD-3-Clause",
+    "Apache-2.0",
+    "0BSD",
+    "BlueOak-1.0.0",
+    "CC0-1.0",
+    "Unlicense",
+    "Python-2.0",
+    "Zlib"
+  ],
+  "exceptions": [
+    {
+      "package": "jimkit-cli",
+      "license": "Unknown",
+      "reason": "no licence field or file in the published package; author is the project owner (npm maintainer jbarlo). CLI only, run from source, not in the web bundle. Fix: publish with a licence."
+    },
+    {
+      "package": "jimkit-completion",
+      "license": "Unknown",
+      "reason": "as jimkit-cli (its dependency): same author, no licence in the package; CLI only."
+    },
+    {
+      "package": "@img/sharp-libvips-*",
+      "license": "LGPL-3.0-or-later",
+      "reason": "libvips (and its bundled libraries) as an unmodified prebuilt shared library that sharp loads at run time; server only, installed by pnpm from npm on the user's machine, never redistributed by this project (the server runs from source; not in the web bundle). LGPL-3.0 allows this use; redistributing the server with it would carry the LGPL obligations (THIRD_PARTY.md)."
+    }
+  ]
+}

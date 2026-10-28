@@ -1,0 +1,17 @@
+dist
+node_modules
+models
+scratch
+result
+.eyespy
+.claude
+pnpm-lock.yaml
+flake.lock
+*.md
+# numerics goldens (json.dumps indent=1)
+core/test/fixtures/numerics/*.json
+# test fixtures and snapshots: byte-exact session files (JSON indent=1) and recorded output
+core/test/fixtures/session-*
+core/test/__snapshots__
+# render module goldens, rewritten by EYESPY_UPDATE_GOLDENS=1 (JSON.stringify indent=1)
+core/test/render/render.json

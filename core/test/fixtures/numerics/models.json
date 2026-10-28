@@ -1,0 +1,128 @@
+{
+ "sam": [
+  {
+   "key": "sam_41",
+   "seed": 41,
+   "w": 37,
+   "h": 23,
+   "sha256": "503339fcdeffac587a2927c3d96af33832f42388acf5463f50c415e2344d3e63"
+  },
+  {
+   "key": "sam_42",
+   "seed": 42,
+   "w": 1200,
+   "h": 40,
+   "sha256": "7915267940a169dc388f84dd0a75c879540b47cf9ee5bab44144f1ff237d68bb"
+  }
+ ],
+ "dino": [
+  {
+   "key": "dino_51",
+   "seed": 51,
+   "w": 37,
+   "h": 23,
+   "sha256": "ef60226c468318a3f54fc6cc7e5ddbf4428d2991cc6b5f2cb19c32eef21ddaf4"
+  },
+  {
+   "key": "dino_52",
+   "seed": 52,
+   "w": 23,
+   "h": 37,
+   "sha256": "6d39674784158bebf3f20367bef35796e5bc935225d1ac4bba80a60b169bad7d"
+  },
+  {
+   "key": "dino_53",
+   "seed": 53,
+   "w": 400,
+   "h": 300,
+   "sha256": "575205a17df97a91496f7802ccbdf4b4e06d7c5f9afd7e9f64f3e184dfd4615d"
+  },
+  {
+   "key": "dino_54",
+   "seed": 54,
+   "w": 256,
+   "h": 300,
+   "sha256": "203c4ea3d0f2162c3b1d7266cdd592f54b1acd680a9e43edf4d398d2087d0155"
+  },
+  {
+   "key": "dino_55",
+   "seed": 55,
+   "w": 300,
+   "h": 256,
+   "sha256": "77db1b45afa0cd0da29e236453cc138f5f09a04bd7cdc06903b7a1f50f5cf4e8"
+  },
+  {
+   "key": "dino_56",
+   "seed": 56,
+   "w": 225,
+   "h": 224,
+   "sha256": "701537cbae49c70a22c6e5be56479432e30b40e5bd2be8ded41f32170c88672b"
+  }
+ ],
+ "keep": {
+  "pred_logits": [
+   2.0,
+   -1.0,
+   0.0,
+   3.5,
+   0.30000001192092896
+  ],
+  "presence": 1.25,
+  "cases": [
+   {
+    "key": "keep_0.5_217x301",
+    "threshold": 0.5,
+    "size": [
+     217,
+     301
+    ],
+    "scores_f32_bits": [
+     1060062411,
+     1061234669
+    ],
+    "n": 2,
+    "H": 217,
+    "W": 301
+   },
+   {
+    "key": "keep_0.5_none",
+    "threshold": 0.5,
+    "size": null,
+    "scores_f32_bits": [
+     1060062411,
+     1061234669
+    ],
+    "n": 2,
+    "H": 288,
+    "W": 288
+   },
+   {
+    "key": "keep_0.3_288x288",
+    "threshold": 0.3,
+    "size": [
+     288,
+     288
+    ],
+    "scores_f32_bits": [
+     1060062411,
+     1053228320,
+     1061234669,
+     1055169919
+    ],
+    "n": 4,
+    "H": 288,
+    "W": 288
+   },
+   {
+    "key": "keep_0.9_none",
+    "threshold": 0.9,
+    "size": null,
+    "scores_f32_bits": [],
+    "n": 0,
+    "H": 0,
+    "W": 0
+   }
+  ]
+ },
+ "step": 997
+}

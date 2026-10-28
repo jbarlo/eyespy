@@ -1,0 +1,23 @@
+SAM 3 model files used by this web app
+
+The SAM 3 model files are SAM Materials (or derivative works of them) and are licensed under the SAM License,
+not under this project's Apache-2.0 licence. The full text is in LICENSE-SAM.txt next to this file (from
+https://github.com/facebookresearch/sam3/blob/main/LICENSE, "Last Updated: November 19, 2025"; the same text is
+the LICENSE of https://huggingface.co/facebook/sam3 and https://huggingface.co/CardAnvilModels/sam3-ONNX). By using
+or distributing any portion of the SAM Materials you agree to be bound by it, including its use restrictions
+(section 1.b.iii-v: applicable laws, trade controls, no military/ITAR/weapons end uses, no reverse engineering).
+
+SAM 3: Segment Anything with Concepts. Meta, 2025. https://github.com/facebookresearch/sam3,
+https://arxiv.org/abs/2511.16719
+
+Files:
+- vision_fp16.onnx, text_fp16.onnx, tokenizer.json: fetched by the app from
+  https://huggingface.co/CardAnvilModels/sam3-ONNX at commit 7eee2d79268e794e433b6e49467c5340525ac228 (not served
+  by this site). ONNX format conversions of facebook/sam3 by Card Anvil, distributed by them under the SAM License;
+  the tokenizer is copied unchanged from facebook/sam3.
+- detector_fp32_nosign.onnx, detector_fp16_nosign.onnx (served by this site, in this folder): modified derivative
+  works of facebook/sam3 (model.safetensors sha256
+  6d06f0a5f84e435071fe6603e61d0b4cc7b40e0d39d487cfd4d67d8cc11cc14a, the same weights as the Card Anvil export).
+  fp32: the DETR detector graph exported to ONNX by this project, then the Sign operators rewritten into equivalent
+  arithmetic. fp16: Card Anvil's detector_fp16.onnx (same commit as above) with the same Sign rewrite. Scripts and
+  commands: tools/models/ in this project's source repository. Distributed under the SAM License.

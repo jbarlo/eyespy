@@ -1,0 +1,53 @@
+{
+ "cfg unknown keys": {
+  "code": "BAD_REQUEST",
+  "message": "unknown setting(s) alpha, zeta"
+ },
+ "cfg manifest config": {
+  "keyframe_thresh": 0.4,
+  "score_floor": 0.3,
+  "threshold": 0.25,
+  "nms_iou": 0.7,
+  "alias_iou": 0.7,
+  "group_sim": 0.65,
+  "group_window": 3,
+  "presence": 0.5,
+  "active": 0.5,
+  "idle_minutes": 30
+ },
+ "frames 1": [
+  "1.0",
+  "1.1",
+  "1.2"
+ ],
+ "error mapping": {
+  "user error (mutation)": {
+   "code": "BAD_REQUEST",
+   "message": "no detection 9.9"
+  },
+  "zod: empty ids": {
+   "code": "BAD_REQUEST",
+   "message": "(input validation: ids)"
+  },
+  "zod: wrong type": {
+   "code": "BAD_REQUEST",
+   "message": "(input validation: threshold)"
+  },
+  "zod: k not positive": {
+   "code": "BAD_REQUEST",
+   "message": "(input validation: k)"
+  },
+  "zod: cfg value not a number": {
+   "code": "BAD_REQUEST",
+   "message": "(input validation: cfg.threshold)"
+  }
+ },
+ "query user error": {
+  "code": "BAD_REQUEST",
+  "message": "bad frame spec: nope"
+ },
+ "after shutdown": {
+  "code": "INTERNAL_SERVER_ERROR",
+  "message": "server is shutting down"
+ }
+}

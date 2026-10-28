@@ -1,0 +1,82 @@
+// `pnpm knip` runs knip twice: once over everything, once over production entries (the `!` globs) with --strict.
+// --strict skips `import type` edges, so the second run leaves types out and the first run checks them.
+{
+  "$schema": "https://unpkg.com/knip@6/schema-jsonc.json",
+  // Every issue type knip has, listed so none falls back to "warn" or "off" unnoticed.
+  "rules": {
+    "files": "error",
+    "dependencies": "error",
+    "devDependencies": "error",
+    "optionalPeerDependencies": "error",
+    "unlisted": "error",
+    "binaries": "error",
+    "unresolved": "error",
+    "exports": "error",
+    "nsExports": "error",
+    "types": "error",
+    "nsTypes": "error",
+    "enumMembers": "error",
+    "namespaceMembers": "error",
+    "catalogReferences": "error",
+    "cycles": "error",
+    "duplicates": "error",
+    "catalog": "error",
+  },
+  // nsExports, nsTypes and cycles are off by default. A list here means "only these", so it names all of them.
+  "include": [
+    "files",
+    "dependencies",
+    "devDependencies",
+    "optionalPeerDependencies",
+    "unlisted",
+    "binaries",
+    "unresolved",
+    "exports",
+    "nsExports",
+    "types",
+    "nsTypes",
+    "enumMembers",
+    "namespaceMembers",
+    "duplicates",
+    "catalog",
+    "catalogReferences",
+    "cycles",
+  ],
+  // A stale ignore or redundant glob fails the run, so ignores can't outlive their reason.
+  "treatConfigHintsAsErrors": true,
+  "ignoreExportsUsedInFile": false,
+  // core's public API is what some workspace imports. Delete an unused re-export instead of keeping it as API.
+  // Tag an export that only tests use `/** @internal */`, and the --production run skips it.
+  "includeEntryExports": true,
+  // These come from the nix devshell.
+  "ignoreBinaries": ["dot", "ffmpeg", "ffprobe"],
+  // `!` marks a production entry or project file. Tests, scripts and build config are dev-only.
+  "workspaces": {
+    ".": {
+      "entry": ["tools/*/*.test.js"],
+      "project": ["tools/**/*.js", "*.{js,cjs}"],
+      // Imported only inside the rule tests' TypeScript source strings (the type-checked code under test).
+      "ignoreDependencies": ["neverthrow"],
+    },
+    "core": {
+      // The package.json "exports" map is core's production entries (knip reads it itself).
+      "entry": ["test/**/*.test.ts", "test/labelling/fixtures/generate.ts"],
+      "project": ["src/**/*.ts!", "test/**/*.ts"],
+    },
+    "web": {
+      // knip's Vite plugin finds src/main.tsx through index.html. The page imports the worker as `?worker&inline`.
+      "entry": ["src/engine/worker/worker.ts!", "scripts/*.ts", "test/*.test.ts"],
+      "project": ["src/**/*.{ts,tsx}!", "scripts/**/*.ts", "test/**/*.ts"],
+    },
+    "cli": {
+      // tsx.mjs is the TypeScript loader of the build script and of the flake wrapper's fallback.
+      "entry": ["src/main.ts!", "tsx.mjs!", "scripts/bundle.ts", "test/**/*.test.ts"],
+      "project": ["src/**/*.ts!", "scripts/**/*.ts", "test/**/*.ts"],
+    },
+    "server": {
+      // tsx.mjs is the flake's eyespy-server launcher's loader.
+      "entry": ["src/main.ts!", "tsx.mjs!", "scripts/**/*.{ts,mjs}", "test/**/*.test.ts"],
+      "project": ["src/**/*.ts!", "scripts/**/*.{ts,mjs}", "test/**/*.ts"],
+    },
+  },
+}

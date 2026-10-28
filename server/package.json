@@ -1,0 +1,26 @@
+{
+  "name": "eyespy-server",
+  "version": "0.1.0",
+  "private": true,
+  "description": "eyespy session server (ONNX on WebGPU) the CLI starts: find and catalogue the objects in a video, locally on your machine",
+  "license": "Apache-2.0",
+  "type": "module",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "node --import tsx --test \"test/**/*.test.ts\"",
+    "start": "tsx src/main.ts"
+  },
+  "dependencies": {
+    "@trpc/server": "catalog:",
+    "neverthrow": "catalog:",
+    "onnxruntime-node": "catalog:",
+    "sharp": "^0.35.5",
+    "tsx": "catalog:",
+    "eyespy-core": "workspace:*",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:",
+    "typescript": "catalog:"
+  }
+}

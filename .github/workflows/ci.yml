@@ -1,0 +1,29 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 26
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      # The tokenizer tests read tokenizer.json from the pinned SAM 3 ONNX repo.
+      - name: Fetch tokenizer.json
+        run: |
+          mkdir -p models/onnx
+          curl -sfL -o models/onnx/tokenizer.json \
+            https://huggingface.co/CardAnvilModels/sam3-ONNX/resolve/7eee2d79268e794e433b6e49467c5340525ac228/tokenizer.json
+          echo "6d9109cc838977f3ca94a379eec36aecc7c807e1785cd729660ca2fc0171fb35  models/onnx/tokenizer.json" | sha256sum -c
+      - run: pnpm verify

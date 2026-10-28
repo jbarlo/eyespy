@@ -1,0 +1,11 @@
+DINOv2 small (model_cls.onnx)
+
+Model weights: facebook/dinov2-small (https://huggingface.co/facebook/dinov2-small), Copyright (c) Meta Platforms,
+Inc. and affiliates, licensed under the Apache License, Version 2.0 (LICENSE in this folder; the upstream
+repository https://github.com/facebookresearch/dinov2 ships no NOTICE file).
+
+ONNX conversion: onnx-community/dinov2-small (https://huggingface.co/onnx-community/dinov2-small), onnx/model.onnx
+(fp32).
+
+Modified by this project: a Gather node appended to the graph's output that selects the CLS token, saved as
+model_cls.onnx. No weights were changed.

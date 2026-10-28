@@ -1,0 +1,784 @@
+{
+ "001 status": {
+  "input": {},
+  "ops": [],
+  "files": {},
+  "texts": [],
+  "output": {
+   "root": "mem",
+   "clips": [
+    {
+     "path": "/videos/kitchen.mp4",
+     "key": "5779faad8d86",
+     "keyframes": 3
+    },
+    {
+     "path": "/videos/pantry.mov",
+     "key": "dcd01881d004",
+     "keyframes": 3
+    }
+   ],
+   "keyframes": 6,
+   "encoded": 6,
+   "prompts": [
+    "box",
+    "container",
+    "jar",
+    "lid"
+   ],
+   "detections": 30,
+   "objects": 3,
+   "rejected": 4,
+   "todo": 5,
+   "assigned": 18
+  }
+ },
+ "002 data.objects": {
+  "input": null,
+  "ops": [],
+  "files": {},
+  "texts": [],
+  "output": {
+   "objects": [
+    {
+     "id": "o1",
+     "label": "red jar",
+     "sightings": 4,
+     "members": [
+      "0.0",
+      "0.3",
+      "3.0",
+      "3.1",
+      "1.0",
+      "1.3",
+      "2.0",
+      "2.3"
+     ],
+     "first_t": 0,
+     "last_t": 0,
+     "best": "3.0",
+     "prompts": {
+      "jar": 0.935,
+      "container": 0.908
+     }
+    },
+    {
+     "id": "o2",
+     "label": "orange jar (small)",
+     "sightings": 2,
+     "members": [
+      "0.1",
+      "0.4",
+      "1.1",
+      "1.4"
+     ],
+     "first_t": 0,
+     "last_t": 0.2,
+     "best": "0.1",
+     "prompts": {
+      "jar": 0.865,
+      "container": 0.865
+     }
+    },
+    {
+     "id": "o3",
+     "label": "green box",
+     "sightings": 1,
+     "members": [
+      "3.2",
+      "3.3"
+     ],
+     "first_t": 0,
+     "last_t": 0,
+     "best": "3.3",
+     "prompts": {
+      "box": 0.935,
+      "container": 0.803
+     }
+    }
+   ],
+   "rejected": [
+    "0.2",
+    "0.5",
+    "1.5",
+    "2.5"
+   ]
+  }
+ },
+ "003 data.history": {
+  "input": null,
+  "ops": [],
+  "files": {},
+  "texts": [],
+  "output": {
+   "ops": [
+    {
+     "ts": 1767323053.638,
+     "op": "new",
+     "obj": "o1",
+     "label": "red jar",
+     "ids": [
+      "0.0",
+      "0.3",
+      "3.0",
+      "3.1"
+     ],
+     "seq": 0,
+     "undoable": true,
+     "undone": false,
+     "objects": [
+      "o1"
+     ]
+    },
+    {
+     "ts": 1767323054.872,
+     "op": "new",
+     "obj": "o2",
+     "label": "orange jar",
+     "ids": [
+      "0.1",
+      "0.4",
+      "1.1",
+      "1.4"
+     ],
+     "seq": 1,
+     "undoable": true,
+     "undone": false,
+     "objects": [
+      "o2"
+     ]
+    },
+    {
+     "ts": 1767323056.106,
+     "op": "label",
+     "obj": "o2",
+     "label": "orange jar (small)",
+     "seq": 2,
+     "undoable": true,
+     "undone": false,
+     "objects": [
+      "o2"
+     ]
+    },
+    {
+     "ts": 1767323057.34,
+     "op": "new",
+     "obj": "o3",
+     "label": "green box",
+     "ids": [
+      "3.2",
+      "3.3"
+     ],
+     "seq": 3,
+     "undoable": true,
+     "undone": false,
+     "objects": [
+      "o3"
+     ]
+    },
+    {
+     "ts": 1767323058.574,
+     "op": "reject",
+     "ids": [
+      "0.2"
+     ],
+     "seq": 4,
+     "undoable": true,
+     "undone": false,
+     "objects": [
+      "x"
+     ]
+    },
+    {
+     "ts": 1767323059.808,
+     "op": "reject",
+     "ids": [
+      "0.5",
+      "1.5",
+      "2.5"
+     ],
+     "seq": 5,
+     "undoable": true,
+     "undone": false,
+     "objects": [
+      "x"
+     ]
+    },
+    {
+     "ts": 1767323061.042,
+     "op": "undo",
+     "of": 5,
+     "seq": 6,
+     "undoable": false,
+     "undone": false,
+     "objects": [
+      "x"
+     ]
+    },
+    {
+     "ts": 1767323062.276,
+     "op": "redo",
+     "of": 5,
+     "seq": 7,
+     "undoable": false,
+     "undone": false,
+     "objects": [
+      "x"
+     ]
+    },
+    {
+     "ts": 1767323063.51,
+     "op": "add",
+     "obj": "o1",
+     "ids": [
+      "1.0",
+      "1.3",
+      "2.0",
+      "2.3"
+     ],
+     "seq": 8,
+     "undoable": true,
+     "undone": false,
+     "objects": [
+      "o1"
+     ]
+    }
+   ],
+   "undo": {
+    "seq": 8,
+    "op": "add"
+   },
+   "redo": null
+  }
+ },
+ "004 todo": {
+  "input": {},
+  "ops": [],
+  "files": {
+   "out/todo.jpg": "662b267cf59d1064 2311"
+  },
+  "texts": [
+   "2.1",
+   "#2 kitchen 1.0s",
+   "4.3",
+   "4.0",
+   "#4 pantry 0.6s",
+   "5.3",
+   "5.0",
+   "#5 pantry 1.6s"
+  ],
+  "output": {
+   "total": 5,
+   "image": "out/todo.jpg",
+   "hits": [
+    {
+     "id": "2.1",
+     "frame": 2,
+     "t": 1,
+     "prompts": [
+      "jar"
+     ],
+     "score": 0.865,
+     "box": [
+      96,
+      40,
+      126,
+      90
+     ],
+     "area": 1500
+    },
+    {
+     "id": "4.3",
+     "frame": 4,
+     "t": 0.6,
+     "prompts": [
+      "box"
+     ],
+     "score": 0.935,
+     "box": [
+      107,
+      20,
+      147,
+      70
+     ],
+     "area": 2000
+    },
+    {
+     "id": "4.0",
+     "frame": 4,
+     "t": 0.6,
+     "prompts": [
+      "jar"
+     ],
+     "score": 0.926,
+     "box": [
+      60,
+      40,
+      100,
+      100
+     ],
+     "area": 2400
+    },
+    {
+     "id": "5.3",
+     "frame": 5,
+     "t": 1.6,
+     "prompts": [
+      "box"
+     ],
+     "score": 0.935,
+     "box": [
+      102,
+      20,
+      142,
+      70
+     ],
+     "area": 2000
+    },
+    {
+     "id": "5.0",
+     "frame": 5,
+     "t": 1.6,
+     "prompts": [
+      "jar"
+     ],
+     "score": 0.926,
+     "box": [
+      60,
+      40,
+      100,
+      100
+     ],
+     "area": 2400
+    }
+   ]
+  }
+ },
+ "005 todo groups": {
+  "input": {
+   "groups": true
+  },
+  "ops": [],
+  "files": {
+   "out/todo-groups.jpg": "98ed7777dcf0785c 76376"
+  },
+  "texts": [
+   "g0 n=1 2.1",
+   "g1 n=2 4.3",
+   "5.3 1.6s",
+   "g2 n=2 4.0",
+   "5.0 1.6s"
+  ],
+  "output": {
+   "total": 5,
+   "groups_total": 3,
+   "image": "out/todo-groups.jpg",
+   "groups": [
+    {
+     "group": "g0",
+     "ids": [
+      "2.1"
+     ],
+     "frames": "2-2"
+    },
+    {
+     "group": "g1",
+     "ids": [
+      "4.3",
+      "5.3"
+     ],
+     "frames": "4-5"
+    },
+    {
+     "group": "g2",
+     "ids": [
+      "4.0",
+      "5.0"
+     ],
+     "frames": "4-5"
+    }
+   ]
+  }
+ },
+ "006 find jar (all cached)": {
+  "input": {
+   "prompt": "jar"
+  },
+  "ops": [],
+  "files": {
+   "out/find-jar.jpg": "ad1c989fe4523fe1 3452"
+  },
+  "texts": [
+   "0.0",
+   "0.1",
+   "#0 kitchen 0.0s",
+   "1.0",
+   "1.1",
+   "#1 kitchen 0.2s",
+   "2.0",
+   "2.1",
+   "#2 kitchen 1.0s",
+   "3.0",
+   "#3 pantry 0.0s",
+   "4.0",
+   "#4 pantry 0.6s",
+   "5.0",
+   "#5 pantry 1.6s"
+  ],
+  "output": {
+   "prompt": "jar",
+   "presence": {
+    "0": 0.982,
+    "1": 0.982,
+    "2": 0.982,
+    "3": 0.982,
+    "4": 0.982,
+    "5": 0.982
+   },
+   "present": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "image": "out/find-jar.jpg",
+   "hits": [
+    {
+     "id": "0.0",
+     "frame": 0,
+     "t": 0,
+     "prompts": [
+      "jar"
+     ],
+     "score": 0.935,
+     "box": [
+      20,
+      30,
+      60,
+      80
+     ],
+     "area": 2000,
+     "object": "o1"
+    },
+    {
+     "id": "0.1",
+     "frame": 0,
+     "t": 0,
+     "prompts": [
+      "jar"
+     ],
+     "score": 0.865,
+     "box": [
+      100,
+      40,
+      130,
+      90
+     ],
+     "area": 1500,
+     "object": "o2"
+    },
+    {
+     "id": "1.0",
+     "frame": 1,
+     "t": 0.2,
+     "prompts": [
+      "jar"
+     ],
+     "score": 0.935,
+     "box": [
+      22,
+      30,
+      62,
+      80
+     ],
+     "area": 2000,
+     "object": "o1"
+    },
+    {
+     "id": "1.1",
+     "frame": 1,
+     "t": 0.2,
+     "prompts": [
+      "jar"
+     ],
+     "score": 0.865,
+     "box": [
+      99,
+      40,
+      129,
+      90
+     ],
+     "area": 1500,
+     "object": "o2"
+    },
+    {
+     "id": "2.0",
+     "frame": 2,
+     "t": 1,
+     "prompts": [
+      "jar"
+     ],
+     "score": 0.935,
+     "box": [
+      30,
+      30,
+      70,
+      80
+     ],
+     "area": 2000,
+     "object": "o1"
+    },
+    {
+     "id": "2.1",
+     "frame": 2,
+     "t": 1,
+     "prompts": [
+      "jar"
+     ],
+     "score": 0.865,
+     "box": [
+      96,
+      40,
+      126,
+      90
+     ],
+     "area": 1500
+    },
+    {
+     "id": "3.0",
+     "frame": 3,
+     "t": 0,
+     "prompts": [
+      "jar"
+     ],
+     "score": 0.926,
+     "box": [
+      60,
+      40,
+      100,
+      100
+     ],
+     "area": 2400,
+     "object": "o1"
+    },
+    {
+     "id": "4.0",
+     "frame": 4,
+     "t": 0.6,
+     "prompts": [
+      "jar"
+     ],
+     "score": 0.926,
+     "box": [
+      60,
+      40,
+      100,
+      100
+     ],
+     "area": 2400
+    },
+    {
+     "id": "5.0",
+     "frame": 5,
+     "t": 1.6,
+     "prompts": [
+      "jar"
+     ],
+     "score": 0.926,
+     "box": [
+      60,
+      40,
+      100,
+      100
+     ],
+     "area": 2400
+    }
+   ]
+  }
+ },
+ "007 undo": {
+  "input": {},
+  "ops": [
+   "{\"ts\": 1767323053.638, \"op\": \"undo\", \"of\": 8, \"diff\": {\"o1\": {\"remove\": [\"1.0\", \"1.3\", \"2.0\", \"2.3\"]}}}"
+  ],
+  "files": {
+   "objects.json": "f03244ddbf9816c4 372",
+   "ops.jsonl": "108f0a26da8df428 1344"
+  },
+  "texts": [],
+  "output": {
+   "undone": {
+    "ts": 1767323063.51,
+    "op": "add",
+    "obj": "o1",
+    "ids": [
+     "1.0",
+     "1.3",
+     "2.0",
+     "2.3"
+    ],
+    "seq": 8
+   },
+   "undo": {
+    "seq": 5,
+    "op": "reject"
+   },
+   "redo": {
+    "seq": 8,
+    "op": "add"
+   }
+  }
+ },
+ "008 manifest crops": {
+  "input": {
+   "crops": true
+  },
+  "ops": [],
+  "files": {
+   "out/manifest.jpg": "48eed3c29a2476ab 37818"
+  },
+  "texts": [
+   "o1 red jar",
+   "o2 orange jar (small)",
+   "o3 green box"
+  ],
+  "output": {
+   "meta": {
+    "clips": [
+     {
+      "path": "/videos/kitchen.mp4",
+      "captured": "2026-01-01T10:00:00.000000Z",
+      "keyframes": 3,
+      "first": 0,
+      "keyframe_thresh": 0.4
+     },
+     {
+      "path": "/videos/pantry.mov",
+      "captured": null,
+      "keyframes": 3,
+      "first": 3,
+      "keyframe_thresh": 0.4
+     }
+    ],
+    "keyframes": 6,
+    "config": {
+     "keyframe_thresh": 0.4,
+     "score_floor": 0.3,
+     "threshold": 0.5,
+     "nms_iou": 0.7,
+     "alias_iou": 0.7,
+     "group_sim": 0.65,
+     "group_window": 8,
+     "presence": 0.5,
+     "active": 0.5,
+     "idle_minutes": 30
+    },
+    "models": {
+     "segmentation": {
+      "name": "SAM 3",
+      "format": "onnx",
+      "export": "CardAnvilModels/sam3-ONNX (HF transformers Sam3Model split into vision/text/detector; Sign ops patched)",
+      "source_weights_sha256": "6d06f0a5f84e435071fe6603e61d0b4cc7b40e0d39d487cfd4d67d8cc11cc14a",
+      "vision": {
+       "file": "vision_fp16.onnx",
+       "sha256": "3e8ed245d940e4d7349bcedcdee2445267e7c77416a4459e855bf168a71617ef"
+      },
+      "text": {
+       "file": "text_fp16.onnx",
+       "sha256": "64e3fa2f5cda80d7fa8083d9a39178efa677ba95d6036538d7faf7ad5bdc0eb4"
+      },
+      "detector": {
+       "file": "detector_fp32_nosign.onnx",
+       "sha256": "69c063890b6f0228132cd7500940ae94ea7bc325fcbf791fd20d901c3a70a261"
+      },
+      "feature_cache": "onnx-cardanvil-vision-fp16/f16-concat-v1"
+     },
+     "appearance": {
+      "name": "facebook/dinov2-small",
+      "export": "onnx-community/dinov2-small fp32 + CLS gather",
+      "file": "dinov2-small/model_cls.onnx",
+      "sha256": "d4747910832911e9d36da9eca40d7288bd9a7cc9edab31625467174b1c008d83",
+      "dim": 384
+     }
+    },
+    "code": "test",
+    "runtime": {
+     "runtime": "fake",
+     "version": "0.0.0",
+     "device": "cpu"
+    }
+   },
+   "items": [
+    {
+     "label": "red jar",
+     "count": 1
+    },
+    {
+     "label": "orange jar (small)",
+     "count": 1
+    },
+    {
+     "label": "green box",
+     "count": 1
+    }
+   ],
+   "objects": [
+    {
+     "id": "o1",
+     "label": "red jar",
+     "sightings": 2,
+     "members": [
+      "0.0",
+      "0.3",
+      "3.0",
+      "3.1"
+     ],
+     "first_t": 0,
+     "last_t": 0,
+     "best": "3.0",
+     "prompts": {
+      "jar": 0.935,
+      "container": 0.908
+     }
+    },
+    {
+     "id": "o2",
+     "label": "orange jar (small)",
+     "sightings": 2,
+     "members": [
+      "0.1",
+      "0.4",
+      "1.1",
+      "1.4"
+     ],
+     "first_t": 0,
+     "last_t": 0.2,
+     "best": "0.1",
+     "prompts": {
+      "jar": 0.865,
+      "container": 0.865
+     }
+    },
+    {
+     "id": "o3",
+     "label": "green box",
+     "sightings": 1,
+     "members": [
+      "3.2",
+      "3.3"
+     ],
+     "first_t": 0,
+     "last_t": 0,
+     "best": "3.3",
+     "prompts": {
+      "box": 0.935,
+      "container": 0.803
+     }
+    }
+   ],
+   "image": "out/manifest.jpg"
+  }
+ }
+}

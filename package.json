@@ -1,0 +1,36 @@
+{
+  "name": "eyespy-workspace",
+  "private": true,
+  "description": "eyespy: find and catalogue the objects in a video, locally in your browser or on your machine",
+  "license": "Apache-2.0",
+  "type": "module",
+  "scripts": {
+    "typecheck": "pnpm -r typecheck",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "pnpm --filter eyespy-core test && pnpm --filter eyespy-web test && pnpm --filter eyespy test && pnpm --filter eyespy-server test && node --test tools/eslint/*.test.js",
+    "verify": "pnpm typecheck && pnpm lint && pnpm format:check && pnpm deps:check && pnpm knip && pnpm test && pnpm licenses:check",
+    "knip": "knip && knip --production --strict --exclude types,nsTypes",
+    "deps:check": "depcruise core server/src server/scripts cli/src web/src web/scripts web/vite.config.ts",
+    "deps:graph": "mkdir -p scratch && depcruise core/src server/src cli/src web/src --include-only \"^(core|server|cli|web)/\" -T archi | dot -Tsvg -o scratch/deps.svg",
+    "licenses:check": "node --test tools/licenses/*.test.js && node tools/licenses/check.js"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@typescript-eslint/rule-tester": "^8.72.0",
+    "@typescript-eslint/utils": "^8.72.0",
+    "dependency-cruiser": "^18.7.0",
+    "eslint": "^10.13.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-functional": "^10.0.1",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "globals": "^17.13.0",
+    "knip": "catalog:",
+    "neverthrow": "catalog:",
+    "prettier": "^3.9.10",
+    "typescript": "catalog:",
+    "typescript-eslint": "^8.72.0"
+  },
+  "packageManager": "pnpm@12.9.0"
+}

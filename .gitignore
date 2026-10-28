@@ -1,0 +1,12 @@
+/result
+/scratch/
+/models/
+*.MOV
+*.mov
+*.mp4
+/.eyespy/
+node_modules/
+.claude/worktrees/
+/web/dist/
+/cli/dist/
+__pycache__/

@@ -1,0 +1,38 @@
+{
+ "version": 1,
+ "config": {},
+ "clips": [
+  {
+   "path": "/videos/kitchen.mp4",
+   "key": "5779faad8d86",
+   "times": [
+    0,
+    0.2,
+    1
+   ],
+   "shape": [
+    120,
+    160
+   ],
+   "captured": "2026-01-01T10:00:00.000000Z",
+   "keyframe_thresh": 0.4
+  },
+  {
+   "path": "/videos/pantry.mov",
+   "key": "dcd01881d004",
+   "times": [
+    0,
+    0.6,
+    1.6
+   ],
+   "shape": [
+    120,
+    160
+   ],
+   "captured": null,
+   "keyframe_thresh": 0.4
+  }
+ ],
+ "next_obj": 4,
+ "features": "onnx-cardanvil-vision-fp16/f16-concat-v1"
+}
