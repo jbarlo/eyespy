@@ -65,8 +65,18 @@
           export EYESPY_VK_LIB=${gpu.vulkan-loader}/lib # GPU scripts: LD_LIBRARY_PATH=$EYESPY_VK_LIB node ...
         '';
       };
+      # CI runs `pnpm verify` and the web build, which need only node and pnpm.
+      ci = pkgs.mkShell {
+        packages = [
+          node
+          gpu.pnpm
+        ];
+      };
     in
     {
-      devShells.${system}.default = shell;
+      devShells.${system} = {
+        default = shell;
+        inherit ci;
+      };
     };
 }
