@@ -7,7 +7,8 @@ licence, and how we comply. It is an engineering inventory, not legal advice.
 
 | Channel | What reaches users | Third-party content |
 |---|---|---|
-| Web app on GitHub Pages | `dist/`: one `index.html` (page + inlined worker), licence files; model files under `models/` | npm packages bundled into `index.html`; ONNX Runtime wasm (fetched from jsDelivr); SAM 3 and DINOv2 model files (detectors and DINOv2 served by us, SAM 3 encoders and tokenizer fetched from Hugging Face) |
+| Web app on GitHub Pages | `dist/`: one `index.html` (page + inlined worker), `LICENSE.txt`, `THIRD_PARTY_NOTICES.txt`, the model licences and notices under `models/` | npm packages bundled into `index.html`; ONNX Runtime wasm (fetched from jsDelivr); SAM 3 and DINOv2 model files (fetched from our Hugging Face repo, next row) |
+| Model files on Hugging Face, `huggingface.co/jbarlo/eyespy-models` | `sam3/` (SAM 3 encoders, tokenizer, detectors, `LICENSE-SAM.txt`, `NOTICE-SAM.txt`), `dinov2-small/` (`model_cls.onnx`, `LICENSE.txt`, `NOTICE.txt`), a model card | we redistribute every model file the web app loads: SAM 3 under the SAM License, DINOv2 under Apache-2.0 |
 | CLI and server, from source via the Nix flake | the repository; the user runs `pnpm install` (packages come from npm) and the flake's wrappers | we redistribute nothing. npm packages come from the user's own install; models are the user's local copies (`models/`) |
 | `cli/dist/eyespy.mjs` (esbuild bundle) | nobody. The devshell wrapper builds it locally, and git ignores it | none. If it is ever published, set esbuild `legalComments` and ship a notices file like the web build does |
 
@@ -17,8 +18,8 @@ licence, and how we comply. It is an engineering inventory, not legal advice.
   exceptions in `tools/licenses/policy.json`. Every production package needs an allowed licence or an exception.
 - `web/scripts/notices.ts` is a Vite plugin that runs on every `vite build`. It writes `dist/THIRD_PARTY_NOTICES.txt`
   from the modules Rollup bundled (page and worker), with each package's LICENSE and NOTICE text plus the run-time
-  components' full licence texts. It also copies the licence files next to what they cover. A bundled package without
-  a licence text fails the build. The app links the notices from the Licences section of Settings and from the
+  components' full licence texts. It also copies the licence texts and model notices into `dist/`. A bundled package
+  without a licence text fails the build. The app links the notices from the Licences section of Settings and from the
   empty-session screen.
 - `third_party/` holds the upstream licence texts, verbatim (sources and hashes
   [below](#licence-texts-in-third_party)).
@@ -46,9 +47,9 @@ No bundled package is Apache-2.0, so there are no NOTICE files to carry forward 
 | Component | Where it comes from | Licence | How we comply |
 |---|---|---|---|
 | ONNX Runtime Web 1.30.0 wasm (`ort-wasm-simd-threaded.asyncify.wasm`) | `cdn.jsdelivr.net/npm/onnxruntime-web@1.30.0`, sha256-pinned | MIT; the native code compiled in carries the notices in ORT's `ThirdPartyNotices.txt` | ORT LICENSE and the full ThirdPartyNotices.txt (v1.30.0) in `THIRD_PARTY_NOTICES.txt` (C.1) |
-| SAM 3: `vision_fp16.onnx`, `text_fp16.onnx`, `tokenizer.json` | fetched from `huggingface.co/CardAnvilModels/sam3-ONNX` at commit `7eee2d79`, sha256-pinned (not served by us) | SAM License (Meta) | see [SAM 3](#sam-3-the-sam-license) |
-| SAM 3 detectors: `detector_fp32_nosign.onnx`, `detector_fp16_nosign.onnx` | served by us: `models/` | SAM License (derivative works) | see [SAM 3](#sam-3-the-sam-license) |
-| DINOv2 small, `models/dinov2-small/model_cls.onnx` | served by us | Apache-2.0 | `models/dinov2-small/LICENSE.txt` and `NOTICE.txt` (attribution; "modified: CLS Gather appended", §4(b)); also C.3 in the notices |
+| SAM 3: `vision_fp16.onnx`, `text_fp16.onnx`, `tokenizer.json` | `huggingface.co/jbarlo/eyespy-models` at commit `7d55bf56`, `sam3/`, sha256-pinned; unchanged copies of `CardAnvilModels/sam3-ONNX` at commit `7eee2d79` | SAM License (Meta) | see [SAM 3](#sam-3-the-sam-license) |
+| SAM 3 detectors: `detector_fp32_nosign.onnx`, `detector_fp16_nosign.onnx` | same repo and commit, `sam3/` | SAM License (derivative works) | see [SAM 3](#sam-3-the-sam-license) |
+| DINOv2 small, `model_cls.onnx` | same repo and commit, `dinov2-small/` | Apache-2.0 | `LICENSE.txt` and `NOTICE.txt` (attribution; "modified: CLS Gather appended", §4(b)) beside the model on Hugging Face and under `models/dinov2-small/` in `dist/`; also C.3 in the notices |
 
 Not shipped: `processor_config.json`, `tokenizer_config.json`, `vocab.json`, `merges.txt` (not in the manifest),
 test clips and fixtures.
@@ -68,9 +69,11 @@ test clips and fixtures.
 
 What the licence requires of a public deploy, and what we do:
 
-- §1.b.i allows distribution, including of derivative works, only under the licence and with a copy of it. We ship
-  `models/LICENSE-SAM.txt` and `models/NOTICE-SAM.txt` next to the detectors, put the text in
-  `THIRD_PARTY_NOTICES.txt`, and link it before the download and in Settings. Our Apache-2.0 covers our code only.
+- §1.b.i allows distribution, including of derivative works, only under the licence and with a copy of it. We
+  distribute every SAM 3 file from `jbarlo/eyespy-models` with `sam3/LICENSE-SAM.txt` and `sam3/NOTICE-SAM.txt`
+  beside them, and the model card names the licence. The site ships the licence and notice as
+  `models/LICENSE-SAM.txt` and `models/NOTICE-SAM.txt`, puts them in `THIRD_PARTY_NOTICES.txt`, and links the licence
+  before the download and in Settings. Our Apache-2.0 covers our code only.
 - Use or distribution means accepting the licence, so every user whose browser downloads the models is a licensee.
   They inherit §1.b.ii (acknowledge SAM in publications), §1.b.iii and §1.b.v (applicable law, trade controls, no
   ITAR or military, nuclear, espionage or weapons uses) and §1.b.iv (no reverse engineering). §5.b indemnity and §6
@@ -84,7 +87,8 @@ The browser stores the agreement as `eyespy.licence.sam`, holding `{sha256, at}`
 this build ships, so a new text asks again. Cancel opens sessions without the models. The worker refuses SAM 3 files
 without the agreement flag. Code: `web/src/state/licence.ts`, `web/src/engine/worker/licence.ts`.
 
-Model files that move to another host take `LICENSE-SAM.txt` and `NOTICE-SAM.txt` (and the DINOv2 files) with them.
+The Hugging Face repo holds its own copies of the licence texts and notices, next to the files they cover. They
+state the same facts as `third_party/`, so a change to one needs the same change in the other.
 
 ### Video decoding: no codec shipped
 
@@ -97,9 +101,10 @@ program. The devshell's ffmpeg is a development tool for the validation scripts,
 
 The `facebook/dinov2-small` weights are Apache-2.0, per the model card and the `facebookresearch/dinov2` LICENSE.
 There is no upstream NOTICE file. The ONNX conversion comes from `onnx-community/dinov2-small`, which has no licence
-of its own and is a format conversion of the base model. We appended a Gather (CLS token) and serve `model_cls.onnx`.
-Apache-2.0 §4 asks for (a) a licence copy, which is `models/dinov2-small/LICENSE.txt`; (b) a modified-files notice and
-(c) attribution, both in `NOTICE.txt`; and (d) the upstream NOTICE, of which there is none.
+of its own and is a format conversion of the base model. We appended a Gather (CLS token) and distribute
+`model_cls.onnx` from `jbarlo/eyespy-models`. Apache-2.0 §4 asks for (a) a licence copy, which is `LICENSE.txt`
+beside the model; (b) a modified-files notice and (c) attribution, both in `NOTICE.txt` beside it; and (d) the
+upstream NOTICE, of which there is none. The site carries both files under `models/dinov2-small/`.
 
 ## CLI and server (run from source)
 
@@ -133,12 +138,12 @@ bundle).
 ## NOTICE file for this project
 
 None. The project has no attribution notices of its own. Third-party attributions are in `THIRD_PARTY_NOTICES.txt` and
-the per-folder files in `dist/`.
+the per-folder licence and notice files in `dist/` and on Hugging Face.
 
 ## Licence texts in third_party/
 
-These are verbatim copies of the upstream files. `web/scripts/notices.ts` copies them into `dist/` beside the files
-they cover and into `THIRD_PARTY_NOTICES.txt`.
+These are verbatim copies of the upstream files. `web/scripts/notices.ts` copies them into `dist/` and into
+`THIRD_PARTY_NOTICES.txt`.
 
 | File | Covers | Source | sha256 |
 |---|---|---|---|

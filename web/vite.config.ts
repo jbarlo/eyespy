@@ -28,7 +28,7 @@ const ortWasmNotAnAsset = {
   },
 };
 
-// THIRD_PARTY_NOTICES.txt and the licence copies beside the models
+// THIRD_PARTY_NOTICES.txt and the licence copies
 const notices = thirdPartyNotices();
 
 // One self-contained index.html with the worker inlined; the engine fetches models and the ort wasm at runtime.

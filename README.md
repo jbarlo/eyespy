@@ -51,9 +51,11 @@ open the same folder.
 
 ## Models
 
-eyespy uses SAM 3 (detector, vision and text encoders) and DINOv2-small as ONNX files. The web app downloads them on
-first use from pinned URLs, checks each sha256, and caches them in OPFS. The CLI reads them from `models/onnx/` in the
-checkout, or from `$EYESPY_MODELS`. The models are not part of this repository and have their own licences.
+eyespy uses SAM 3 (detector, vision and text encoders) and DINOv2-small as ONNX files. They are not part of this
+repository. They are on Hugging Face at [jbarlo/eyespy-models](https://huggingface.co/jbarlo/eyespy-models), with
+their own licences next to them. The web app downloads them on first use from a pinned commit of that repo, checks
+each sha256, and caches them in OPFS. The CLI reads them from `models/onnx/` in the checkout, or from
+`$EYESPY_MODELS`.
 
 ## Checks
 

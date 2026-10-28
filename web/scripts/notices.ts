@@ -5,7 +5,7 @@
  *   That covers the page and the inlined worker, and leaves out tree-shaken and type-only packages. Then come the
  *   run-time components (ONNX Runtime's wasm, the models) with their texts from third_party/. A bundled package with no
  *   licence file and no entry in SUPPLEMENTS fails the build.
- * - COPIES are licence texts placed beside the files they cover.
+ * - COPIES are the project licence and the model licences and notices, at the dist paths the app links.
  *
  * The app records its SAM License agreement against `samLicenseSha256()`.
  */
@@ -81,10 +81,12 @@ function runtimeSections(ort: string): string {
     `${HEAD}\nB. Loaded by the app at run time (not inside index.html)\n${HEAD}\n\n` +
       `- ONNX Runtime Web ${ort} wasm (ort-wasm-simd-threaded.asyncify.wasm), fetched from cdn.jsdelivr.net\n` +
       `  (npm onnxruntime-web@${ort}): MIT, Copyright (c) Microsoft Corporation. Its third-party notices are in C.1.\n` +
-      "- SAM 3 model files (vision and text encoders and tokenizer from Hugging Face, detectors from models/):\n" +
-      "  the SAM License, NOT an open-source licence: models/LICENSE-SAM.txt, models/NOTICE-SAM.txt. Text in C.2.\n" +
-      "- DINOv2 small (models/dinov2-small/model_cls.onnx): Apache-2.0, modified (CLS-token output):\n" +
-      "  models/dinov2-small/LICENSE.txt, models/dinov2-small/NOTICE.txt. Text in C.3.",
+      "- SAM 3 model files (vision and text encoders, tokenizer, detectors), fetched from\n" +
+      "  huggingface.co/jbarlo/eyespy-models (sam3/). The SAM License, NOT an open-source licence:\n" +
+      "  models/LICENSE-SAM.txt, models/NOTICE-SAM.txt. Text in C.2.\n" +
+      "- DINOv2 small (model_cls.onnx), fetched from huggingface.co/jbarlo/eyespy-models (dinov2-small/).\n" +
+      "  Apache-2.0, modified (CLS-token output): models/dinov2-small/LICENSE.txt, models/dinov2-small/NOTICE.txt.\n" +
+      "  Text in C.3.",
     `${HEAD}\nC.1 ONNX Runtime ${ort}: LICENSE and ThirdPartyNotices.txt\n${HEAD}\n\n` +
       read("third_party/onnxruntime/LICENSE").trim() +
       "\n\n" +
@@ -100,7 +102,7 @@ function runtimeSections(ort: string): string {
   ].join("\n\n\n");
 }
 
-/** Files copied into dist/ beside what they cover, as dist path and repo-relative source. */
+/** Files copied into dist/, as dist path and repo-relative source. */
 const COPIES: Readonly<Record<string, string>> = {
   "LICENSE.txt": "LICENSE",
   "models/LICENSE-SAM.txt": "third_party/sam3/LICENSE",

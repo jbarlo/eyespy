@@ -10,14 +10,18 @@ or distributing any portion of the SAM Materials you agree to be bound by it, in
 SAM 3: Segment Anything with Concepts. Meta, 2025. https://github.com/facebookresearch/sam3,
 https://arxiv.org/abs/2511.16719
 
+This project distributes the files below under the SAM License from https://huggingface.co/jbarlo/eyespy-models
+at commit 7d55bf5697d2d229e72aef402ddbf921c3a74110, folder sam3/, with LICENSE-SAM.txt and a copy of this notice.
+The app downloads them from there.
+
 Files:
-- vision_fp16.onnx, text_fp16.onnx, tokenizer.json: fetched by the app from
-  https://huggingface.co/CardAnvilModels/sam3-ONNX at commit 7eee2d79268e794e433b6e49467c5340525ac228 (not served
-  by this site). ONNX format conversions of facebook/sam3 by Card Anvil, distributed by them under the SAM License;
-  the tokenizer is copied unchanged from facebook/sam3.
-- detector_fp32_nosign.onnx, detector_fp16_nosign.onnx (served by this site, in this folder): modified derivative
-  works of facebook/sam3 (model.safetensors sha256
-  6d06f0a5f84e435071fe6603e61d0b4cc7b40e0d39d487cfd4d67d8cc11cc14a, the same weights as the Card Anvil export).
-  fp32: the DETR detector graph exported to ONNX by this project, then the Sign operators rewritten into equivalent
-  arithmetic. fp16: Card Anvil's detector_fp16.onnx (same commit as above) with the same Sign rewrite. Scripts and
-  commands: tools/models/ in this project's source repository. Distributed under the SAM License.
+- vision_fp16.onnx, text_fp16.onnx, tokenizer.json: unchanged copies of the files at
+  https://huggingface.co/CardAnvilModels/sam3-ONNX, commit 7eee2d79268e794e433b6e49467c5340525ac228. The encoders
+  are ONNX format conversions of facebook/sam3 by Card Anvil, distributed by them under the SAM License; the
+  tokenizer is copied unchanged from facebook/sam3.
+- detector_fp32_nosign.onnx, detector_fp16_nosign.onnx: modified derivative works of facebook/sam3
+  (model.safetensors sha256 6d06f0a5f84e435071fe6603e61d0b4cc7b40e0d39d487cfd4d67d8cc11cc14a, the same weights as
+  the Card Anvil export). fp32: the DETR detector graph exported to ONNX by this project, with the Sign operators
+  rewritten into equivalent arithmetic and the exporter's metadata removed. fp16: Card Anvil's detector_fp16.onnx
+  (same commit as above) with the same Sign rewrite and metadata removal. Scripts and commands: tools/models/ in
+  https://github.com/jbarlo/eyespy.
