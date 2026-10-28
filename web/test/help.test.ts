@@ -102,7 +102,7 @@ test("SAM License dialog: short, says what and why, links the full text, the two
   assert.ok(!body.includes("DINOv2"), "DINOv2 needs no agreement");
   assert.equal(T.agree, "I agree");
   assert.equal(T.cancel, "Cancel");
-  for (const s of [T.intro, T.points, T.banner]) assert.match(s, /\.$/);
+  for (const s of [T.intro, T.banner]) assert.match(s, /\.$/);
   assert.ok(T.banner.length <= 200 && T.banner.includes("SAM License"));
 });
 

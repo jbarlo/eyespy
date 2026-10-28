@@ -54,7 +54,7 @@ function onEvent(e: EngineEvent) {
 
 const testAgree = new URLSearchParams(location.search).get("agree") === "1";
 const samAgreed = () => testAgree || agreedTo(browserStorage.prefs, __EYESPY_SAM_LICENSE_SHA256__);
-$("licence-text").textContent = `${SAM_LICENCE_TEXT.intro} ${SAM_LICENCE_TEXT.points}`;
+$("licence-text").textContent = SAM_LICENCE_TEXT.intro;
 
 let current: { dispose: () => void } | null = null;
 let currentSession: SessionLocation = { opfs: params.session ?? "default" };
