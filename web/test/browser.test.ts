@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { clearFeaturesIn, sessionsUsage, type Dir } from "../src/browser.ts";
+import { clearFeaturesIn, sessionsUsage, webgpuIn, type Dir } from "../src/browser.ts";
 import type { FakeFile } from "./fsaccess.ts";
 import { FakeDir } from "./fsaccess.ts";
 
@@ -49,4 +49,22 @@ test("clearFeaturesIn removes clips' feature folders of every session but the ke
   assert.ok(root.at(`a/.eyespy/clips/${KEY}/frames/000.jpg`));
   assert.ok(root.at(`a/.eyespy/out/feat/x.jpg`));
   assert.ok(root.at(`b/.eyespy/clips/${KEY}/feat/000.f16`));
+});
+
+test("webgpuIn: no API, no adapter (null or a throw), an adapter asked for high performance", async () => {
+  assert.equal(await webgpuIn(undefined), "no-webgpu");
+  assert.equal(await webgpuIn({ requestAdapter: () => Promise.resolve(null) }), "no-adapter");
+  assert.equal(
+    await webgpuIn({ requestAdapter: () => Promise.reject(new Error("GPU process crashed")) }),
+    "no-adapter",
+  );
+  const asked: unknown[] = [];
+  const gpu = {
+    requestAdapter: (o: unknown) => {
+      asked.push(o);
+      return Promise.resolve({});
+    },
+  };
+  assert.equal(await webgpuIn(gpu), "available");
+  assert.deepEqual(asked, [{ powerPreference: "high-performance" }]);
 });

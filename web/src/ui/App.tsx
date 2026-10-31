@@ -6,6 +6,7 @@ import { SettingsDialog } from "./dialogs/Settings.tsx";
 import { Empty } from "./Empty.tsx";
 import { Filmstrip } from "./Filmstrip.tsx";
 import { keyHandler } from "./keyboard.ts";
+import { NoWebGpu } from "./NoWebGpu.tsx";
 import { ObjectsDatalist, PANELS } from "./panels/index.ts";
 import { PromptBar } from "./PromptBar.tsx";
 import { SessionBar } from "./SessionBar.tsx";
@@ -23,10 +24,12 @@ export function App() {
   }, [app]);
   const hasFrames = useSlice("frames", (s) => s.frames.length > 0);
   const triageOn = useSlice("triage", (s) => s.page !== null);
+  const phase = useSlice("engine", (s) => s.phase);
   // triage moves to the top while it runs (keyed by id, so panels keep their state when reordered)
   const panels = triageOn
     ? [...PANELS.filter((p) => p.id === "triage"), ...PANELS.filter((p) => p.id !== "triage")]
     : PANELS;
+  if (phase === "no-webgpu" || phase === "no-adapter") return <NoWebGpu kind={phase} />;
   return (
     <div className="app">
       <SessionBar />

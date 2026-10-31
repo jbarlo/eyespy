@@ -2,11 +2,12 @@
  * Engine lifecycle and what it reports. `generation` counts session closes (each open begins with one), for
  * openSession's stale-start check.
  */
-import type { EngineEvent, EngineSession } from "./ports.ts";
+import type { EngineEvent, EngineSession, WebGpu } from "./ports.ts";
 import { slice } from "./slice.ts";
 import type { SessionLocation, Status } from "./types.ts";
 
-type Phase = "starting" | "ready" | "failed";
+/** Starting, ready, failed to start, or not started because the browser can't run the models (no WebGPU). */
+type Phase = "starting" | "ready" | "failed" | Exclude<WebGpu, "available">;
 type Download = {
   readonly loaded: number;
   readonly total: number;

@@ -12,6 +12,7 @@ import {
   PANEL_HELP,
   PREFERENCE_HELP,
   TOOL_HELP,
+  NO_WEBGPU_TEXT,
   SAM_LICENCE_TEXT,
   UNSUPPORTED_VIDEO,
   DOWNLOAD_GB,
@@ -104,6 +105,21 @@ test("SAM License dialog: short, says what and why, links the full text, the two
   assert.equal(T.cancel, "Cancel");
   for (const s of [T.intro, T.banner]) assert.match(s, /\.$/);
   assert.ok(T.banner.length <= 200 && T.banner.includes("SAM License"));
+});
+
+test("no-WebGPU page: both cases name WebGPU and the GPU, say what to do, in full sentences", () => {
+  const T = NO_WEBGPU_TEXT;
+  assert.match(T.how, /WebGPU/);
+  assert.match(T.how, /graphics card \(GPU\)/);
+  for (const kind of ["no-webgpu", "no-adapter"] as const) {
+    assert.ok(T.title[kind].length <= 60, `${kind}: title`);
+    for (const s of [T.why[kind], T.todo[kind]]) assert.match(s, /\.$/, `${kind}: ${s}`);
+  }
+  assert.notEqual(T.why["no-webgpu"], T.why["no-adapter"]);
+  assert.match(T.where.flag, /^chrome:\/\/flags\//);
+  const all = JSON.stringify(T);
+  assert.ok(!all.includes("—"), "no em-dash asides");
+  assert.ok(all.length <= 1600, `${all.length} chars (keep it short)`);
 });
 
 test("DOWNLOAD_GB matches the default first download (every model but the fp16 detector, plus the ORT wasm)", () => {

@@ -4,6 +4,7 @@
  */
 import { ResultAsync, errAsync, okAsync } from "neverthrow";
 import { isFeatureDir } from "eyespy-core/storage/pure";
+import type { WebGpu } from "./state/ports.ts";
 
 type HostError = { readonly kind: "host"; readonly message: string };
 export type Dir = FileSystemDirectoryHandle & { entries(): AsyncIterable<[string, FileSystemHandle]> };
@@ -143,6 +144,23 @@ export const browserStorage = {
   persist: () => ResultAsync.fromPromise(navigator.storage.persist?.() ?? Promise.resolve(false), hostError),
 };
 
+/** The part of navigator.gpu the check uses. */
+type Gpu = { readonly requestAdapter: (o: { powerPreference: "high-performance" }) => Promise<unknown> };
+
+/**
+ * What `gpu` (navigator.gpu) offers: no API, an API that gives no adapter (null, or a throw), or an adapter. It asks
+ * the way the engine does, so the answer matches what the engine gets.
+ * @internal
+ */
+export async function webgpuIn(gpu: Gpu | undefined): Promise<WebGpu> {
+  if (!gpu) return "no-webgpu";
+  try {
+    return (await gpu.requestAdapter({ powerPreference: "high-performance" })) ? "available" : "no-adapter";
+  } catch {
+    return "no-adapter";
+  }
+}
+
 type Picker = (o: object) => Promise<FileSystemDirectoryHandle>;
 const picker = (globalThis as { showDirectoryPicker?: Picker }).showDirectoryPicker;
 
@@ -156,6 +174,7 @@ export const browserHost = {
             : errAsync<FileSystemDirectoryHandle | null, HostError>(hostError(e)),
         )
     : null,
+  webgpu: () => webgpuIn((navigator as { gpu?: Gpu }).gpu),
   download(name: string, text: string, type: string) {
     const a = document.createElement("a");
     a.href = URL.createObjectURL(new Blob([text], { type }));

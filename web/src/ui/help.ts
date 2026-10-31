@@ -334,3 +334,45 @@ export const SAM_LICENCE_TEXT = {
     "keyframes and searching need the models.",
   review: "Review licence",
 } as const;
+
+/**
+ * The page shown instead of the app when the browser can't run the models, by case: no WebGPU API, or WebGPU without
+ * a GPU adapter. Text around a code or link is split (`before`, `after`) so the page can mark it up.
+ */
+export const NO_WEBGPU_TEXT = {
+  title: {
+    "no-webgpu": "This browser can't run eyespy's models",
+    "no-adapter": "This browser won't let eyespy use your graphics card",
+  },
+  how:
+    "eyespy runs its AI models on your graphics card (GPU), inside this browser tab, so your videos never leave your " +
+    "machine. Web pages reach the GPU through WebGPU.",
+  why: {
+    "no-webgpu": "This browser doesn't offer WebGPU to web pages, so the models can't run here.",
+    "no-adapter":
+      "This browser supports WebGPU but gave this page no GPU to use. Browsers do that when hardware acceleration is " +
+      "off, or when they block WebGPU for this graphics card or its driver.",
+  },
+  todo: {
+    "no-webgpu": "Open eyespy in a browser that supports WebGPU.",
+    "no-adapter":
+      "Check that hardware acceleration is on in the browser's settings, update the graphics driver, or try another " +
+      "browser.",
+  },
+  gpuPage: { before: "In Chrome or Edge, ", page: "chrome://gpu", after: " shows whether WebGPU is on, and why not." },
+  where: {
+    before:
+      "WebGPU works in current Chrome and Edge on Windows, macOS and ChromeOS, in Safari 26 or later, and in Firefox " +
+      "on Windows and on Apple silicon Macs. On Linux and Android it depends on the graphics chip, and Chrome on " +
+      "Linux may need ",
+    flag: "chrome://flags/#enable-unsafe-webgpu",
+    after: " turned on.",
+  },
+  lists: {
+    before: "Support changes with each browser release. Up-to-date lists: ",
+    caniuse: "Can I use WebGPU",
+    between: " and the ",
+    status: "WebGPU implementation status",
+    after: " page.",
+  },
+} as const;

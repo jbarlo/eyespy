@@ -39,6 +39,31 @@ test("open failure: phase failed, the error is a notice", async () => {
   );
 });
 
+test("no WebGPU: no licence question, no engine, no notice; the phase says which case", async () => {
+  for (const webgpu of ["no-webgpu", "no-adapter"] as const) {
+    const { app, engine, host } = setup({ webgpu, agreed: false });
+    assert.equal(await app.actions.openSession({ opfs: "s1" }), null);
+    const e = app.stores.engine.getState();
+    assert.equal(e.phase, webgpu);
+    assert.match(e.error ?? "", /WebGPU/);
+    assert.equal(app.stores.licence.getState().ask, null, "no licence dialog for models that can't run");
+    assert.equal(engine.opened.length, 0);
+    assert.deepEqual(app.stores.notices.getState().notices, []);
+    assert.equal(await app.actions.openSession({ opfs: "s2" }), null);
+    assert.equal(app.stores.engine.getState().phase, webgpu);
+    assert.equal(host.checks, 1, "the browser is asked once per page load");
+  }
+});
+
+test("WebGPU checked once: a later switch resets the old session at once", async () => {
+  const { app, engine, host } = setup();
+  await app.actions.openSession({ opfs: "s1" });
+  const opening = app.actions.openSession({ opfs: "s2" });
+  assert.equal(engine.opened[0]?.disposed, true, "disposed before the first await");
+  assert.ok(await opening);
+  assert.equal(host.checks, 1);
+});
+
 test("switch: the old engine is disposed, session stores and asset caches reset, its poll stopped", async () => {
   const { app, engine, clock, img } = setup();
   await app.actions.openSession({ opfs: "s1" });

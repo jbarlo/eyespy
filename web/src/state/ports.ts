@@ -63,8 +63,18 @@ export type Clock = {
   readonly after: (ms: number, fn: () => void) => () => void;
 };
 
-/** Page capabilities: the folder picker (null when the browser has none; resolves null if cancelled), downloads. */
+/**
+ * What the browser offers for running the models: WebGPU with an adapter, no WebGPU API at all, or the API without an
+ * adapter (a blocklisted GPU or driver, hardware acceleration off).
+ */
+export type WebGpu = "available" | "no-webgpu" | "no-adapter";
+
+/**
+ * Page capabilities: the folder picker (null when the browser has none; resolves null if cancelled), downloads, and the
+ * WebGPU check (it never rejects).
+ */
 export type Host = {
   readonly pickDirectory: (() => ResultAsync<FileSystemDirectoryHandle | null, HostError>) | null;
   readonly download: (name: string, text: string, type: string) => void;
+  readonly webgpu: () => Promise<WebGpu>;
 };

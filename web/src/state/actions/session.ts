@@ -7,7 +7,8 @@ import type { Result } from "neverthrow";
 import { SAM_LICENSE_REFUSED } from "../../protocol.ts";
 import { applyEvent, isFailureLog } from "../engine.ts";
 import { nearestFrame } from "../frames.ts";
-import type { EngineError, EngineEvent, EyespyApi } from "../ports.ts";
+import type { EngineError, EngineEvent, EyespyApi, WebGpu } from "../ports.ts";
+import { once } from "../once.cache.ts";
 import { createPoller } from "../poll.cache.ts";
 import { refKey } from "../selectors.ts";
 import { PREF } from "../settings.ts";
@@ -21,6 +22,11 @@ import type { Runner } from "./run.ts";
 import type { TriageActions } from "./triage.ts";
 
 const POLL_MS = 2500;
+/** The engine error for automation (window.eyespyReady rejects with it); the page explains it in full. */
+const NO_WEBGPU_ERROR = {
+  "no-webgpu": "This browser has no WebGPU, which the models need",
+  "no-adapter": "This browser has WebGPU but gave the page no GPU adapter",
+} as const satisfies Record<Exclude<WebGpu, "available">, string>;
 const labelOf = (loc: SessionLocation) => ("opfs" in loc ? loc.opfs : loc.dir.name);
 
 export function createSessionActions(ctx: Ctx, r: Runner, triageActions: TriageActions, licence: LicenceActions) {
@@ -30,6 +36,8 @@ export function createSessionActions(ctx: Ctx, r: Runner, triageActions: TriageA
   const current = (g: number) => engine.getState().generation === g;
   /** The open session's status poll (the handle lives here, not in a store). */
   const poll = createPoller(deps.clock, POLL_MS);
+  /** Whether this browser can run the models, asked of the browser on the first open only. */
+  const webgpu = once(deps.host.webgpu);
 
   function onEvent(g: number, ev: EngineEvent) {
     if (!current(g)) return;
@@ -130,10 +138,20 @@ export function createSessionActions(ctx: Ctx, r: Runner, triageActions: TriageA
     frames.setState({ clips: res.value.clips });
   }
 
-  /** Starts (or switches to) a session on a fresh engine worker. Resolves to window.eyespy's API, null on failure. */
+  /**
+   * Starts (or switches to) a session on a fresh engine worker. Resolves to window.eyespy's API, null on failure.
+   * Without WebGPU nothing starts and nobody is asked about the licence: the phase says why, and the page explains it.
+   */
   async function openSession(loc: SessionLocation, label?: string): Promise<EyespyApi | null> {
-    // ask about the SAM License first, so no engine starts (and no model downloads or loads from cache) before the
-    // answer. When the answer is known this is synchronous, so a switch resets the old session at once
+    const knownGpu = webgpu();
+    const gpu = typeof knownGpu === "string" ? knownGpu : await knownGpu;
+    if (gpu !== "available") {
+      closeSession();
+      engine.setState({ phase: gpu, error: NO_WEBGPU_ERROR[gpu] });
+      return null;
+    }
+    // ask about the SAM License next, so no engine starts (and no model downloads or loads from cache) before the
+    // answer. When both answers are known this is synchronous, so a switch resets the old session at once
     const known = licence.ensureLicence();
     const samLicenseAgreed = typeof known === "boolean" ? known : await known;
     closeSession();

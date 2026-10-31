@@ -3,7 +3,16 @@ import type { DataFrame } from "eyespy-core/session";
 import type { EngineError, EngineOps } from "../src/engine/port.ts";
 import { createAssetCaches, createStores } from "../src/state/index.ts";
 import { LICENCE_PREF } from "../src/state/licence.ts";
-import type { App, BrowserStorage, Clock, EngineSession, Host, Imaging, OpenRequest } from "../src/state/index.ts";
+import type {
+  App,
+  BrowserStorage,
+  Clock,
+  EngineSession,
+  Host,
+  Imaging,
+  OpenRequest,
+  WebGpu,
+} from "../src/state/index.ts";
 
 export type Handler = (input: never, call: { path: string; session: number }) => unknown;
 export type Handlers = Record<string, Handler>;
@@ -205,9 +214,20 @@ export function fakeImaging() {
   return { imaging, made, urls };
 }
 
-export const fakeHost = (): Host & { downloads: { name: string; text: string }[] } => {
+/** A host whose WebGPU check answers `webgpu`; `checks` counts the checks. */
+export const fakeHost = (webgpu: WebGpu = "available") => {
   const downloads: { name: string; text: string }[] = [];
-  return { pickDirectory: null, download: (name, text) => void downloads.push({ name, text }), downloads };
+  const h: Host & { downloads: typeof downloads; checks: number } = {
+    pickDirectory: null,
+    download: (name, text) => void downloads.push({ name, text }),
+    downloads,
+    checks: 0,
+    webgpu: () => {
+      h.checks++;
+      return Promise.resolve(webgpu);
+    },
+  };
+  return h;
 };
 
 export const frame = (n: number): DataFrame =>
@@ -307,13 +327,19 @@ export const AGREED = { [LICENCE_PREF]: JSON.stringify({ sha256: SAM_SHA, at: "2
 
 /** `agreed: false` starts without the SAM License agreement (the licence dialog comes first). */
 export function setup(
-  o: { handlers?: Handlers; prefs?: Record<string, string>; query?: Record<string, string>; agreed?: boolean } = {},
+  o: {
+    handlers?: Handlers;
+    prefs?: Record<string, string>;
+    query?: Record<string, string>;
+    agreed?: boolean;
+    webgpu?: WebGpu;
+  } = {},
 ) {
   const engine = fakeEngine(o.handlers ?? sessionHandlers());
   const clock = fakeClock();
   const storage = fakeStorage({ ...(o.agreed === false ? {} : AGREED), ...o.prefs });
   const img = fakeImaging();
-  const host = fakeHost();
+  const host = fakeHost(o.webgpu);
   const assets = createAssetCaches({ imaging: img.imaging });
   const app: App = createStores({
     engine: engine.port,
