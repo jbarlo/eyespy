@@ -85,8 +85,9 @@ this build ships, so a new text asks again. Cancel opens sessions without the mo
 without the agreement flag. Code: `web/src/state/licence.ts`, `web/src/engine/worker/licence.ts`.
 
 The Hugging Face repo holds its own copies of the licence texts and notices, next to the files they cover. They
-state the same facts as `third_party/`, so a change to one needs the same change in the other. The `sam-license-hf`
-workflow uploads `sam3/LICENSE-SAM.txt` and `sam3/NOTICE-SAM.txt` when `third_party/sam3/` changes on main.
+state the same facts as `third_party/`, so a change to one needs the same change in the other. The weekly
+`sam-license` workflow fails while `sam3/LICENSE-SAM.txt` or `sam3/NOTICE-SAM.txt` differs from `third_party/sam3/`
+on main; the owner uploads them with `hf upload`.
 
 ### Video decoding: no codec shipped
 

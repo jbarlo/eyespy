@@ -94,8 +94,16 @@ export function prBody(old, next, diff) {
       "diff before merging. Nothing merges this automatically.",
     "",
     `This pull request writes the new text to \`${FILES.license}\` and updates its sha256, upstream commit and date ` +
-      `in \`${FILES.thirdParty}\` and its date in \`${FILES.notice}\`. After the merge, the sam-license-hf workflow ` +
-      "uploads the licence and notice to huggingface.co/jbarlo/eyespy-models (sam3/).",
+      `in \`${FILES.thirdParty}\` and its date in \`${FILES.notice}\`.`,
+    "",
+    "After the merge, upload the licence and notice to Hugging Face from a checkout of main, in the default devshell:",
+    "",
+    "```sh",
+    `hf upload jbarlo/eyespy-models ${FILES.license} sam3/LICENSE-SAM.txt`,
+    `hf upload jbarlo/eyespy-models ${FILES.notice} sam3/NOTICE-SAM.txt`,
+    "```",
+    "",
+    "The weekly run fails until the copies on Hugging Face match main.",
     "",
     "Check by hand before merging:",
     "",

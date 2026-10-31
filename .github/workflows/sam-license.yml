@@ -1,7 +1,8 @@
 name: sam-license
 
 # Compares third_party/sam3/LICENSE with the SAM License upstream. When the text changed, it opens (or updates) one
-# pull request on the sam-license-update branch for the owner to review. A failed fetch fails the run.
+# pull request on the sam-license-update branch for the owner to review. A failed fetch fails the run. The hf job fails
+# while the licence and notice copies on Hugging Face differ from main's, which the owner uploads by hand.
 on:
   schedule:
     - cron: "17 6 * * 1"
@@ -42,3 +43,22 @@ jobs:
             third_party/sam3/LICENSE
             third_party/sam3/NOTICE
             THIRD_PARTY.md
+
+  hf:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Compare with the copies on Hugging Face
+        env:
+          HF_REPO: jbarlo/eyespy-models
+        run: |
+          stale=0
+          for pair in LICENSE:LICENSE-SAM.txt NOTICE:NOTICE-SAM.txt; do
+            local=third_party/sam3/${pair%%:*} remote=sam3/${pair#*:}
+            curl -fsSL "https://huggingface.co/$HF_REPO/resolve/main/$remote" -o "$RUNNER_TEMP/hf-copy"
+            if ! cmp -s "$RUNNER_TEMP/hf-copy" "$local"; then
+              echo "::error::$remote on $HF_REPO differs from $local. From a checkout of main, in the default devshell: hf upload $HF_REPO $local $remote"
+              stale=1
+            fi
+          done
+          exit $stale
