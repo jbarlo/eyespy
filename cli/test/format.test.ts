@@ -40,6 +40,7 @@ const EMPTY_OBJ: Obj = {
 
 test("rows", () => {
   assert.equal(hitLine(H1), "3.1       1.3s  0.88  [10,20,110,220]         jar");
+  assert.equal(hitLine({ ...H1, t: 3, photo: true }), "3.1     photo 3  0.88  [10,20,110,220]         jar");
   assert.equal(hitLine(H2), "12.10    10.0s  0.50  [0,0,5,5]               jar, glass jar  → o1");
   assert.equal(hitLine({ ...H1, prompts: [], sim: 0.4567 }), "3.1       1.3s  0.88  [10,20,110,220]         sim=0.46");
   assert.equal(objLine(OBJ), "o1    glass jar  (2 sightings, 1.3–10.0s, best 3.1)  [jar 0.88, glass jar 0.50]");
@@ -97,6 +98,14 @@ test("find, search, semantic, sheet", () => {
     ],
   } as never;
   assert.equal(reply.sheet(sheet), "#0=0s #1=2.5s\nimage: /s/sheet.jpg");
+  const photos: Outputs["sheet"] = {
+    image: "/s/sheet.jpg",
+    frames: [
+      { frame: 0, t: 0 },
+      { frame: 54, t: 0, photo: true },
+    ],
+  } as never;
+  assert.equal(reply.sheet(photos), "#0=0s #54=photo 0\nimage: /s/sheet.jpg");
 });
 
 test("videos: added, clips, status, config", () => {

@@ -60,7 +60,10 @@ export const look = (k: Kit): Session["look"] => ({
           )
         : inView.filter((d) => d.score >= threshold(ctx, req) && own.get(d.id) !== REJECT);
       if (req.crops)
-        return view(k, req, hits, "show").map((image) => ({ image, hits: hits.map((d) => summary(d, own)) }));
+        return view(k, req, hits, "show").map((image) => ({
+          image,
+          hits: hits.map((d) => summary(d, own, k.modules.video)),
+        }));
       const drawn = req.objects
         ? perObject(k, hits, own)
         : {
@@ -82,7 +85,7 @@ export const look = (k: Kit): Session["look"] => ({
       )
         .andThen((tiles) => saveGrid(k, tiles, "show"))
         .andThen(someFrames)
-        .map((image) => ({ image, hits: drawn.shown.map((d) => summary(d, own)) }));
+        .map((image) => ({ image, hits: drawn.shown.map((d) => summary(d, own, k.modules.video)) }));
     }),
 
   crop: (_ctx, req) =>
@@ -90,7 +93,7 @@ export const look = (k: Kit): Session["look"] => ({
       k.modules.render
         .cropRegion(d)
         .andThen((img) => save(k, img, `crop-${d.id}`, 95))
-        .map((image) => ({ image, ...summary(d, k.modules.labelling.owners()) })),
+        .map((image) => ({ image, ...summary(d, k.modules.labelling.owners(), k.modules.video) })),
     ),
 
   similar: (ctx, req) =>
@@ -102,10 +105,11 @@ export const look = (k: Kit): Session["look"] => ({
         d.emb,
         req.k ?? 8,
         own,
+        k.modules.video,
       );
       const labels = [`${d.id} (query)`, ...matches.map(simLabel)];
       return saveSheet(k, [d, ...near], `similar-${d.id}`, labels).map((image) => ({
-        query: summary(d, own),
+        query: summary(d, own, k.modules.video),
         image,
         matches,
       }));
@@ -117,7 +121,7 @@ export const look = (k: Kit): Session["look"] => ({
       const sel = selectDets(k.modules.detections.all(), new Set(fs), threshold(ctx, req), req.prompt);
       return (req.crops ? view(k, req, sel, "dets") : okAsync(null)).map((image) => ({
         image,
-        hits: sel.map((d) => summary(d, own)),
+        hits: sel.map((d) => summary(d, own, k.modules.video)),
       }));
     }),
 

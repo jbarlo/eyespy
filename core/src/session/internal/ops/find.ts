@@ -12,7 +12,7 @@ import type { Kit } from "../context.ts";
 import { detectionsOf, sequence } from "../context.ts";
 import { ensureRegionRun, ensureRun } from "../detect.ts";
 import { saveGrid, someFrames, view } from "../pictures.ts";
-import { round, scored, summary, threshold } from "../replies.ts";
+import { isPhoto, round, scored, summary, threshold } from "../replies.ts";
 
 /** The smallest side, in pixels, of a search region. */
 const MIN_REGION = 16;
@@ -102,7 +102,13 @@ export const find = (k: Kit): Session["find"] => ({
         saveGrid(k, tiles, "sheet")
           .andThen(someFrames)
           .andThen((image) =>
-            Result.combine(fs.map((i) => k.modules.video.t(i).map((t) => ({ frame: i, t })))).map((list) => ({
+            Result.combine(
+              fs.map((i) =>
+                k.modules.video
+                  .t(i)
+                  .map((t) => ({ frame: i, t, ...(isPhoto(k.modules.video, i) ? { photo: true as const } : {}) })),
+              ),
+            ).map((list) => ({
               image,
               frames: list,
             })),
@@ -128,7 +134,7 @@ export const find = (k: Kit): Session["find"] => ({
               presence,
               present,
               image,
-              hits: hits.map((d) => summary(d, own)),
+              hits: hits.map((d) => summary(d, own, k.modules.video)),
             }));
           }),
       ),
@@ -166,6 +172,7 @@ export const find = (k: Kit): Session["find"] => ({
                   emb,
                   req.k ?? 8,
                   own,
+                  k.modules.video,
                 ).matches,
             )
           : okAsync([])
@@ -174,7 +181,7 @@ export const find = (k: Kit): Session["find"] => ({
           box: region,
           prompt: prompt ?? null,
           presence,
-          hits: hits.map((d) => summary(d, own)),
+          hits: hits.map((d) => summary(d, own, k.modules.video)),
           similar,
         })),
       );

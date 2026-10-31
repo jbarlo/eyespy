@@ -47,7 +47,10 @@ type Op<Req, Reply> = (ctx: Ctx, req: Req) => ResultAsync<Reply, SessionError>;
 export type DetSummary = {
   readonly id: DetId;
   readonly frame: FrameNo;
+  /** Seconds, or the position in its folder for a photo. */
   readonly t: number;
+  /** Present on a photo of a `stills` clip. */
+  readonly photo?: true;
   readonly prompts: readonly string[];
   /** Rounded to 3 decimals. */
   readonly score: number;
@@ -129,7 +132,8 @@ export type FrameSpecReq = { readonly frames?: string | null };
 type HoldReq = { readonly hold?: string | null };
 export type SheetReply = {
   readonly image: Locator;
-  readonly frames: readonly { readonly frame: FrameNo; readonly t: number }[];
+  /** `photo` and `t` as in DetSummary. */
+  readonly frames: readonly { readonly frame: FrameNo; readonly t: number; readonly photo?: true }[];
 };
 export type FindReq = FrameSpecReq &
   HoldReq & {

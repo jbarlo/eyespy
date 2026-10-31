@@ -56,7 +56,7 @@ export const label = (k: Kit): Session["label"] => {
             total: ms.length,
             offset: off,
             image,
-            hits: page.map((d) => summary(d, own)),
+            hits: page.map((d) => summary(d, own, k.modules.video)),
           }));
         }),
 
@@ -71,6 +71,7 @@ export const label = (k: Kit): Session["label"] => {
             c,
             req.k ?? 8,
             own,
+            k.modules.video,
           );
           const best: readonly Detection[] = b ? [b] : [];
           const labels = [`${req.obj} best=${b?.id ?? ""}`, ...matches.map(simLabel)];
@@ -135,7 +136,7 @@ export const label = (k: Kit): Session["label"] => {
         return (shown.length ? view(k, req, shown, "todo") : okAsync(null)).map((image) => ({
           total: q.length,
           image,
-          hits: shown.map((d) => summary(d, own)),
+          hits: shown.map((d) => summary(d, own, k.modules.video)),
         }));
       }),
 

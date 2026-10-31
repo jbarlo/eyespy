@@ -61,7 +61,7 @@ export const data = (k: Kit): Session["data"] => ({
       const th = req.threshold ?? 0; // every cached detection (above the score floor) unless asked
       const sel = selectDets(k.modules.detections.all(), fset, th, req.prompt);
       const row = (d: Detection, mask: DataMask | null) => ({
-        ...summary(d, own),
+        ...summary(d, own, k.modules.video),
         prompt: d.prompt,
         run: runLabel(d),
         rejected: own.get(d.id) === REJECT,

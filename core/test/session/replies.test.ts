@@ -1,6 +1,8 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { bestOfEach, countsOf } from "../../src/session/internal/replies.ts";
+import { err, ok } from "neverthrow";
+import type { FrameNo, FrameSlot } from "../../src/video/pure.ts";
+import { bestOfEach, countsOf, isPhoto, simLabel } from "../../src/session/internal/replies.ts";
 
 type Item = { id: number; key: string | null; score: number };
 
@@ -71,4 +73,15 @@ test("countsOf: occurrences per value, values in first-appearance order", () => 
     ["egg", 1],
   ]);
   assert.deepEqual(countsOf([]), []);
+});
+
+test("isPhoto and simLabel: a photo shows its position, a video frame its seconds", () => {
+  const slotOf = (kind: "stills" | "video") => ({ clip: { timing: { kind } }, index: 0, t: 2 }) as unknown as FrameSlot;
+  const video = (kind: "stills" | "video") => ({ slot: () => ok(slotOf(kind)) });
+  const f = 4 as FrameNo;
+  assert.equal(isPhoto(video("stills"), f), true);
+  assert.equal(isPhoto(video("video"), f), false);
+  assert.equal(isPhoto({ slot: () => err({ kind: "no-keyframe" as const, frame: 4 }) }, f), false);
+  assert.equal(simLabel({ id: "4.1", t: 2, photo: true, sim: 0.5 }), "4.1 photo 2 sim 0.50");
+  assert.equal(simLabel({ id: "4.1", t: 2, sim: 0.5 }), "4.1 2.0s sim 0.50");
 });

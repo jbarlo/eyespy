@@ -55,7 +55,7 @@ export const config = (r: O["config"], key: string | undefined): string => {
 };
 
 export const sheet = (r: O["sheet"]): string =>
-  `${r.frames.map((f) => `#${f.frame}=${f.t}s`).join(" ")}\nimage: ${r.image}`;
+  `${r.frames.map((f) => `#${f.frame}=${f.photo ? `photo ${f.t}` : `${f.t}s`}`).join(" ")}\nimage: ${r.image}`;
 
 export const find = (r: O["find"], prompt: string): string =>
   hitsBlock(
