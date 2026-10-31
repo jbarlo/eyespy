@@ -5,7 +5,7 @@
 import { err, ok } from "neverthrow";
 import type { Result } from "neverthrow";
 import type { Clip, ClipKey, FrameNo, FrameSlot, NoKeyframe } from "../pure.ts";
-import { isFrameNo } from "../pure.ts";
+import { isFrameNo, placeOf } from "../pure.ts";
 import type { VideoError } from "../types.ts";
 
 export type Timeline = {
@@ -58,7 +58,7 @@ const basename = (p: string): string => p.slice(p.lastIndexOf("/") + 1);
 export const tagOf = (tl: Timeline, s: FrameSlot, i: FrameNo): string => {
   const stem = basename(s.clip.path).replace(/\.[^.]*$/, "");
   const name = liveClips(tl).length > 1 ? ` ${stem}` : "";
-  return s.clip.timing.kind === "stills" ? `#${i}${name} photo ${s.t}` : `#${i}${name} ${s.t.toFixed(1)}s`;
+  return `#${i}${name} ${placeOf({ t: s.t, photo: s.clip.timing.kind === "stills" })}`;
 };
 
 /**

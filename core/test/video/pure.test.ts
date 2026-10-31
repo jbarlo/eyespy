@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
 import { test } from "node:test";
 import {
+  placeOf,
   CONTENT_KEY_RANGE,
   contentKey,
   contentKeyOf,
@@ -192,4 +193,10 @@ test("sampleAt / sampleCount: ffmpeg's fps filter (last frame whose time rounds 
   assert.equal(sampleCount(5, 29.97, 600), 100);
   assert.equal(sampleCount(4, 4, 7), 7);
   assert.equal(sampleCount(5, 30, 1), 1);
+});
+
+test("placeOf: a photo by position, a video frame by seconds to one decimal", () => {
+  assert.equal(placeOf({ t: 3, photo: true }), "photo 3");
+  assert.equal(placeOf({ t: 1.25 }), "1.3s");
+  assert.equal(placeOf({ t: 0, photo: false }), "0.0s");
 });

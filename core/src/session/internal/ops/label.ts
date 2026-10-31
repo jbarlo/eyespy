@@ -12,7 +12,7 @@ import type { Session, SessionError, TodoReply } from "../../types.ts";
 import type { Kit } from "../context.ts";
 import { detectionsOf, labelCtx } from "../context.ts";
 import { save, saveSheet, view } from "../pictures.ts";
-import { scored, simLabel, summary, threshold } from "../replies.ts";
+import { isPhoto, scored, simLabel, summary, threshold } from "../replies.ts";
 
 /** An id labelling just accepted as a real object, because delete succeeded on it. */
 const objectId = (id: string): Result<ObjectId, SessionError> =>
@@ -116,7 +116,10 @@ export const label = (k: Kit): Session["label"] => {
           const tiles = page.map((g, j) => ({
             id: `g${off + j}`,
             // best views first
-            regions: [...g].sort((a, b) => viewQuality(b) - viewQuality(a)).slice(0, CROP_COLS),
+            regions: [...g]
+              .sort((a, b) => viewQuality(b) - viewQuality(a))
+              .slice(0, CROP_COLS)
+              .map((d) => (isPhoto(k.modules.video, d.frame) ? { ...d, photo: true as const } : d)),
           }));
           const sheet = tiles.length
             ? k.modules.render.groupSheet(tiles).andThen((img) => (img ? save(k, img, "todo-groups") : okAsync(null)))

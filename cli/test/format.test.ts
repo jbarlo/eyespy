@@ -97,7 +97,7 @@ test("find, search, semantic, sheet", () => {
       { frame: 1, t: 2.5 },
     ],
   } as never;
-  assert.equal(reply.sheet(sheet), "#0=0s #1=2.5s\nimage: /s/sheet.jpg");
+  assert.equal(reply.sheet(sheet), "#0=0.0s #1=2.5s\nimage: /s/sheet.jpg");
   const photos: Outputs["sheet"] = {
     image: "/s/sheet.jpg",
     frames: [
@@ -105,7 +105,7 @@ test("find, search, semantic, sheet", () => {
       { frame: 54, t: 0, photo: true },
     ],
   } as never;
-  assert.equal(reply.sheet(photos), "#0=0s #54=photo 0\nimage: /s/sheet.jpg");
+  assert.equal(reply.sheet(photos), "#0=0.0s #54=photo 0\nimage: /s/sheet.jpg");
 });
 
 test("videos: added, clips, status, config", () => {

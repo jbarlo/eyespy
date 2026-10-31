@@ -5,6 +5,7 @@ import type { Owner } from "../../labelling/index.ts";
 import { round } from "../../labelling/pure.ts";
 import type { Appearance } from "../../perception/pure.ts";
 import type { FrameNo } from "../../video/pure.ts";
+import { placeOf } from "../../video/pure.ts";
 import type { Video } from "../../video/index.ts";
 import type { Ctx } from "../pure.ts";
 import type { DetSummary } from "../types.ts";
@@ -66,9 +67,9 @@ export const scored = (
   };
 };
 
-/** The label "<id> <t>s sim <s>", or "<id> photo <position> sim <s>", under each look-alike tile. */
+/** The label "<id> <place> sim <s>" under each look-alike tile, the place as `placeOf` gives it. */
 export const simLabel = (o: Pick<DetSummary, "t" | "photo"> & { readonly id: string; readonly sim: number }): string =>
-  `${o.id} ${o.photo ? `photo ${o.t}` : `${o.t.toFixed(1)}s`} sim ${o.sim.toFixed(2)}`;
+  `${o.id} ${placeOf(o)} sim ${o.sim.toFixed(2)}`;
 
 /**
  * The best item of each key (highest score, the first on ties), in the order the keys first appear. Items without

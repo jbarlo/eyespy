@@ -54,9 +54,12 @@ export interface Renderer {
     labels?: readonly string[],
     limit?: number | null,
   ): ResultAsync<RGB | null, RenderError>;
-  /** One CROP_COLS row of best views per group, the first tile labelled "<gid> n=<k> <id>", or null for none. */
+  /**
+   * One CROP_COLS row of best views per group, the first tile labelled "<gid> n=<k> <id>" and the rest "<id> <place>"
+   * (`placeOf`; `photo` marks a photo's region), or null for none.
+   */
   groupSheet(
-    groups: readonly { readonly id: string; readonly regions: readonly Region[] }[],
+    groups: readonly { readonly id: string; readonly regions: readonly (Region & { readonly photo?: true })[] }[],
   ): ResultAsync<RGB | null, RenderError>;
   /**
    * Tints the frame with the heatmap in JET, after resizing the heatmap to the frame as cv2 does. Also returns

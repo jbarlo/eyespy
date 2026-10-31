@@ -11,6 +11,7 @@ import { hostFailure } from "../../ports/index.ts";
 import { at, got, invariant } from "../../invariant/index.ts";
 import { sequence } from "../../railway/index.ts";
 import type { FrameNo, NoKeyframe } from "../../video/pure.ts";
+import { placeOf } from "../../video/pure.ts";
 import type { RenderPorts } from "../ports.ts";
 import { CROP_COLS, CROP_SHEET_MAX, CROP_TILE, GRID_COLS } from "../pure.ts";
 import type { CreateRenderer, Region, RenderError, Renderer } from "../types.ts";
@@ -143,7 +144,7 @@ export const createRenderer: CreateRenderer = ({ frames, text }: RenderPorts): R
       const rows = groups.map(({ id, regions }) =>
         regions.slice(0, CROP_COLS).map((r, k): Tile => ({
           region: r,
-          label: k === 0 ? `${id} n=${regions.length} ${r.id}` : `${r.id} ${r.t.toFixed(1)}s`,
+          label: k === 0 ? `${id} n=${regions.length} ${r.id}` : `${r.id} ${placeOf(r)}`,
         })),
       );
       const starts = rows.map((_, g) => rows.slice(0, g).reduce((n, row) => n + row.length, 0));

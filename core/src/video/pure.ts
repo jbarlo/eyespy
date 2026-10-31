@@ -17,6 +17,13 @@ export type ClipKey = string & { readonly brand: "video.ClipKey" };
 export const isFrameNo = (n: number): n is FrameNo => Number.isInteger(n) && n >= 0;
 export const isClipKey = (s: string): s is ClipKey => /^[0-9a-f]{12}$/.test(s);
 
+/**
+ * A keyframe's place in its clip as tags and text print it: "photo <position>" for a photo of a `stills` clip,
+ * else "<t>s" to one decimal.
+ */
+export const placeOf = (f: { readonly t: number; readonly photo?: boolean }): string =>
+  f.photo ? `photo ${f.t}` : `${f.t.toFixed(1)}s`;
+
 /** A frame as the session folder files it, by clip and the keyframe's index within the clip. */
 export type FrameRef = { readonly clipKey: ClipKey; readonly index: number };
 

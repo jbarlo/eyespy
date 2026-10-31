@@ -179,6 +179,12 @@ test("cropSheet: limit null draws all; empty is null", async () => {
   assert.equal(await unwrap(r.cropSheet(regions, undefined, 0)), null);
 });
 
+test("groupSheet: a photo's tile reads photo <position>", async () => {
+  const { r, text } = mk();
+  await unwrap(r.groupSheet([{ id: "g0", regions: [square(0, "0.0"), { ...square(1, "1.0"), t: 3, photo: true }] }]));
+  assert.equal(text.texts[1]?.[0]?.text, "1.0 photo 3");
+});
+
 test("groupSheet: a row per group (first CROP_COLS views), n = the group's size, empty group = blank row", async () => {
   const { r, text } = mk();
   const big = Array.from({ length: CROP_COLS + 3 }, (_, k) => square(k % 3, `${k % 3}.${k}`));
@@ -191,6 +197,7 @@ test("groupSheet: a row per group (first CROP_COLS views), n = the group's size,
   assert.deepEqual([img?.w, img?.h], [CROP_COLS * CROP_TILE, 2 * CROP_TILE]);
   assert.equal(text.texts.length, CROP_COLS);
   assert.equal(text.texts[0]?.[0]?.text, `g0 n=${big.length} 0.0`);
+  assert.equal(text.texts[1]?.[0]?.text, `1.1 ${big[1]?.t.toFixed(1)}s`);
   const second = img ? img.data.subarray(CROP_TILE * CROP_COLS * CROP_TILE * 3) : new Uint8Array(1);
   assert.ok(
     second.every((v) => v === 0),
