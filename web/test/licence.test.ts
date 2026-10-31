@@ -26,7 +26,7 @@ test("the shipped licence's sha256 is the build constant, and follows the file's
   const f = path.join(dir, "LICENSE");
   writeFileSync(f, readFileSync(path.join(REPO, "third_party/sam3/LICENSE")));
   assert.equal(sha256File(f), sha);
-  writeFileSync(f, readFileSync(f, "utf8").replace("November 19, 2025", "November 20, 2025"));
+  writeFileSync(f, readFileSync(f, "utf8").replace(/Last Updated: .*/, "Last Updated: another day"));
   assert.notEqual(sha256File(f), sha, "an edited text is a different licence");
 });
 

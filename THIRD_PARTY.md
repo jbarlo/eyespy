@@ -75,7 +75,8 @@ What we do for a public deploy:
   before the download and in Settings. Our Apache-2.0 covers our code only.
 - Everyone whose browser downloads the models uses them under the SAM License, so the app asks them to agree to
   the full text first (below).
-- Meta can change the licence text, so we re-check it before each deploy.
+- Meta can change the licence text. The weekly `sam-license` workflow compares it with upstream and opens a pull
+  request when it changes (`tools/licenses/sam-license.js`).
 
 The web app asks for explicit acceptance. Before any engine start, so before the first SAM 3 download or any use of
 cached models, it shows a licence dialog ("I agree" or "Cancel") that links `models/LICENSE-SAM.txt` and the notices.
@@ -84,7 +85,8 @@ this build ships, so a new text asks again. Cancel opens sessions without the mo
 without the agreement flag. Code: `web/src/state/licence.ts`, `web/src/engine/worker/licence.ts`.
 
 The Hugging Face repo holds its own copies of the licence texts and notices, next to the files they cover. They
-state the same facts as `third_party/`, so a change to one needs the same change in the other.
+state the same facts as `third_party/`, so a change to one needs the same change in the other. The `sam-license-hf`
+workflow uploads `sam3/LICENSE-SAM.txt` and `sam3/NOTICE-SAM.txt` when `third_party/sam3/` changes on main.
 
 ### Video decoding: no codec shipped
 

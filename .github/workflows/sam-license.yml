@@ -1,0 +1,44 @@
+name: sam-license
+
+# Compares third_party/sam3/LICENSE with the SAM License upstream. When the text changed, it opens (or updates) one
+# pull request on the sam-license-update branch for the owner to review. A failed fetch fails the run.
+on:
+  schedule:
+    - cron: "17 6 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: sam-license
+  cancel-in-progress: false
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: cachix/install-nix-action@75c75c31ebece974e48ebc36b4ad125bd97bd97b # v31.11.3
+      - name: Compare with upstream
+        id: check
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: nix develop .#ci --command node tools/licenses/sam-license.js --body "$RUNNER_TEMP/sam-license-pr.md"
+      - name: Open or update the pull request
+        if: steps.check.outputs.changed == 'true'
+        uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8.1.1
+        with:
+          branch: sam-license-update
+          delete-branch: true
+          title: "SAM License: the upstream text changed"
+          body-path: ${{ runner.temp }}/sam-license-pr.md
+          commit-message: "third_party/sam3: the SAM License text from upstream"
+          author: github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>
+          add-paths: |
+            third_party/sam3/LICENSE
+            third_party/sam3/NOTICE
+            THIRD_PARTY.md
