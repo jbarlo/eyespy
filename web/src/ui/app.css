@@ -383,6 +383,14 @@ progress {
   margin: 0;
   font-size: 20px;
 }
+.empty-state .examples {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 6px 8px;
+  margin-top: 4px;
+}
 
 .filmstrip {
   background: var(--panel);

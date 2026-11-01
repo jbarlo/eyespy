@@ -342,8 +342,7 @@ export const SAM_LICENCE_TEXT = {
  */
 /** What eyespy expects of the machine, on the start screen and the no-WebGPU page. */
 export const GPU_NOTE =
-  `eyespy is made for a desktop or laptop with a graphics card. The models are about ${DOWNLOAD_GB} GB to download ` +
-  "and need a lot of graphics memory.";
+  "eyespy is made for a desktop or laptop with a graphics card, since the models need a lot of graphics memory.";
 
 type NoGpu = Exclude<WebGpu, "available">;
 /**

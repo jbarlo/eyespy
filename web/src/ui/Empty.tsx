@@ -1,5 +1,7 @@
 /** What the canvas area shows before there are keyframes. */
 import { useState } from "react";
+import { EXAMPLES } from "../state/index.ts";
+import type { Example } from "../state/index.ts";
 import { VideoInput } from "./common.tsx";
 import { DOWNLOAD_GB, GPU_NOTE } from "./help.ts";
 import { useActions, useSlice } from "./context.tsx";
@@ -7,6 +9,7 @@ import { useActions, useSlice } from "./context.tsx";
 export function Empty() {
   const a = useActions();
   const [over, setOver] = useState(false);
+  const [fetching, setFetching] = useState<Example | null>(null);
   const phase = useSlice("engine", (s) => s.phase);
   const error = useSlice("engine", (s) => s.error);
   if (phase === "failed")
@@ -47,6 +50,27 @@ export function Empty() {
         Choose video…
         <VideoInput label="Choose video" id="empty-video" onFile={(f) => void a.addVideo(f)} />
       </label>
+      <div className="examples">
+        <span className="muted">Or try an example:</span>
+        {EXAMPLES.map((e) => (
+          <button
+            key={e.file}
+            type="button"
+            className="button"
+            title={`Adds this example clip to the session. Prompts to try: ${e.prompts.join(", ")}`}
+            disabled={fetching !== null}
+            onClick={() => {
+              setFetching(e);
+              void a.addExample(e).finally(() => setFetching(null));
+            }}
+          >
+            {fetching === e ? "Loading…" : e.title}
+          </button>
+        ))}
+        <a className="muted small" href="examples/SOURCES.txt">
+          sources
+        </a>
+      </div>
       <p className="muted small">{GPU_NOTE}</p>
       <p className="muted small">
         The first search downloads the models (about {DOWNLOAD_GB} GB, once; cached in the browser). The SAM 3 models

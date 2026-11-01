@@ -77,11 +77,13 @@ export type Platform = {
 
 /**
  * Page capabilities: the folder picker (null when the browser has none; resolves null if cancelled), downloads, and the
- * WebGPU check (it never rejects), and the browser engine and OS.
+ * WebGPU check (it never rejects), the browser engine and OS, and fetching the page's own files.
  */
 export type Host = {
   readonly pickDirectory: (() => ResultAsync<FileSystemDirectoryHandle | null, HostError>) | null;
   readonly download: (name: string, text: string, type: string) => void;
   readonly webgpu: () => Promise<WebGpu>;
   readonly platform: () => Platform;
+  /** A file the page ships (relative to the page), named `name`. */
+  readonly fetchFile: (url: string, name: string) => ResultAsync<File, HostError>;
 };

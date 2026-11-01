@@ -1,0 +1,16 @@
+eyespy example clips
+
+Both clips are cut from videos on Wikimedia Commons that are free of copyright. They are trimmed, scaled to 720p,
+re-encoded as H.264 and have no sound.
+
+produce.mp4
+  From: Supermarket Grocery Products (13083756734).webm, 0:10 to 0:34
+  https://commons.wikimedia.org/wiki/File:Supermarket_Grocery_Products_(13083756734).webm
+  By: U.S. Department of Agriculture (USDAgov)
+  Licence: public domain (a work of the United States federal government)
+
+street.mp4
+  From: Market Street, Fremantle.ogv, 0:01.5 to 0:21
+  https://commons.wikimedia.org/wiki/File:Market_Street,_Fremantle.ogv
+  By: Evad37
+  Licence: CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/)

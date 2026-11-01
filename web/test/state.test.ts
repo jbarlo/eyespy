@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { masksOf } from "../src/state/detections.ts";
+import { EXAMPLES } from "../src/state/examples.ts";
 import { parseSpec, toSpec } from "../src/state/frames.ts";
 import type { DetRow } from "../src/state/types.ts";
 import { AGREED, det, frame, sessionHandlers, settle, setup, UserError } from "./fakes.ts";
@@ -670,4 +671,25 @@ test("masksOf: typed data.dets rows; rle masks kept with their aliases, png/none
   assert.deepEqual(m.get("0.0")?.aliases, ["0.0", "0.1"]);
   assert.deepEqual(m.get("0.1")?.aliases, [], "no aliases asked for");
   assert.deepEqual(m.get("0.0")?.rle.counts, [1, 1]);
+});
+
+test("an example clip: fetched from the page and added, its first prompt in the prompt bar; a failed fetch is a notice", async () => {
+  const added: string[] = [];
+  const { app } = setup({
+    handlers: sessionHandlers({
+      add: (i: { video: string }) => {
+        added.push(i.video);
+        return { first: 0, keyframes: 1 };
+      },
+    }),
+  });
+  await app.actions.openSession({ opfs: "s1" });
+  const example = EXAMPLES[0]!;
+  await app.actions.addExample(example);
+  assert.deepEqual(added, [example.file]);
+  assert.equal(app.stores.layers.getState().prompt, example.prompts[0]);
+  await app.actions.addExample({ title: "Gone", file: "gone.missing", prompts: ["x"] });
+  assert.deepEqual(added, [example.file]);
+  assert.match(app.stores.notices.getState().notices.at(-1)?.text ?? "", /gone\.missing: HTTP 404/);
+  assert.equal(app.stores.layers.getState().prompt, example.prompts[0]);
 });

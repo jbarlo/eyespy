@@ -6,6 +6,8 @@ import { ResultAsync, ok } from "neverthrow";
 import type { Result } from "neverthrow";
 import { SAM_LICENSE_REFUSED } from "../../protocol.ts";
 import { applyEvent, isFailureLog } from "../engine.ts";
+import { exampleUrl } from "../examples.ts";
+import type { Example } from "../examples.ts";
 import { nearestFrame } from "../frames.ts";
 import type { EngineError, EngineEvent, EyespyApi, WebGpu } from "../ports.ts";
 import { once } from "../once.cache.ts";
@@ -248,6 +250,13 @@ export function createSessionActions(ctx: Ctx, r: Runner, triageActions: TriageA
     return added ? "added" : unsupported() ? "unsupported" : "failed";
   }
 
+  /** Adds an example clip the page ships to this session and puts its first prompt in the prompt bar. */
+  async function addExample(e: Example) {
+    const file = await deps.host.fetchFile(exampleUrl(e), e.file);
+    if (file.isErr()) return r.report(file.error);
+    if ((await addVideo(file.value)) === "added") layers.setState({ prompt: e.prompts[0] });
+  }
+
   /**
    * Creates an OPFS session named after the video, then adds the video. When the browser can't decode the video, this
    * deletes the new empty session and reopens the previous one, leaving only the can't-decode dialog.
@@ -337,6 +346,7 @@ export function createSessionActions(ctx: Ctx, r: Runner, triageActions: TriageA
     loadClips,
     listSessions,
     addVideo,
+    addExample,
     closeUnsupported,
     newSessionFromVideo,
     removeClip,

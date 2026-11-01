@@ -1,6 +1,8 @@
 import assert from "node:assert/strict";
+import { existsSync, readFileSync } from "node:fs";
 import { test } from "node:test";
 import { CONFIG_KEYS } from "eyespy-core/session/pure";
+import { EXAMPLES } from "../src/state/examples.ts";
 import { createLayersStore } from "../src/state/layers.ts";
 import { createSettingsStore } from "../src/state/settings.ts";
 import { PRODUCTION_MODELS, PRODUCTION_RUNTIME } from "../src/engine/manifest.ts";
@@ -127,7 +129,6 @@ test("no-WebGPU page: both cases name WebGPU and the GPU, say what to do, in ful
       assert.ok(s.text.length <= 260, `short step: ${s.text}`);
     }
   assert.match(GPU_NOTE, /desktop or laptop/);
-  assert.ok(GPU_NOTE.includes(`${DOWNLOAD_GB} GB`));
 });
 
 test("stepsFor: this OS and case first, then general steps; other systems' only when the OS is unknown", () => {
@@ -148,4 +149,16 @@ test("DOWNLOAD_GB matches the default first download (every model but the fp16 d
   const models = Object.entries(PRODUCTION_MODELS).filter(([name]) => name !== "detector_fp16_nosign.onnx");
   const bytes = models.reduce((n, [, e]) => n + e.bytes, PRODUCTION_RUNTIME.ortWasm.bytes);
   assert.equal((bytes / 1e9).toFixed(1), DOWNLOAD_GB);
+});
+
+test("examples: every clip the app offers is in web/public/examples, with its source in SOURCES.txt", () => {
+  const dir = new URL("../public/examples/", import.meta.url);
+  const sources = readFileSync(new URL("SOURCES.txt", dir), "utf8");
+  for (const e of EXAMPLES) {
+    assert.ok(existsSync(new URL(e.file, dir)), e.file);
+    assert.match(
+      sources,
+      new RegExp(`^${e.file.replace(".", "\\.")}\\n  From: .+\\n  https://.+\\n  By: .+\\n  Licence: `, "m"),
+    );
+  }
 });

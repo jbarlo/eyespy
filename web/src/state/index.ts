@@ -46,6 +46,8 @@ export type { StoreStates } from "./stores.ts";
 export type * from "./ports.ts";
 export type * from "./types.ts";
 export { currentTask } from "./notices.ts";
+export type { Example } from "./examples.ts";
+export { EXAMPLES } from "./examples.ts";
 export type { Preferences } from "./settings.ts";
 export { FEATURE_CACHE_CHOICES, FEATURE_DISK_CHOICES } from "./settings.ts";
 export type { SessionRow, StorageSummary } from "./storage.ts";

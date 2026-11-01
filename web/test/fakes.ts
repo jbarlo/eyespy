@@ -223,6 +223,10 @@ export const fakeHost = (webgpu: WebGpu = "available") => {
     downloads,
     checks: 0,
     platform: () => ({ engine: "chromium", os: "linux" }),
+    fetchFile: (url: string, name: string) =>
+      url.endsWith(".missing")
+        ? errAsync({ kind: "host" as const, message: `${url}: HTTP 404` })
+        : okAsync(new File([url], name, { type: "video/mp4" })),
     webgpu: () => {
       h.checks++;
       return Promise.resolve(webgpu);

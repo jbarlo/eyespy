@@ -226,6 +226,15 @@ export const browserHost = {
     : null,
   webgpu: () => webgpuIn((navigator as { gpu?: Gpu }).gpu),
   platform: () => platformIn(navigator),
+  fetchFile: (url: string, name: string) =>
+    ResultAsync.fromPromise(
+      fetch(url).then(async (r) => {
+        if (!r.ok) throw new Error(`${url}: HTTP ${r.status}`);
+        const blob = await r.blob();
+        return new File([blob], name, { type: blob.type });
+      }),
+      hostError,
+    ),
   download(name: string, text: string, type: string) {
     const a = document.createElement("a");
     a.href = URL.createObjectURL(new Blob([text], { type }));

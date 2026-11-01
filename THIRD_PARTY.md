@@ -7,7 +7,7 @@ licence, and how we comply. It is an engineering inventory, not legal advice.
 
 | Channel | What reaches users | Third-party content |
 |---|---|---|
-| Web app on GitHub Pages | `dist/`: one `index.html` (page + inlined worker), `LICENSE.txt`, `THIRD_PARTY_NOTICES.txt`, the model licences and notices under `models/` | npm packages bundled into `index.html`; ONNX Runtime wasm (fetched from jsDelivr); SAM 3 and DINOv2 model files (fetched from our Hugging Face repo, next row) |
+| Web app on GitHub Pages | `dist/`: one `index.html` (page + inlined worker), `LICENSE.txt`, `THIRD_PARTY_NOTICES.txt`, the model licences and notices under `models/`, two example clips and their sources under `examples/` | npm packages bundled into `index.html`; ONNX Runtime wasm (fetched from jsDelivr); SAM 3 and DINOv2 model files (fetched from our Hugging Face repo, next row) |
 | Model files on Hugging Face, `huggingface.co/jbarlo/eyespy-models` | `sam3/` (SAM 3 encoders, tokenizer, detectors, `LICENSE-SAM.txt`, `NOTICE-SAM.txt`), `dinov2-small/` (`model_cls.onnx`, `LICENSE.txt`, `NOTICE.txt`), a model card | we redistribute every model file the web app loads: SAM 3 under the SAM License, DINOv2 under Apache-2.0 |
 | CLI and server, from source via the Nix flake | the repository; the user runs `pnpm install` (packages come from npm) and the flake's wrappers | we redistribute nothing. npm packages come from the user's own install; models are the user's local copies (`models/`) |
 | `cli/dist/eyespy.mjs` (esbuild bundle) | nobody. The devshell wrapper builds it locally, and git ignores it | none. If it is ever published, set esbuild `legalComments` and ship a notices file like the web build does |
@@ -50,6 +50,13 @@ No bundled package is Apache-2.0, so there are no NOTICE files to carry forward 
 | SAM 3: `vision_fp16.onnx`, `text_fp16.onnx`, `tokenizer.json` | `huggingface.co/jbarlo/eyespy-models` at commit `7d55bf56`, `sam3/`, sha256-pinned; unchanged copies of `CardAnvilModels/sam3-ONNX` at commit `7eee2d79` | SAM License (Meta) | see [SAM 3](#sam-3-the-sam-license) |
 | SAM 3 detectors: `detector_fp32_nosign.onnx`, `detector_fp16_nosign.onnx` | same repo and commit, `sam3/` | SAM License (derivative works) | see [SAM 3](#sam-3-the-sam-license) |
 | DINOv2 small, `model_cls.onnx` | same repo and commit, `dinov2-small/` | Apache-2.0 | `LICENSE.txt` and `NOTICE.txt` (attribution; "modified: CLS Gather appended", §4(b)) beside the model on Hugging Face and under `models/dinov2-small/` in `dist/`; also C.3 in the notices |
+
+### Example clips
+
+`examples/produce.mp4` and `examples/street.mp4` are cut from videos on Wikimedia Commons: a USDA video (public
+domain, a US federal government work) and one by Evad37 (CC0 1.0). Neither licence has conditions.
+`examples/SOURCES.txt` names each source, author and licence anyway, and a test checks that every clip the app
+offers has an entry.
 
 Not shipped: `processor_config.json`, `tokenizer_config.json`, `vocab.json`, `merges.txt` (not in the manifest),
 test clips and fixtures.
