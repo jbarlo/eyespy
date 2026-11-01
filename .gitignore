@@ -4,6 +4,7 @@
 *.MOV
 *.mov
 *.mp4
+!/web/public/examples/*.mp4
 /.eyespy/
 node_modules/
 .claude/worktrees/
