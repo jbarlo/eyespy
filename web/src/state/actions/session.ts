@@ -147,7 +147,7 @@ export function createSessionActions(ctx: Ctx, r: Runner, triageActions: TriageA
     const gpu = typeof knownGpu === "string" ? knownGpu : await knownGpu;
     if (gpu !== "available") {
       closeSession();
-      engine.setState({ phase: gpu, error: NO_WEBGPU_ERROR[gpu] });
+      engine.setState({ phase: gpu, error: NO_WEBGPU_ERROR[gpu], platform: deps.host.platform() });
       return null;
     }
     // ask about the SAM License next, so no engine starts (and no model downloads or loads from cache) before the

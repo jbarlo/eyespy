@@ -69,12 +69,19 @@ export type Clock = {
  */
 export type WebGpu = "available" | "no-webgpu" | "no-adapter";
 
+/** The browser engine and operating system, as far as the page can tell; the no-WebGPU page picks its steps by them. */
+export type Platform = {
+  readonly engine: "chromium" | "gecko" | "webkit" | "other";
+  readonly os: "windows" | "macos" | "linux" | "chromeos" | "android" | "ios" | "other";
+};
+
 /**
  * Page capabilities: the folder picker (null when the browser has none; resolves null if cancelled), downloads, and the
- * WebGPU check (it never rejects).
+ * WebGPU check (it never rejects), and the browser engine and OS.
  */
 export type Host = {
   readonly pickDirectory: (() => ResultAsync<FileSystemDirectoryHandle | null, HostError>) | null;
   readonly download: (name: string, text: string, type: string) => void;
   readonly webgpu: () => Promise<WebGpu>;
+  readonly platform: () => Platform;
 };

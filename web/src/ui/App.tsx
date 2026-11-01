@@ -25,11 +25,12 @@ export function App() {
   const hasFrames = useSlice("frames", (s) => s.frames.length > 0);
   const triageOn = useSlice("triage", (s) => s.page !== null);
   const phase = useSlice("engine", (s) => s.phase);
+  const platform = useSlice("engine", (s) => s.platform);
   // triage moves to the top while it runs (keyed by id, so panels keep their state when reordered)
   const panels = triageOn
     ? [...PANELS.filter((p) => p.id === "triage"), ...PANELS.filter((p) => p.id !== "triage")]
     : PANELS;
-  if (phase === "no-webgpu" || phase === "no-adapter") return <NoWebGpu kind={phase} />;
+  if (phase === "no-webgpu" || phase === "no-adapter") return <NoWebGpu kind={phase} platform={platform} />;
   return (
     <div className="app">
       <SessionBar />

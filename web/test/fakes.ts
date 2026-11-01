@@ -222,6 +222,7 @@ export const fakeHost = (webgpu: WebGpu = "available") => {
     download: (name, text) => void downloads.push({ name, text }),
     downloads,
     checks: 0,
+    platform: () => ({ engine: "chromium", os: "linux" }),
     webgpu: () => {
       h.checks++;
       return Promise.resolve(webgpu);

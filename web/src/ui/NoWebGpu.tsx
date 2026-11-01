@@ -1,13 +1,22 @@
 /**
- * The whole page when this browser can't run the models: what eyespy needs, what is missing, what to try. The rest of
- * the app needs the engine, so none of it shows. chrome:// addresses are text, since pages can't link to them.
+ * The whole page when this browser can't run the models: what eyespy needs, what is missing, what to try in each
+ * browser engine. This browser's engine is open, with only its OS's steps and the general ones. The rest of the app
+ * needs the engine, so none of it shows. chrome:// and about: addresses are text, since pages can't link to them.
  */
-import { NO_WEBGPU_TEXT as T } from "./help.ts";
+import type { Platform } from "../state/ports.ts";
+import { GPU_NOTE, NO_WEBGPU_TEXT as T, stepsFor } from "./help.ts";
 
 const CANIUSE_URL = "https://caniuse.com/webgpu";
 const STATUS_URL = "https://github.com/gpuweb/gpuweb/wiki/Implementation-Status";
+const ENGINES = ["chromium", "gecko", "webkit"] as const;
 
-export function NoWebGpu({ kind }: { kind: "no-webgpu" | "no-adapter" }) {
+/** Backticked parts of a step as code. */
+const Step = ({ text }: { text: string }) => (
+  <li>{text.split("`").map((part, i) => (i % 2 ? <code key={i}>{part}</code> : part))}</li>
+);
+
+export function NoWebGpu({ kind, platform }: { kind: "no-webgpu" | "no-adapter"; platform: Platform | null }) {
+  const engines = ENGINES.toSorted((a, b) => Number(b === platform?.engine) - Number(a === platform?.engine));
   return (
     <div className="no-webgpu">
       <header className="topbar">
@@ -18,20 +27,19 @@ export function NoWebGpu({ kind }: { kind: "no-webgpu" | "no-adapter" }) {
           <h2 id="no-webgpu-title">{T.title[kind]}</h2>
           <p>{T.how}</p>
           <p>{T.why[kind]}</p>
+          <p>{GPU_NOTE}</p>
           <h3>What you can do</h3>
           <p>{T.todo[kind]}</p>
-          {kind === "no-adapter" && (
-            <p>
-              {T.gpuPage.before}
-              <code>{T.gpuPage.page}</code>
-              {T.gpuPage.after}
-            </p>
-          )}
-          <p>
-            {T.where.before}
-            <code>{T.where.flag}</code>
-            {T.where.after}
-          </p>
+          {engines.map((e) => (
+            <details key={e} open={e === platform?.engine}>
+              <summary>{T.guides[e].name}</summary>
+              <ul>
+                {stepsFor(T.guides[e].steps, e === platform?.engine ? platform.os : null, kind).map((s) => (
+                  <Step key={s.text} text={s.text} />
+                ))}
+              </ul>
+            </details>
+          ))}
           <p className="muted">
             {T.lists.before}
             <a href={CANIUSE_URL} target="_blank" rel="noreferrer">

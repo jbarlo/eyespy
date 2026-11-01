@@ -7,6 +7,7 @@ import { DEFAULT_CACHE_MB, FEATURE_BYTES } from "eyespy-core/perception/pure";
 import { CONFIG_META } from "eyespy-core/session/pure";
 import type { ConfigKey } from "eyespy-core/session/pure";
 import type { LayerId, Preferences, ToolId } from "../state/index.ts";
+import type { Platform, WebGpu } from "../state/ports.ts";
 
 export type Help = { readonly label: string; readonly tip: string; readonly more?: string };
 
@@ -339,6 +340,19 @@ export const SAM_LICENCE_TEXT = {
  * The page shown instead of the app when the browser can't run the models, by case: no WebGPU API, or WebGPU without
  * a GPU adapter. Text around a code or link is split (`before`, `after`) so the page can mark it up.
  */
+/** What eyespy expects of the machine, on the start screen and the no-WebGPU page. */
+export const GPU_NOTE =
+  `eyespy is made for a desktop or laptop with a graphics card. The models are about ${DOWNLOAD_GB} GB to download ` +
+  "and need a lot of graphics memory.";
+
+type NoGpu = Exclude<WebGpu, "available">;
+/**
+ * One thing to try. `os` and `kind` say where it applies (everywhere when absent); text in backticks is an address
+ * or setting name to type, shown as code.
+ */
+export type GpuStep = { readonly os?: readonly Platform["os"][]; readonly kind?: NoGpu; readonly text: string };
+type Guide = { readonly name: string; readonly steps: readonly GpuStep[] };
+
 export const NO_WEBGPU_TEXT = {
   title: {
     "no-webgpu": "This browser can't run eyespy's models",
@@ -354,20 +368,82 @@ export const NO_WEBGPU_TEXT = {
       "off, or when they block WebGPU for this graphics card or its driver.",
   },
   todo: {
-    "no-webgpu": "Open eyespy in a browser that supports WebGPU.",
-    "no-adapter":
-      "Check that hardware acceleration is on in the browser's settings, update the graphics driver, or try another " +
-      "browser.",
+    "no-webgpu": "Turn WebGPU on in this browser, or open eyespy in one that has it on.",
+    "no-adapter": "Turn on hardware acceleration, update the graphics driver, or try another browser.",
   },
-  gpuPage: { before: "In Chrome or Edge, ", page: "chrome://gpu", after: " shows whether WebGPU is on, and why not." },
-  where: {
-    before:
-      "WebGPU works in current Chrome and Edge on Windows, macOS and ChromeOS, in Safari 26 or later, and in Firefox " +
-      "on Windows and on Apple silicon Macs. On Linux and Android it depends on the graphics chip, and Chrome on " +
-      "Linux may need ",
-    flag: "chrome://flags/#enable-unsafe-webgpu",
-    after: " turned on.",
-  },
+  guides: {
+    chromium: {
+      name: "Chrome, Edge, Brave and other Chromium browsers",
+      steps: [
+        {
+          os: ["windows", "macos", "chromeos"],
+          kind: "no-webgpu",
+          text: "WebGPU is on by default on Windows, macOS and ChromeOS. Update the browser.",
+        },
+        {
+          os: ["windows"],
+          kind: "no-webgpu",
+          text: "On Windows on Arm, turn on `chrome://flags/#enable-unsafe-webgpu` and relaunch.",
+        },
+        {
+          os: ["linux"],
+          kind: "no-webgpu",
+          text:
+            "On Linux, WebGPU is on by default only for some recent Intel and NVIDIA graphics. Otherwise turn on " +
+            "`chrome://flags/#enable-unsafe-webgpu` and `chrome://flags/#enable-vulkan`, then relaunch. The first also " +
+            "skips the list of drivers known to misbehave.",
+        },
+        {
+          kind: "no-adapter",
+          text: 'In the browser\'s settings, under System, turn on "Use graphics acceleration when available" and relaunch.',
+        },
+        { text: "`chrome://gpu` shows whether WebGPU is on, and why not." },
+        {
+          text: "Brave's Shields can block WebGPU: turn them off for this site from the lion icon in the address bar.",
+        },
+      ],
+    },
+    gecko: {
+      name: "Firefox",
+      steps: [
+        {
+          os: ["windows", "macos"],
+          kind: "no-webgpu",
+          text: "WebGPU is on by default on Windows (Firefox 141 and later) and on Apple silicon Macs (147 and later). Update Firefox.",
+        },
+        {
+          os: ["linux", "macos"],
+          kind: "no-webgpu",
+          text:
+            "On Linux and Intel Macs it isn't on by default yet. In `about:config`, set `dom.webgpu.enabled` to true " +
+            "and restart Firefox, or use Firefox Nightly.",
+        },
+        {
+          kind: "no-adapter",
+          text:
+            'In Settings, under Performance, untick "Use recommended performance settings" and tick "Use hardware ' +
+            'acceleration when available".',
+        },
+        { text: "`about:support` shows WebGPU under Graphics, with the reason when it is off." },
+      ],
+    },
+    webkit: {
+      name: "Safari, and every browser on iPhone and iPad",
+      steps: [
+        { kind: "no-webgpu", text: "WebGPU is on by default in Safari 26 and later. Update macOS, iOS or iPadOS." },
+        { os: ["macos"], kind: "no-webgpu", text: "In older Safari, turn on Develop → Feature Flags → WebGPU." },
+        {
+          os: ["ios"],
+          kind: "no-webgpu",
+          text: "Before iOS 26, turn on Settings → Apps → Safari → Advanced → Feature Flags → WebGPU.",
+        },
+        {
+          os: ["ios"],
+          text: "On iPhone and iPad every browser uses Safari's engine, so another browser there has the same WebGPU.",
+        },
+      ],
+    },
+  } satisfies Record<Exclude<Platform["engine"], "other">, Guide>,
   lists: {
     before: "Support changes with each browser release. Up-to-date lists: ",
     caniuse: "Can I use WebGPU",
@@ -376,3 +452,13 @@ export const NO_WEBGPU_TEXT = {
     after: " page.",
   },
 } as const;
+
+/**
+ * A guide's steps for this case first, OS-specific before general. With a known OS, only its steps and the general
+ * ones.
+ */
+export function stepsFor(steps: readonly GpuStep[], os: Platform["os"] | null, kind: NoGpu): readonly GpuStep[] {
+  const here = steps.filter((s) => os === null || s.os === undefined || s.os.includes(os));
+  const score = (s: GpuStep) => (s.kind === undefined || s.kind === kind ? 2 : 0) + (s.os === undefined ? 0 : 1);
+  return here.toSorted((x, y) => score(y) - score(x));
+}

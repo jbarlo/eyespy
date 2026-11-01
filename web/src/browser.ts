@@ -4,7 +4,7 @@
  */
 import { ResultAsync, errAsync, okAsync } from "neverthrow";
 import { isFeatureDir } from "eyespy-core/storage/pure";
-import type { WebGpu } from "./state/ports.ts";
+import type { Platform, WebGpu } from "./state/ports.ts";
 
 type HostError = { readonly kind: "host"; readonly message: string };
 export type Dir = FileSystemDirectoryHandle & { entries(): AsyncIterable<[string, FileSystemHandle]> };
@@ -161,6 +161,56 @@ export async function webgpuIn(gpu: Gpu | undefined): Promise<WebGpu> {
   }
 }
 
+/** What platformIn reads from navigator; userAgentData exists only in Chromium browsers. */
+type Nav = {
+  readonly userAgent: string;
+  readonly userAgentData?: { readonly platform: string };
+  readonly platform?: string;
+  readonly maxTouchPoints?: number;
+};
+
+const OS_BY_UA_DATA: Readonly<Record<string, Platform["os"]>> = {
+  Windows: "windows",
+  macOS: "macos",
+  Linux: "linux",
+  "Chrome OS": "chromeos",
+  ChromeOS: "chromeos",
+  Android: "android",
+};
+
+/**
+ * The browser engine and OS. Every iPhone and iPad browser is WebKit; an iPad asking for desktop pages calls itself a
+ * Mac but has a touch screen.
+ * @internal
+ */
+export function platformIn(nav: Nav): Platform {
+  const ua = nav.userAgent;
+  if (/iPhone|iPad|iPod/.test(ua) || (nav.platform === "MacIntel" && (nav.maxTouchPoints ?? 0) > 1))
+    return { engine: "webkit", os: "ios" };
+  const os =
+    (nav.userAgentData && OS_BY_UA_DATA[nav.userAgentData.platform]) ??
+    (/CrOS/.test(ua)
+      ? "chromeos"
+      : /Android/.test(ua)
+        ? "android"
+        : /Windows/.test(ua)
+          ? "windows"
+          : /Macintosh|Mac OS X/.test(ua)
+            ? "macos"
+            : /Linux/.test(ua)
+              ? "linux"
+              : "other");
+  const engine =
+    nav.userAgentData || /Chrome\/|Chromium\/|Edg\//.test(ua)
+      ? "chromium"
+      : /Firefox\//.test(ua)
+        ? "gecko"
+        : /AppleWebKit\//.test(ua)
+          ? "webkit"
+          : "other";
+  return { engine, os };
+}
+
 type Picker = (o: object) => Promise<FileSystemDirectoryHandle>;
 const picker = (globalThis as { showDirectoryPicker?: Picker }).showDirectoryPicker;
 
@@ -175,6 +225,7 @@ export const browserHost = {
         )
     : null,
   webgpu: () => webgpuIn((navigator as { gpu?: Gpu }).gpu),
+  platform: () => platformIn(navigator),
   download(name: string, text: string, type: string) {
     const a = document.createElement("a");
     a.href = URL.createObjectURL(new Blob([text], { type }));

@@ -1058,6 +1058,23 @@ button.info {
 .no-webgpu p:last-child {
   margin-bottom: 0;
 }
+.no-webgpu details {
+  margin: 0 0 8px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 6px 10px;
+}
+.no-webgpu summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+.no-webgpu ul {
+  margin: 8px 0 4px;
+  padding-left: 18px;
+}
+.no-webgpu li {
+  margin: 0 0 6px;
+}
 .no-webgpu a {
   color: var(--accent);
 }

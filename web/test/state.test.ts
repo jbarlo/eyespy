@@ -46,6 +46,7 @@ test("no WebGPU: no licence question, no engine, no notice; the phase says which
     const e = app.stores.engine.getState();
     assert.equal(e.phase, webgpu);
     assert.match(e.error ?? "", /WebGPU/);
+    assert.deepEqual(e.platform, { engine: "chromium", os: "linux" });
     assert.equal(app.stores.licence.getState().ask, null, "no licence dialog for models that can't run");
     assert.equal(engine.opened.length, 0);
     assert.deepEqual(app.stores.notices.getState().notices, []);

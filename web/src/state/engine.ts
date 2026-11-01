@@ -2,7 +2,7 @@
  * Engine lifecycle and what it reports. `generation` counts session closes (each open begins with one), for
  * openSession's stale-start check.
  */
-import type { EngineEvent, EngineSession, WebGpu } from "./ports.ts";
+import type { EngineEvent, EngineSession, Platform, WebGpu } from "./ports.ts";
 import { slice } from "./slice.ts";
 import type { SessionLocation, Status } from "./types.ts";
 
@@ -19,6 +19,8 @@ type Progress = { readonly file: string; readonly stage: string; readonly fracti
 export type EngineState = {
   readonly phase: Phase;
   readonly error: string | null;
+  /** The browser engine and OS, set when the phase says the browser can't run the models. */
+  readonly platform: Platform | null;
   readonly session: EngineSession | null;
   readonly generation: number;
   readonly label: string;
@@ -39,6 +41,7 @@ export const createEngineStore = () =>
   slice<EngineState>(() => ({
     phase: "starting",
     error: null,
+    platform: null,
     session: null,
     generation: 0,
     label: "",

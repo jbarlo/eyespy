@@ -12,7 +12,9 @@ import {
   PANEL_HELP,
   PREFERENCE_HELP,
   TOOL_HELP,
+  GPU_NOTE,
   NO_WEBGPU_TEXT,
+  stepsFor,
   SAM_LICENCE_TEXT,
   UNSUPPORTED_VIDEO,
   DOWNLOAD_GB,
@@ -116,10 +118,30 @@ test("no-WebGPU page: both cases name WebGPU and the GPU, say what to do, in ful
     for (const s of [T.why[kind], T.todo[kind]]) assert.match(s, /\.$/, `${kind}: ${s}`);
   }
   assert.notEqual(T.why["no-webgpu"], T.why["no-adapter"]);
-  assert.match(T.where.flag, /^chrome:\/\/flags\//);
   const all = JSON.stringify(T);
   assert.ok(!all.includes("—"), "no em-dash asides");
-  assert.ok(all.length <= 1600, `${all.length} chars (keep it short)`);
+  for (const g of Object.values(T.guides))
+    for (const s of g.steps) {
+      assert.match(s.text, /[.]$/, s.text);
+      assert.equal(s.text.split("`").length % 2, 1, `balanced backticks: ${s.text}`);
+      assert.ok(s.text.length <= 260, `short step: ${s.text}`);
+    }
+  assert.match(GPU_NOTE, /desktop or laptop/);
+  assert.ok(GPU_NOTE.includes(`${DOWNLOAD_GB} GB`));
+});
+
+test("stepsFor: this OS and case first, then general steps; other systems' only when the OS is unknown", () => {
+  const steps = [
+    { os: ["windows"], kind: "no-webgpu", text: "win" },
+    { text: "any" },
+    { os: ["linux"], kind: "no-webgpu", text: "linux" },
+    { kind: "no-adapter", text: "accel" },
+  ] as const;
+  const order = (os: Parameters<typeof stepsFor>[1], kind: "no-webgpu" | "no-adapter") =>
+    stepsFor(steps, os, kind).map((s) => s.text);
+  assert.deepEqual(order("linux", "no-webgpu"), ["linux", "any", "accel"]);
+  assert.deepEqual(order("linux", "no-adapter"), ["any", "accel", "linux"]);
+  assert.deepEqual(order(null, "no-webgpu"), ["win", "linux", "any", "accel"]);
 });
 
 test("DOWNLOAD_GB matches the default first download (every model but the fp16 detector, plus the ORT wasm)", () => {

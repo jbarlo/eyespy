@@ -12,7 +12,8 @@ local server process (onnxruntime-node on WebGPU) that it starts for you.
 
 ## Web app
 
-Needs a browser with WebGPU turned on.
+Needs a browser with WebGPU turned on, on a desktop or laptop with a graphics card. If WebGPU is off, the app says how
+to turn it on in your browser.
 
 ```sh
 pnpm install
