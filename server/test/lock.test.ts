@@ -55,21 +55,24 @@ test("lock: no session folder → no lock and nothing created", () =>
     assert.deepEqual(readdirSync(dir), []);
   }));
 
-/** Starts a process that takes the lock (stale or not), holds it a moment and prints "won" or "lost". */
-function contender(file: string): Promise<string> {
+/**
+ * Starts a process that takes the lock (stale or not) and prints "won" or "lost". A winner holds the lock until its
+ * stdin closes, so a slow starter can't find it already released.
+ */
+function contender(file: string): Promise<{ result: string; done: Promise<void>; finish: () => void }> {
   const script = `
     import { takeLock } from ${JSON.stringify(LOCK_TS)};
     const r = takeLock(${JSON.stringify(file)});
     process.stdout.write(r.isOk() ? "won" : "lost");
-    if (r.isOk()) setTimeout(() => r.value?.release(), 600);`;
+    process.stdin.on("end", () => r.isOk() && r.value?.release()).resume();`;
   return new Promise((resolve, reject) => {
     const p = spawn(process.execPath, ["--import", TSX, "--input-type=module", "-e", script], {
-      stdio: ["ignore", "pipe", "inherit"],
+      stdio: ["pipe", "pipe", "inherit"],
     });
-    let out = "";
-    p.stdout.on("data", (d: Buffer) => (out += d.toString()));
+    const done = new Promise<void>((res) => p.on("close", () => res()));
+    p.stdout.once("data", (d: Buffer) => resolve({ result: d.toString(), done, finish: () => p.stdin.end() }));
     p.on("error", reject);
-    p.on("close", () => resolve(out));
+    p.on("close", () => reject(new Error("contender exited without a result")));
   });
 }
 
@@ -78,7 +81,10 @@ test("lock: processes racing for it (fresh, and over a stale lock): exactly one 
     const file = path.join(dir, "server.lock");
     for (const stale of [false, true]) {
       if (stale) writeFileSync(file, "999999999\n"); // no such pid
-      const results = await Promise.all(Array.from({ length: 6 }, () => contender(file)));
+      const all = await Promise.all(Array.from({ length: 6 }, () => contender(file)));
+      for (const c of all) c.finish();
+      await Promise.all(all.map((c) => c.done));
+      const results = all.map((c) => c.result);
       assert.deepEqual(
         results.filter((r) => r === "won").length,
         1,
