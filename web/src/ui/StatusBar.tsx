@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { currentTask } from "../state/index.ts";
 import { fmtBytes } from "./common.tsx";
 import { useActions, useSlice } from "./context.tsx";
@@ -76,14 +77,46 @@ export function StatusBar() {
   );
 }
 
+const COPIED_MS = 1500;
+
+/** Two overlapping sheets, or a tick once copied. */
+const CopyIcon = ({ done }: { done: boolean }) => (
+  <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden>
+    {done ? (
+      <path d="M3 8.5l3 3 7-7" strokeLinecap="round" strokeLinejoin="round" />
+    ) : (
+      <>
+        <rect x="5.5" y="5.5" width="8" height="8" rx="1.5" />
+        <path d="M10.5 3.5v-.5a1 1 0 0 0-1-1h-6a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h.5" />
+      </>
+    )}
+  </svg>
+);
+
 export function Toasts() {
   const a = useActions();
   const notices = useSlice("notices", (s) => s.notices);
+  const [copied, setCopied] = useState<number | null>(null);
   return (
     <div className="toasts" role="alert" aria-live="assertive">
       {notices.map((e) => (
         <div className={`toast${e.info ? " info" : ""}`} key={e.id} role={e.info ? "status" : undefined}>
           <span>{e.text}</span>
+          <button
+            type="button"
+            className="copy"
+            aria-label={copied === e.id ? "Copied" : "Copy message"}
+            title={copied === e.id ? "Copied" : "Copy message"}
+            onClick={() =>
+              void a.copyNotice(e.id).then((ok) => {
+                if (!ok) return;
+                setCopied(e.id);
+                setTimeout(() => setCopied((c) => (c === e.id ? null : c)), COPIED_MS);
+              })
+            }
+          >
+            <CopyIcon done={copied === e.id} />
+          </button>
           <button type="button" aria-label="Dismiss error" onClick={() => a.dismiss(e.id)}>
             ×
           </button>

@@ -693,3 +693,20 @@ test("an example clip: fetched from the page and added, its first prompt in the 
   assert.match(app.stores.notices.getState().notices.at(-1)?.text ?? "", /gone\.missing: HTTP 404/);
   assert.equal(app.stores.layers.getState().prompt, example.prompts[0]);
 });
+
+test("copyNotice: a notice's text goes to the clipboard; a clipboard failure is a notice of its own", async () => {
+  const { app, host } = setup();
+  app.actions.notify("background: Pad shader is invalid");
+  const id = app.stores.notices.getState().notices.at(-1)!.id;
+  assert.equal(await app.actions.copyNotice(id), true);
+  assert.deepEqual(host.copied, ["background: Pad shader is invalid"]);
+  assert.equal(await app.actions.copyNotice(id + 100), false, "a dismissed notice copies nothing");
+  app.actions.notify("no clipboard here");
+  const other = app.stores.notices.getState().notices.at(-1)!.id;
+  assert.equal(await app.actions.copyNotice(other), false);
+  assert.match(
+    app.stores.notices.getState().notices.at(-1)!.text,
+    /Couldn't copy to the clipboard: Document is not focused\./,
+  );
+  assert.equal(host.copied.length, 1);
+});

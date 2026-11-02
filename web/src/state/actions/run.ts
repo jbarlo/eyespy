@@ -49,6 +49,15 @@ export function createRunner(ctx: Ctx, refresh: () => Promise<void>) {
     };
   }
 
+  /** Copies a notice's text to the clipboard; resolves whether it did. */
+  async function copyNotice(id: number): Promise<boolean> {
+    const n = notices.getState().notices.find((x) => x.id === id);
+    if (!n) return false;
+    const r = await ctx.deps.host.copyText(n.text);
+    if (r.isErr()) notify(`Couldn't copy to the clipboard: ${r.error.message}`);
+    return r.isOk();
+  }
+
   const cancel = (id: number) =>
     notices.setState((s) => ({ busy: s.busy.map((t) => (t.id === id ? { ...t, cancelled: true } : t)) }));
 
@@ -84,7 +93,7 @@ export function createRunner(ctx: Ctx, refresh: () => Promise<void>) {
     return r.isOk() ? r.value : undefined;
   }
 
-  return { notify, dismiss, report, begin, cancel, ask, run };
+  return { notify, dismiss, copyNotice, report, begin, cancel, ask, run };
 }
 
 export type Runner = ReturnType<typeof createRunner>;

@@ -30,6 +30,7 @@ export function createActions(ctx: Ctx) {
   return {
     notify: runner.notify,
     dismiss: runner.dismiss,
+    copyNotice: runner.copyNotice,
     cancelTask: runner.cancel,
     ask: runner.ask,
     ...view,

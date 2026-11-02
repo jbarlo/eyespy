@@ -235,6 +235,7 @@ export const browserHost = {
       }),
       hostError,
     ),
+  copyText: (text: string) => ResultAsync.fromPromise(navigator.clipboard.writeText(text), hostError),
   download(name: string, text: string, type: string) {
     const a = document.createElement("a");
     a.href = URL.createObjectURL(new Blob([text], { type }));

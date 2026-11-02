@@ -856,6 +856,15 @@ progress {
   min-height: 0;
   padding: 0 4px;
 }
+.toast button.copy {
+  display: flex;
+  align-items: center;
+  height: 20px;
+  opacity: 0.75;
+}
+.toast button.copy:hover {
+  opacity: 1;
+}
 
 dialog {
   border: 1px solid var(--line);

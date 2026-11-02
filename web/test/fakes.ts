@@ -214,13 +214,21 @@ export function fakeImaging() {
   return { imaging, made, urls };
 }
 
-/** A host whose WebGPU check answers `webgpu`; `checks` counts the checks. */
+/** A host whose WebGPU check answers `webgpu`; `checks` counts the checks, `copied` holds what went to the clipboard. */
 export const fakeHost = (webgpu: WebGpu = "available") => {
   const downloads: { name: string; text: string }[] = [];
-  const h: Host & { downloads: typeof downloads; checks: number } = {
+  const copied: string[] = [];
+  const h: Host & { downloads: typeof downloads; copied: typeof copied; checks: number } = {
     pickDirectory: null,
     download: (name, text) => void downloads.push({ name, text }),
     downloads,
+    copied,
+    copyText: (text: string) => {
+      if (text.includes("no clipboard"))
+        return errAsync({ kind: "host" as const, message: "Document is not focused." });
+      copied.push(text);
+      return okAsync(undefined);
+    },
     checks: 0,
     platform: () => ({ engine: "chromium", os: "linux" }),
     fetchFile: (url: string, name: string) =>
