@@ -6,6 +6,7 @@ import * as ort from "onnxruntime-web/webgpu";
 import type { Model, ModelRuntime, Tensor } from "eyespy-core/ports";
 import type { ModelEntry, ModelManifest } from "../manifest.ts";
 import type { DownloadCache } from "./cache.ts";
+import { installPortableWgsl } from "./wgsl.ts";
 
 export class WebModelRuntime implements ModelRuntime {
   private adapterInfo = "webgpu";
@@ -19,6 +20,7 @@ export class WebModelRuntime implements ModelRuntime {
     ort.env.wasm.numThreads = globalThis.crossOriginIsolated ? Math.min(4, navigator.hardwareConcurrency) : 1;
     ort.env.webgpu.powerPreference = "high-performance";
     ort.env.logLevel = "error";
+    installPortableWgsl();
   }
 
   private entry(name: string): ModelEntry {
