@@ -646,10 +646,6 @@ progress {
   color: var(--muted);
   font-size: 12px;
 }
-.obj-row .oid {
-  color: var(--muted);
-  font-variant-numeric: tabular-nums;
-}
 .obj-row .olabel {
   flex: 1;
   overflow: hidden;

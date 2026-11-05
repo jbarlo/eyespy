@@ -1,20 +1,24 @@
 /**
  * Object identity and the shapes storage maps to objects.json and ops.jsonl. They live outside pure.ts so that
- * internal/ can import them without a cycle. The "o<n>" format and the reject id are private to this module and
+ * internal/ can import them without a cycle. The id formats and the reject id are private to this module and
  * storage.
  */
 import type { Result } from "neverthrow";
 import type { DetId } from "../detections/pure.ts";
 import type { ClipKey, FrameNo } from "../video/pure.ts";
 
-/** "o<n>" from a counter that only goes up (next_obj in session.json), so no id is reused. */
+/**
+ * A word pair ("calm-otter") named by a counter that only goes up (next_obj in session.json), so no id is reused.
+ * Sessions from before word pairs hold "o<n>", which stays valid. The shape is all that is checked here, so a list of
+ * words can never invalidate a stored id. See internal/names.ts.
+ */
 export type ObjectId = string & { readonly brand: "labelling.ObjectId" };
 /** The reserved object holding rejected detections. */
 export type RejectId = "x";
 export const REJECT: RejectId = "x";
 export type Owner = ObjectId | RejectId;
 
-export const isObjectId = (s: string): s is ObjectId => /^o\d+$/.test(s);
+export const isObjectId = (s: string): s is ObjectId => /^(?:o\d+|[a-z]+-[a-z]+)$/.test(s);
 export const isReject = (s: string): s is RejectId => s === REJECT;
 export const isOwner = (s: string): s is Owner => isReject(s) || isObjectId(s);
 

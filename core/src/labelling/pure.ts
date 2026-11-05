@@ -7,3 +7,10 @@ export {
 } from "./internal/diff.ts";
 export { /** @internal */ historyView, /** @internal */ stacks } from "./internal/history.ts";
 export { describeOp } from "./internal/describe.ts";
+export {
+  /** @internal */ ADJECTIVES,
+  /** @internal */ NOUNS,
+  /** @internal */ PAIRS,
+  /** @internal */ counterOf,
+  /** @internal */ objectName,
+} from "./internal/names.ts";

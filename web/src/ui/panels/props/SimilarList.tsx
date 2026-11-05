@@ -1,10 +1,11 @@
 import type { Similar } from "../../../state/index.ts";
-import { REJECTED } from "../../../state/index.ts";
 import { Crop } from "../../common.tsx";
 import { useActions } from "../../context.tsx";
+import { useOwnerText } from "../owner.ts";
 
 export function SimilarList({ title, list }: { readonly title: string; readonly list: readonly Similar[] }) {
   const a = useActions();
+  const ownerText = useOwnerText();
   return (
     <>
       <h4>{title}</h4>
@@ -22,7 +23,7 @@ export function SimilarList({ title, list }: { readonly title: string; readonly 
             <figcaption>
               {s.id} · {s.sim.toFixed(2)}
               <br />
-              <span className="muted">{s.object ? (s.object === REJECTED ? "rejected" : s.object) : "unassigned"}</span>
+              <span className="muted">{ownerText(s)}</span>
             </figcaption>
           </figure>
         ))}

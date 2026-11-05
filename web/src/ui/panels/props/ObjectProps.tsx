@@ -1,7 +1,7 @@
 import { useState } from "react";
 import type { Det, Similar } from "../../../state/index.ts";
-import { objColor } from "../../../state/index.ts";
-import { Crop } from "../../common.tsx";
+import { objColor, objName } from "../../../state/index.ts";
+import { Crop, ObjName } from "../../common.tsx";
 import { useActions, useDerived, useSlice } from "../../context.tsx";
 import { HELP } from "../../help.ts";
 
@@ -26,8 +26,11 @@ export function ObjectProps({ oid }: { readonly oid: string }) {
   return (
     <div className="props" data-obj={oid}>
       <p>
-        <i className="sw" style={{ background: objColor(oid) }} /> <strong>{oid}</strong> · {o.sightings} sightings ·{" "}
-        {o.members.length} detections
+        <i className="sw" style={{ background: objColor(oid) }} />{" "}
+        <strong>
+          <ObjName id={oid} label={o.label} />
+        </strong>{" "}
+        · {o.sightings} sightings · {o.members.length} detections
         {o.first_t !== null && o.last_t !== null && (
           <>
             {" "}
@@ -112,7 +115,7 @@ export function ObjectProps({ oid }: { readonly oid: string }) {
             <option value="">Merge into…</option>
             {others.map((x) => (
               <option key={x.id} value={x.id}>
-                {x.id} · {x.label}
+                {objName(x)}
               </option>
             ))}
           </select>

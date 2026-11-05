@@ -32,13 +32,14 @@ import type {
 import { applyDiff, diffObjects, invertDiff } from "./diff.ts";
 import type { StackState } from "./history.ts";
 import { fold, stateOf, step, viewOf } from "./history.ts";
+import { counterOf, objectName } from "./names.ts";
 import type { View } from "./queries.ts";
 import * as Q from "./queries.ts";
 
 const isEmpty = (d: Diff) => Object.keys(d).length === 0;
 
 const objectId = (n: number): ObjectId => {
-  const id = `o${n}`;
+  const id = objectName(n);
   invariant(isObjectId(id), () => `bad object number ${n}`);
   return id;
 };
@@ -57,12 +58,9 @@ const assign = (objects: Objects, owner: Owner, ids: readonly DetId[]): Objects 
 const ownersOf = (objects: Objects): ReadonlyMap<DetId, Owner> =>
   new Map([...objects].flatMap(([k, o]) => o.members.map((m) => [m, k] as const)));
 
-/** The highest n of the "o<n>" ids among `objects`' keys, 0 if there are none. */
+/** The highest counter value behind `objects`' keys, 0 if there are none. */
 const highestId = (objects: Objects): number =>
-  [...objects.keys()].reduce((top, k) => {
-    const m = /^o(\d+)$/.exec(k);
-    return m ? Math.max(top, Number(m[1])) : top;
-  }, 0);
+  [...objects.keys()].reduce((top, k) => Math.max(top, counterOf(k) ?? 0), 0);
 
 const withoutDiff = ({ diff: _, ...e }: OpEntry): OpEntrySansDiff => e;
 

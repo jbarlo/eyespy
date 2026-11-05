@@ -52,7 +52,7 @@ export function Stage() {
           unassigned
         </span>
         <span>
-          <i style={{ background: objColor("o1") }} />
+          <i style={{ background: objColor("quiet-lynx") }} />
           object
         </span>
         <span>

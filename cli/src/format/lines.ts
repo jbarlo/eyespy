@@ -22,12 +22,24 @@ export const hitLine = (h: Hit & { readonly sim?: number }): string =>
 /** A time with one decimal; a missing one prints as `undefined`. */
 const time = (t: number | null): string => (t === null ? "undefined" : t.toFixed(1));
 
-/** `o1    label  (n sightings, a–bs, best id)  [prompt score, ...]` */
-export const objLine = (o: Obj): string =>
-  `${o.id.padEnd(4)}  ${o.label}  (${o.sightings} sightings, ${time(o.first_t)}–${time(o.last_t)}s, best ${o.best})` +
+/** The width of a column of `ids`, at least `min`. Rows print one by one, so the column is as wide as its longest id. */
+export const idWidth = (ids: readonly string[], min: number): number => Math.max(min, ...ids.map((id) => id.length));
+
+/** `calm-otter  label  (n sightings, a–bs, best id)  [prompt score, ...]`, with the id padded to `width`. */
+export const objLine = (o: Obj, width = 4): string =>
+  `${o.id.padEnd(width)}  ${o.label}  (${o.sightings} sightings, ${time(o.first_t)}–${time(o.last_t)}s, best ${o.best})` +
   `  [${Object.entries(o.prompts)
     .map(([p, v]) => `${p} ${v.toFixed(2)}`)
     .join(", ")}]`;
+
+/** Object rows with their ids in one column. */
+export const objLines = (objs: readonly Obj[]): readonly string[] => {
+  const width = idWidth(
+    objs.map((o) => o.id),
+    4,
+  );
+  return objs.map((o) => objLine(o, width));
+};
 
 /**
  * Every query prints its hits and the rendered image path, so an agent can look at the result. It prints the optional

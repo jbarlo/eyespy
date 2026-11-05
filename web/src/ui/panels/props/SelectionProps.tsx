@@ -1,7 +1,7 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
-import { objColor, REJECTED } from "../../../state/index.ts";
-import { Crop } from "../../common.tsx";
+import { objColor, pickObject, REJECTED } from "../../../state/index.ts";
+import { Crop, ObjName } from "../../common.tsx";
 import { useActions, useDerived, useSlice } from "../../context.tsx";
 import { HELP } from "../../help.ts";
 import { Info } from "../../Info.tsx";
@@ -20,18 +20,9 @@ function ObjectPicker({
   const a = useActions();
   const [v, setV] = useState("");
   const objs = useSlice("objects", (s) => s.objects);
-  const resolve = (s: string) => {
-    const t = s.trim();
-    const id = t.split(/\s|·/)[0];
-    return (
-      objs.find((o) => o.id === id)?.id ??
-      objs.find((o) => o.label.toLowerCase() === t.toLowerCase())?.id ??
-      objs.find((o) => o.label.toLowerCase().includes(t.toLowerCase()))?.id
-    );
-  };
   const go = (e: FormEvent) => {
     e.preventDefault();
-    const id = resolve(v);
+    const id = pickObject(objs, v);
     if (id) {
       onPick(id);
       setV("");
@@ -112,7 +103,7 @@ export function SelectionProps() {
                 title={`closest sighting ${x.closest} (${x.closest_sim.toFixed(2)}), ${x.sightings} sightings`}
               >
                 <i className="sw" style={{ background: objColor(x.obj) }} />
-                Assign to {x.obj} · {x.label}
+                Assign to <ObjName id={x.obj} label={x.label} />
                 <span className="muted"> {x.sim.toFixed(2)}</span>
                 {k === 0 && <kbd>A</kbd>}
               </button>
@@ -159,7 +150,7 @@ export function SelectionProps() {
               )
             }
           >
-            Remove from {o}
+            Remove from {ownerText({ object: o })}
           </button>
         ))}
         {only && (

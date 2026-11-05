@@ -173,16 +173,16 @@ test("every op undoes and redoes, across a reopen", async () => {
     okv(await p);
     states.push(state(log.objects));
   };
-  const o1 = okv(await lab.create("jar", ["0.0", "1.0"], ctx));
-  assert.equal(o1.id, "o1");
+  const first = okv(await lab.create("jar", ["0.0", "1.0"], ctx));
+  assert.equal(first.id, "orderly-dolphin");
   states.push(state(log.objects));
-  await step(lab.add("o1", ["2.0"], ctx));
+  await step(lab.add("orderly-dolphin", ["2.0"], ctx));
   await step(lab.create("tub", ["0.1"], ctx));
-  await step(lab.reject(["1.0"], ctx)); // moves 1.0 from o1 to x
-  await step(lab.relabel("o2", "tub of butter"));
-  await step(lab.merge("o1", "o2"));
-  await step(lab.remove("o1", ["0.1"], ctx));
-  await step(lab.delete("o1"));
+  await step(lab.reject(["1.0"], ctx)); // moves 1.0 from orderly-dolphin to x
+  await step(lab.relabel("dreamy-jay", "tub of butter"));
+  await step(lab.merge("orderly-dolphin", "dreamy-jay"));
+  await step(lab.remove("orderly-dolphin", ["0.1"], ctx));
+  await step(lab.delete("orderly-dolphin"));
   assert.equal(lab.historyState().undo?.op, "delete");
 
   for (let k = states.length - 1; k > 4; k--) {
@@ -221,7 +221,7 @@ test("a new op after undo drops the redo stack; history marks undone ops; undo r
   okv(await lab.create("tub", ["0.1"], ctx));
   const u = okv(await lab.undo());
   assert.deepEqual(u, {
-    undone: { ts: 1003, op: "new", obj: "o2", label: "tub", ids: ["0.1"], seq: 1 },
+    undone: { ts: 1003, op: "new", obj: "dreamy-jay", label: "tub", ids: ["0.1"], seq: 1 },
     undo: { seq: 0, op: "new" },
     redo: { seq: 1, op: "new" },
   });
@@ -229,15 +229,15 @@ test("a new op after undo drops the redo stack; history marks undone ops; undo r
     ts: 1004.5,
     op: "undo",
     of: 1,
-    diff: { o2: { from: "tub", to: null, remove: ["0.1"] } },
+    diff: { "dreamy-jay": { from: "tub", to: null, remove: ["0.1"] } },
     seq: 2,
   });
   assert.ok(lab.history().ops[1]?.undone);
   assert.equal(lab.historyState().redo?.seq, 1);
-  okv(await lab.relabel("o1", "pickle jar"));
+  okv(await lab.relabel("orderly-dolphin", "pickle jar"));
   assert.equal(lab.historyState().redo, null);
   assert.deepEqual(errv(await lab.redo()), { kind: "nothing-to-redo" });
-  assert.deepEqual([...log.objects.keys()], [REJECT, "o1"]);
+  assert.deepEqual([...log.objects.keys()], [REJECT, "orderly-dolphin"]);
 });
 
 test("undo refuses when the objects no longer match the log", async () => {
@@ -245,7 +245,7 @@ test("undo refuses when the objects no longer match the log", async () => {
   okv(await lab.create("jar", ["0.0"], ctx));
   // objects.json changed with no log entry
   const edited = new Map(log.objects);
-  edited.set(own("o1"), { label: "edited", members: [did("0.0")] });
+  edited.set(own("orderly-dolphin"), { label: "edited", members: [did("0.0")] });
   const { lab: lab2 } = open(DETS, { objects: edited, history: [...log.entries], nextObj: log.nextObj }, log);
   const n = log.entries.length;
   assert.deepEqual(errv(await lab2.undo()), {
@@ -253,11 +253,11 @@ test("undo refuses when the objects no longer match the log", async () => {
     op: "undo",
     seq: 0,
     of: "new",
-    reason: { kind: "label-mismatch", obj: "o1", actual: "edited", expected: "jar" },
+    reason: { kind: "label-mismatch", obj: "orderly-dolphin", actual: "edited", expected: "jar" },
   });
   assert.equal(
     lab2
-      .get("o1")
+      .get("orderly-dolphin")
       .map((o) => o.label)
       .unwrapOr(""),
     "edited",
@@ -281,27 +281,27 @@ test("stripFrames: one clip_remove line always, objects left empty deleted (not 
   okv(await lab.create("jar", ["0.0", "1.0"], ctx));
   okv(await lab.create("mug", ["2.0"], ctx));
   okv(await lab.create("empty", ["2.1"], ctx));
-  okv(await lab.remove("o3", ["2.1"], ctx));
+  okv(await lab.remove("sunny-osprey", ["2.1"], ctx));
   okv(await lab.reject(["1.1"], ctx));
   const key = "0a1b2c3d4e03";
   if (!isClipKey(key)) throw new Error("key");
   const r = okv(await lab.stripFrames({ key, path: "/v/extra.mp4", frames: [frame(1), frame(2)] }));
-  assert.deepEqual(r, { stripped: 3, deleted: ["o2"] });
+  assert.deepEqual(r, { stripped: 3, deleted: ["dreamy-jay"] });
   const { ts: _, seq: _s, ...line } = log.entries.at(-1) ?? { seq: -1, op: "" };
   assert.deepEqual(line, {
     op: "clip_remove",
     clip: key,
     path: "/v/extra.mp4",
     frames: [1, 2],
-    deleted: ["o2"],
+    deleted: ["dreamy-jay"],
     changes: {
       x: { remove: ["1.1"] },
-      o1: { remove: ["1.0"] },
-      o2: { from: "mug", to: null, remove: ["2.0"] },
+      "orderly-dolphin": { remove: ["1.0"] },
+      "dreamy-jay": { from: "mug", to: null, remove: ["2.0"] },
     },
   });
   assert.deepEqual(Object.keys(line), ["op", "clip", "path", "frames", "deleted", "changes"]);
-  assert.deepEqual(okv(lab.get("o3")).members, [], "already empty: kept");
+  assert.deepEqual(okv(lab.get("sunny-osprey")).members, [], "already empty: kept");
   assert.deepEqual(errv(await lab.undo()), { kind: "nothing-to-undo" });
   assert.deepEqual(lab.history().ops.at(-1)?.objects, []);
   // with nothing left to strip, the op is still logged as a barrier
@@ -313,28 +313,28 @@ test("stripFrames: one clip_remove line always, objects left empty deleted (not 
 test("object ids are never reused: merge, delete, undo, redo, reopen", async () => {
   const { lab, log } = open(DETS);
   const mk = async (label: string, d: string) => okv(await lab.create(label, [d], ctx)).id;
-  assert.equal(await mk("a", "0.0"), "o1");
-  assert.equal(await mk("b", "0.1"), "o2");
-  okv(await lab.merge("o1", "o2"));
-  assert.equal(await mk("c", "1.0"), "o3", "a merged-away id is not reused");
-  okv(await lab.delete("o3"));
-  assert.equal(await mk("d", "1.1"), "o4", "a deleted id is not reused");
+  assert.equal(await mk("a", "0.0"), "orderly-dolphin");
+  assert.equal(await mk("b", "0.1"), "dreamy-jay");
+  okv(await lab.merge("orderly-dolphin", "dreamy-jay"));
+  assert.equal(await mk("c", "1.0"), "sunny-osprey", "a merged-away id is not reused");
+  okv(await lab.delete("sunny-osprey"));
+  assert.equal(await mk("d", "1.1"), "inner-tapir", "a deleted id is not reused");
   okv(await lab.undo());
-  assert.equal(await mk("e", "1.1"), "o5", "undo never lowers the counter");
+  assert.equal(await mk("e", "1.1"), "boreal-bog", "undo never lowers the counter");
   okv(await lab.undo());
   okv(await lab.redo()); // redo of an undone `new` recreates the same id
-  assert.equal(okv(lab.get("o5")).label, "e");
+  assert.equal(okv(lab.get("boreal-bog")).label, "e");
   okv(await lab.undo());
   assert.equal(log.nextObj, 6);
   const { lab: lab2 } = reopen(DETS, log);
-  assert.equal(okv(await lab2.create("f", ["2.0"], ctx)).id, "o6");
+  assert.equal(okv(await lab2.create("f", ["2.0"], ctx)).id, "relaxed-fjord");
   assert.deepEqual(errv(await lab2.redo()), { kind: "nothing-to-redo" });
 });
 
 test("object ids: next_obj, raised above every id in objects.json; the log is not read", async () => {
   // a stored next_obj below what objects.json holds is raised, so an id present in objects.json is skipped
   const { lab, log } = open(DETS, { objects: objs({ o3: { label: "jar", members: [] } }), nextObj: 2 });
-  assert.equal(okv(await lab.create("lid", ["1.0"], ctx)).id, "o4");
+  assert.equal(okv(await lab.create("lid", ["1.0"], ctx)).id, "inner-tapir");
   assert.equal(log.nextObj, 5);
   // ids the log mentions don't move the counter
   const history = entries([
@@ -342,7 +342,7 @@ test("object ids: next_obj, raised above every id in objects.json; the log is no
     { ts: 2, op: "delete", obj: "o7" },
   ]);
   const { lab: lab2 } = open(DETS, { history, nextObj: 3 });
-  assert.equal(okv(await lab2.create("lid", ["1.0"], ctx)).id, "o3");
+  assert.equal(okv(await lab2.create("lid", ["1.0"], ctx)).id, "sunny-osprey");
 });
 
 test("undo, redo and history stay fast over a 50k-entry log (stacks folded once, not per call)", async () => {
@@ -382,11 +382,11 @@ test("no-op ops log nothing, take no undo slot, keep the redo stack", async () =
   okv(await lab.undo());
   const n = log.entries.length;
   assert.deepEqual(okv(await lab.reject([], ctx)), { rejected: [] });
-  assert.deepEqual(okv(await lab.add("o1", ["1.0"], ctx)), { added: ["1.0"] });
-  assert.deepEqual(okv(await lab.remove("o1", ["2.1"], ctx)), { removed: ["2.1"] });
-  okv(await lab.relabel("o1", "jar"));
+  assert.deepEqual(okv(await lab.add("orderly-dolphin", ["1.0"], ctx)), { added: ["1.0"] });
+  assert.deepEqual(okv(await lab.remove("orderly-dolphin", ["2.1"], ctx)), { removed: ["2.1"] });
+  okv(await lab.relabel("orderly-dolphin", "jar"));
   assert.equal(log.entries.length, n);
-  assert.deepEqual(okv(lab.get("o1")).members, ["0.0", "1.0"], "member order untouched");
+  assert.deepEqual(okv(lab.get("orderly-dolphin")).members, ["0.0", "1.0"], "member order untouched");
   assert.equal(lab.historyState().redo?.seq, 1, "redo survives");
   okv(await lab.redo());
   assert.deepEqual(okv(lab.get(REJECT)).members, ["2.0"]);
@@ -408,14 +408,14 @@ test("a failed commit leaves the instance unchanged", async () => {
     op: "appendText",
     message: "disk full",
   });
-  assert.deepEqual(lab.objectIds(), ["o1"]);
+  assert.deepEqual(lab.objectIds(), ["orderly-dolphin"]);
   assert.equal(lab.ownerOf(okv(DETS.get("0.1")).id), undefined);
   assert.equal(lab.history().ops.length, 1);
   log.failNext = true;
   assert.equal(errv(await lab.undo()).kind, "host");
-  assert.deepEqual(lab.objectIds(), ["o1"]);
+  assert.deepEqual(lab.objectIds(), ["orderly-dolphin"]);
   assert.deepEqual(lab.historyState(), { undo: { seq: 0, op: "new" }, redo: null });
-  assert.equal(okv(await lab.create("tub", ["0.1"], ctx)).id, "o2", "the counter did not move");
+  assert.equal(okv(await lab.create("tub", ["0.1"], ctx)).id, "dreamy-jay", "the counter did not move");
 });
 
 test("errors: unknown ids/objects, merge/delete of the reject set, empty centroid", async () => {
@@ -423,21 +423,21 @@ test("errors: unknown ids/objects, merge/delete of the reject set, empty centroi
   okv(await lab.create("jar", ["0.0"], ctx));
   assert.deepEqual(errv(await lab.create("x", ["0.0", "42.0"], ctx)), { kind: "no-detection", id: "42.0" });
   assert.deepEqual(errv(await lab.add("o99", ["bad"], ctx)), { kind: "no-object", id: "o99" }, "object checked first");
-  assert.deepEqual(errv(await lab.add("o1", ["bad"], ctx)), { kind: "no-detection", id: "bad" });
+  assert.deepEqual(errv(await lab.add("orderly-dolphin", ["bad"], ctx)), { kind: "no-detection", id: "bad" });
   assert.deepEqual(errv(await lab.remove("o99", ["0.0"], ctx)), { kind: "no-object", id: "o99" });
   assert.deepEqual(errv(await lab.relabel("o99", "x")), { kind: "no-object", id: "o99" });
   assert.deepEqual(errv(await lab.delete("x")), { kind: "delete-reject" });
   assert.deepEqual(errv(await lab.delete("o99")), { kind: "no-object", id: "o99" });
-  assert.deepEqual(errv(await lab.merge("x", "o1")), { kind: "merge-reject" });
-  assert.deepEqual(errv(await lab.merge("o1", "x")), { kind: "merge-reject" });
-  assert.deepEqual(errv(await lab.merge("o1", "o1")), { kind: "merge-self" });
-  assert.deepEqual(errv(await lab.merge("o1", "o99")), { kind: "no-object", id: "o99" });
+  assert.deepEqual(errv(await lab.merge("x", "orderly-dolphin")), { kind: "merge-reject" });
+  assert.deepEqual(errv(await lab.merge("orderly-dolphin", "x")), { kind: "merge-reject" });
+  assert.deepEqual(errv(await lab.merge("orderly-dolphin", "orderly-dolphin")), { kind: "merge-self" });
+  assert.deepEqual(errv(await lab.merge("orderly-dolphin", "o99")), { kind: "no-object", id: "o99" });
   assert.deepEqual(errv(await lab.merge("o98", "o99")), { kind: "no-object", id: "o98" });
   assert.deepEqual(errv(lab.summary("o99")), { kind: "no-object", id: "o99" });
   assert.deepEqual(errv(lab.match(["9.9"], 5, ctx)), { kind: "no-detection", id: "9.9" });
-  okv(await lab.remove("o1", ["0.0"], ctx));
-  assert.deepEqual(errv(lab.centroid("o1")), { kind: "object-no-members", id: "o1" });
-  assert.equal(okv(lab.best("o1")), null);
+  okv(await lab.remove("orderly-dolphin", ["0.0"], ctx));
+  assert.deepEqual(errv(lab.centroid("orderly-dolphin")), { kind: "object-no-members", id: "orderly-dolphin" });
+  assert.equal(okv(lab.best("orderly-dolphin")), null);
   assert.equal(log.entries.length, 2);
   okv(await lab.relabel("x", "junk"));
   assert.equal(okv(lab.get("x")).label, "junk");
@@ -450,17 +450,17 @@ test("obj.match ranks objects by centroid similarity, leaving the query out", as
   const m = okv(lab.match(["2.0"], 5, ctx));
   assert.deepEqual(
     m.map((x) => x.obj),
-    ["o1", "o2"],
+    ["orderly-dolphin", "dreamy-jay"],
   );
   assert.ok((m[0]?.sim ?? 0) > 0.9 && (m[1]?.sim ?? 1) < 0.1);
   const self = okv(lab.match(["1.0"], 5, ctx));
-  assert.equal(self[0]?.obj, "o1");
+  assert.equal(self[0]?.obj, "orderly-dolphin");
   assert.equal(self[0]?.closest, "0.0");
   assert.equal(self[0]?.sightings, 1);
   const g = okv(lab.match(["1.1", "0.1"], 5, ctx));
   assert.deepEqual(
     g.map((x) => x.obj),
-    ["o1"],
+    ["orderly-dolphin"],
     "an object whose only member is the query is skipped",
   );
   assert.equal(okv(lab.match(["2.0"], 1, ctx)).length, 1);
@@ -480,18 +480,18 @@ test("summary, owners, unassigned with real detections: aliases expand and colla
   });
   const { lab, log } = open(dets);
   const c = okv(await lab.create("jar", ["0.0", "1.0"], ctx));
-  assert.deepEqual(c, { id: "o1", added: ["0.0", "0.1", "1.0"] });
+  assert.deepEqual(c, { id: "orderly-dolphin", added: ["0.0", "0.1", "1.0"] });
   assert.deepEqual(log.entries.at(-1), {
     ts: 1001.5,
     op: "new",
-    obj: "o1",
+    obj: "orderly-dolphin",
     label: "jar",
     ids: ["0.0", "0.1", "1.0"],
-    diff: { o1: { from: null, to: "jar", add: ["0.0", "0.1", "1.0"] } },
+    diff: { "orderly-dolphin": { from: null, to: "jar", add: ["0.0", "0.1", "1.0"] } },
     seq: 0,
   });
-  assert.deepEqual(okv(lab.summary("o1")), {
-    id: "o1",
+  assert.deepEqual(okv(lab.summary("orderly-dolphin")), {
+    id: "orderly-dolphin",
     label: "jar",
     sightings: 2,
     members: ["0.0", "0.1", "1.0"],
@@ -500,7 +500,7 @@ test("summary, owners, unassigned with real detections: aliases expand and colla
     best: "0.0", // 0.9·sqrt(100) > 0.95·sqrt(80)
     prompts: { container: 0.95, jar: 0.9 },
   });
-  assert.equal(lab.ownerOf(okv(dets.get("0.1")).id), "o1");
+  assert.equal(lab.ownerOf(okv(dets.get("0.1")).id), "orderly-dolphin");
   assert.deepEqual([...lab.owners().keys()], ["0.0", "0.1", "1.0"]);
   assert.deepEqual(
     lab.unassigned({ threshold: 0.5 }, ctx).map((d) => d.id),
@@ -516,8 +516,8 @@ test("summary, owners, unassigned with real detections: aliases expand and colla
   );
   okv(await lab.reject(["1.1"], ctx));
   assert.deepEqual(lab.rejected(), ["1.1"]);
-  assert.deepEqual(lab.objectIds(), ["o1"]);
-  const cen = okv(lab.centroid("o1"));
+  assert.deepEqual(lab.objectIds(), ["orderly-dolphin"]);
+  const cen = okv(lab.centroid("orderly-dolphin"));
   assert.ok(Math.abs(cen[0] ?? 0) > 0.99);
 });
 

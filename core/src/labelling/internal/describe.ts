@@ -27,7 +27,7 @@ const count = (list: readonly string[] | undefined): string =>
   list ? ` ${list.length} det${list.length === 1 ? "" : "s"}` : "";
 
 /**
- * Lines such as "new o3 “jar” 2 dets", "merge o2 into o1", "remove video a.mp4 (#0–#12)" and "undo #5". An entry
+ * Lines such as "new calm-otter “jar” 2 dets", "merge shy-heron into calm-otter", "remove video a.mp4 (#0–#12)" and "undo #5". An entry
  * that doesn't parse gives just the op name.
  */
 export const describeOp = (entry: { readonly op: string; readonly [k: string]: unknown }): string => {

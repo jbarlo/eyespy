@@ -363,7 +363,7 @@ await idle();
 await top("objects");
 await page.dragAndDrop(`li:has(> button.obj-row[data-obj="${o2}"])`, `li:has(> button.obj-row[data-obj="${o1}"])`);
 await page.waitForSelector("dialog[open]");
-assert.match((await page.textContent("dialog[open]"))!, new RegExp(`Merge ${o2} .* into ${o1}`));
+assert.match((await page.textContent("dialog[open]"))!, new RegExp(`Merge .*${o2} into .*${o1}`));
 await page.click("dialog[open] button.primary");
 await idle();
 objs = (await api("data.objects")).objects;
@@ -410,7 +410,7 @@ const boxesOf = (ids: string[]) =>
     );
   }, ids) as Promise<Record<string, [number, number, number, number]>>;
 
-// the engine never reuses object ids. o2 was merged away, and o1 deleted and restored, so the next object is o3.
+// the engine never reuses object ids. o2 was merged away, and o1 deleted and restored, so the next object is new.
 step("new object id after merge/delete");
 let todo = await frameWithTodo(1);
 await page.evaluate((id) => window.eyespyUI.select([id]), must(todo[0], "an unassigned region"));
@@ -418,9 +418,14 @@ await page.fill('input[aria-label="New object label"]', `${PROMPT} C`);
 await page.click('form.inline button[type=submit]:has-text("New object")');
 await idle();
 objs = (await api("data.objects")).objects;
-assert.deepEqual(objs.map((x: { id: string }) => x.id).sort(), [o1, "o3"], "the new object is o3, not the freed o2");
-assert.ok(await page.$('button.obj-row[data-obj="o3"]'));
-step(`new object o3 (o2 not reused)`);
+assert.equal(objs.length, 2);
+const o3 = must(
+  objs.find((x: { id: string }) => x.id !== o1),
+  "the new object",
+).id;
+assert.notEqual(o3, o2, "the new object does not take the freed id");
+assert.ok(await page.$(`button.obj-row[data-obj="${o3}"]`));
+step(`new object ${o3} (${o2} not reused)`);
 
 step("rect select (drag)");
 todo = await frameWithTodo(2);
@@ -483,7 +488,7 @@ const o1members: readonly string[] = must(
 const victim = must(o1members[0], `a member of ${o1}`);
 await page.evaluate((id) => window.eyespyUI.setFrame(Number(id.split(".")[0])), victim);
 await page.evaluate((id) => window.eyespyUI.select([id]), victim);
-await page.click(`button:has-text("Remove from ${o1}")`);
+await page.click(`button:has-text("Remove from"):has-text("${o1}")`);
 await idle();
 const after1 = (await api("data.objects")).objects.find((x) => x.id === o1);
 assert.ok(!after1?.members.some((m) => m === victim), `${victim} left ${o1}`);
@@ -494,15 +499,15 @@ await page.click("#panel-console > summary");
 await page.fill('#panel-console input[aria-label="Op"]', "obj.label");
 await page.fill(
   '#panel-console textarea[aria-label="Input JSON"]',
-  JSON.stringify({ obj: "o3", label: `${PROMPT} (console)` }),
+  JSON.stringify({ obj: o3, label: `${PROMPT} (console)` }),
 );
 await page.click('#panel-console button:has-text("Run")');
 await idle();
 await page.waitForSelector("#panel-console pre.console-out");
 const out = JSON.parse((await page.textContent("#panel-console pre.console-out"))!);
-assert.equal(out.id, "o3");
+assert.equal(out.id, o3);
 assert.equal(out.label, `${PROMPT} (console)`);
-assert.equal((await api("data.objects")).objects.find((x) => x.id === "o3")?.label, `${PROMPT} (console)`);
+assert.equal((await api("data.objects")).objects.find((x) => x.id === o3)?.label, `${PROMPT} (console)`);
 await page.fill('#panel-console input[aria-label="Op"]', "obj.nope");
 await page.click('#panel-console button:has-text("Run")');
 await idle();
@@ -514,7 +519,7 @@ await page.waitForFunction(
 await top("console");
 await snap(
   "console",
-  "Console: any router op as JSON (here obj.label on o3); the reply shows below, errors (an unknown op) as a toast.",
+  "Console: any router op as JSON (here obj.label on the third object); the reply shows below, errors (an unknown op) as a toast.",
 );
 await page.evaluate(() => {
   for (const b of document.querySelectorAll<HTMLButtonElement>('button[aria-label="Dismiss error"]')) b.click();
@@ -542,7 +547,7 @@ if (o.second) {
   const secondDet = secondDets[0];
   if (secondDet) {
     o4 = (await api("obj.new", { label: "only in the second clip", ids: [secondDet.id] })).id;
-    assert.equal(o4, "o4");
+    assert.ok(o4 !== o1 && o4 !== o2 && o4 !== o3, "a fresh id");
     await ui(() => window.eyespyUI.refresh());
     await page.waitForFunction(() => window.eyespyUI.state().clips?.[1]?.objects === 1, null, { timeout: 30_000 }); // the open panel follows edits
   }

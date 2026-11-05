@@ -229,3 +229,36 @@ test("label, todo, history, manifest", () => {
   assert.equal(reply.manifest({ ...manifest, items: [] }), "(no objects yet)");
   assert.equal(reply.exported(manifest, "/w/e.json"), "wrote 1 objects to /w/e.json");
 });
+
+test("word-pair ids: rows stay aligned, whichever id format they hold", () => {
+  const word = { ...OBJ, id: "orderly-dolphin" } as Obj;
+  assert.ok(objLine(word).startsWith("orderly-dolphin  glass jar  ("), "a lone row just has its id");
+  const manifest: Outputs["manifest"] = {
+    meta: {} as never,
+    items: [{ label: "glass jar", count: 2 }],
+    objects: [OBJ, word, EMPTY_OBJ],
+    image: null,
+  };
+  const rows = reply.manifest(manifest).split("\n").slice(2);
+  assert.deepEqual(
+    rows.map((r) => r.indexOf("glass jar")),
+    [17, 17, 17],
+  );
+  assert.ok(rows[0]?.startsWith("o1               glass jar"));
+  const match: Outputs["obj.match"] = {
+    ids: ["1.0"] as never,
+    current: [],
+    matches: [
+      { obj: "o1", label: "jar", sim: 0.9, closest: "1.0", closest_sim: 0.9, sightings: 2 },
+      { obj: "dreamy-jay", label: "tub", sim: 0.8, closest: "1.1", closest_sim: 0.8, sightings: 1 },
+    ] as never,
+  };
+  assert.deepEqual(
+    reply
+      .objMatch(match)
+      .split("\n")
+      .map((r) => r.indexOf(" sim ")),
+    [10, 10],
+  );
+  assert.ok(reply.objMatch(match).startsWith("o1         sim 0.90"));
+});

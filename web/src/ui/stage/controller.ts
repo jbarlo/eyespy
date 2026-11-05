@@ -6,7 +6,7 @@
  */
 import type { StoreApi } from "zustand/vanilla";
 import type { App, Box, Det, StageHandle, StageStats } from "../../state/index.ts";
-import { computeVisible, refKey, REJECTED } from "../../state/index.ts";
+import { computeVisible, objName, refKey, REJECTED } from "../../state/index.ts";
 import { drawScene, fillBand, sameScene, sizeCanvas } from "./draw.ts";
 import type { Scene } from "./draw.ts";
 import { toolOf } from "./tools.ts";
@@ -223,7 +223,7 @@ export function createStageController(o: {
         x: e.clientX - r.left + 14,
         y: e.clientY - r.top + 14,
         lines: [
-          o ? `${o.id} · ${o.label}` : p.object === REJECTED ? "rejected" : "unassigned",
+          o ? objName(o) : p.object === REJECTED ? "rejected" : "unassigned",
           `${p.id} · “${p.prompt}” · score ${p.score.toFixed(2)}`,
         ],
       },

@@ -6,6 +6,10 @@ import { detectionsOf } from "../context.ts";
 import { saveSheet } from "../pictures.ts";
 import { countsOf } from "../replies.ts";
 
+/** `id label`. The tile fits about 32 characters, and a long id leaves the label less room. */
+const tileCaption = (o: { readonly id: string; readonly label: string }): string =>
+  `${o.id} ${[...o.label].slice(0, Math.min(22, 31 - o.id.length)).join("")}`;
+
 export const exportOps = (k: Kit): Session["export"] => ({
   manifest: (ctx, req) => {
     const { labelling, video, perception } = k.modules;
@@ -28,15 +32,7 @@ export const exportOps = (k: Kit): Session["export"] => ({
             ? detectionsOf(
                 k,
                 objs.flatMap((o) => (o.best === null ? [] : [o.best])),
-              ).asyncAndThen((best) =>
-                saveSheet(
-                  k,
-                  best,
-                  "manifest",
-                  objs.map((o) => `${o.id} ${[...o.label].slice(0, 22).join("")}`),
-                  null,
-                ),
-              )
+              ).asyncAndThen((best) => saveSheet(k, best, "manifest", objs.map(tileCaption), null))
             : okAsync(null);
         // `first` is the clip's first global keyframe index, since detection ids are "frame.n". Removed clips are
         // left out, and so is a clip without keyframes, which only a hand-edited session.json can have.

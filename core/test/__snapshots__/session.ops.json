@@ -5821,16 +5821,16 @@
    ]
   },
   "ops": [
-   "{\"ts\": 1767323121.508, \"op\": \"new\", \"obj\": \"o1\", \"label\": \"red jar\", \"ids\": [\"0.0\", \"0.3\", \"1.0\", \"1.3\", \"1.5\"], \"diff\": {\"o1\": {\"from\": null, \"to\": \"red jar\", \"add\": [\"0.0\", \"0.3\", \"1.0\", \"1.3\", \"1.5\"]}}}"
+   "{\"ts\": 1767323121.508, \"op\": \"new\", \"obj\": \"orderly-dolphin\", \"label\": \"red jar\", \"ids\": [\"0.0\", \"0.3\", \"1.0\", \"1.3\", \"1.5\"], \"diff\": {\"orderly-dolphin\": {\"from\": null, \"to\": \"red jar\", \"add\": [\"0.0\", \"0.3\", \"1.0\", \"1.3\", \"1.5\"]}}}"
   ],
   "files": {
-   "objects.json": "15e4bde2816bb856 161",
-   "ops.jsonl": "72556dc8b99d3e9f 206",
+   "objects.json": "d57675739159930e 174",
+   "ops.jsonl": "0240b8d776f48ce4 232",
    "session.json": "4acecacc61d16206 557"
   },
   "texts": [],
   "output": {
-   "id": "o1",
+   "id": "orderly-dolphin",
    "label": "red jar",
    "sightings": 2,
    "members": [
@@ -5851,22 +5851,22 @@
  },
  "063 obj.add": {
   "input": {
-   "obj": "o1",
+   "obj": "orderly-dolphin",
    "ids": [
     "2.0",
     "3.0"
    ]
   },
   "ops": [
-   "{\"ts\": 1767323122.742, \"op\": \"add\", \"obj\": \"o1\", \"ids\": [\"2.0\", \"2.3\", \"3.0\", \"3.1\"], \"diff\": {\"o1\": {\"add\": [\"2.0\", \"2.3\", \"3.0\", \"3.1\"]}}}"
+   "{\"ts\": 1767323122.742, \"op\": \"add\", \"obj\": \"orderly-dolphin\", \"ids\": [\"2.0\", \"2.3\", \"3.0\", \"3.1\"], \"diff\": {\"orderly-dolphin\": {\"add\": [\"2.0\", \"2.3\", \"3.0\", \"3.1\"]}}}"
   ],
   "files": {
-   "objects.json": "cc06d97a7dc90631 201",
-   "ops.jsonl": "f91c38ca2a47aeda 347"
+   "objects.json": "56f122b3b5dbe430 214",
+   "ops.jsonl": "a2877a9cd641618e 399"
   },
   "texts": [],
   "output": {
-   "id": "o1",
+   "id": "orderly-dolphin",
    "label": "red jar",
    "sightings": 4,
    "members": [
@@ -5891,21 +5891,21 @@
  },
  "064 obj.remove": {
   "input": {
-   "obj": "o1",
+   "obj": "orderly-dolphin",
    "ids": [
     "3.0"
    ]
   },
   "ops": [
-   "{\"ts\": 1767323123.976, \"op\": \"remove\", \"obj\": \"o1\", \"ids\": [\"3.0\", \"3.1\"], \"diff\": {\"o1\": {\"remove\": [\"3.0\", \"3.1\"]}}}"
+   "{\"ts\": 1767323123.976, \"op\": \"remove\", \"obj\": \"orderly-dolphin\", \"ids\": [\"3.0\", \"3.1\"], \"diff\": {\"orderly-dolphin\": {\"remove\": [\"3.0\", \"3.1\"]}}}"
   ],
   "files": {
-   "objects.json": "9b767420c58bd830 181",
-   "ops.jsonl": "b04e96dd0ff4983b 466"
+   "objects.json": "b82889259334001a 194",
+   "ops.jsonl": "f686a48e084ab676 544"
   },
   "texts": [],
   "output": {
-   "id": "o1",
+   "id": "orderly-dolphin",
    "label": "red jar",
    "sightings": 3,
    "members": [
@@ -5934,16 +5934,16 @@
    ]
   },
   "ops": [
-   "{\"ts\": 1767323125.21, \"op\": \"new\", \"obj\": \"o2\", \"label\": \"orange jar\", \"ids\": [\"0.1\", \"0.4\"], \"diff\": {\"o2\": {\"from\": null, \"to\": \"orange jar\", \"add\": [\"0.1\", \"0.4\"]}}}"
+   "{\"ts\": 1767323125.21, \"op\": \"new\", \"obj\": \"dreamy-jay\", \"label\": \"orange jar\", \"ids\": [\"0.1\", \"0.4\"], \"diff\": {\"dreamy-jay\": {\"from\": null, \"to\": \"orange jar\", \"add\": [\"0.1\", \"0.4\"]}}}"
   ],
   "files": {
-   "objects.json": "e9b357db179c6778 257",
-   "ops.jsonl": "7b3a13f2f330dae9 635",
+   "objects.json": "0880d51357e73781 278",
+   "ops.jsonl": "7e67e7e0ea77024d 729",
    "session.json": "07a07fa3a20d8531 557"
   },
   "texts": [],
   "output": {
-   "id": "o2",
+   "id": "dreamy-jay",
    "label": "orange jar",
    "sightings": 1,
    "members": [
@@ -5961,19 +5961,19 @@
  },
  "066 obj.label unicode": {
   "input": {
-   "obj": "o2",
+   "obj": "dreamy-jay",
    "label": "второй jar (café)"
   },
   "ops": [
-   "{\"ts\": 1767323126.444, \"op\": \"label\", \"obj\": \"o2\", \"label\": \"второй jar (café)\", \"diff\": {\"o2\": {\"from\": \"orange jar\", \"to\": \"второй jar (café)\"}}}"
+   "{\"ts\": 1767323126.444, \"op\": \"label\", \"obj\": \"dreamy-jay\", \"label\": \"второй jar (café)\", \"diff\": {\"dreamy-jay\": {\"from\": \"orange jar\", \"to\": \"второй jar (café)\"}}}"
   ],
   "files": {
-   "objects.json": "742fe20add9a8242 271",
-   "ops.jsonl": "789853b8c556a596 797"
+   "objects.json": "6ce2b5d7ed54c412 292",
+   "ops.jsonl": "9ef131ece5a5246f 907"
   },
   "texts": [],
   "output": {
-   "id": "o2",
+   "id": "dreamy-jay",
    "label": "второй jar (café)",
    "sightings": 1,
    "members": [
@@ -5998,16 +5998,16 @@
    ]
   },
   "ops": [
-   "{\"ts\": 1767323127.678, \"op\": \"new\", \"obj\": \"o3\", \"label\": \"tmp\", \"ids\": [\"1.1\", \"1.4\", \"0.1\", \"0.4\"], \"diff\": {\"o2\": {\"remove\": [\"0.1\", \"0.4\"]}, \"o3\": {\"from\": null, \"to\": \"tmp\", \"add\": [\"1.1\", \"1.4\", \"0.1\", \"0.4\"]}}}"
+   "{\"ts\": 1767323127.678, \"op\": \"new\", \"obj\": \"sunny-osprey\", \"label\": \"tmp\", \"ids\": [\"1.1\", \"1.4\", \"0.1\", \"0.4\"], \"diff\": {\"dreamy-jay\": {\"remove\": [\"0.1\", \"0.4\"]}, \"sunny-osprey\": {\"from\": null, \"to\": \"tmp\", \"add\": [\"1.1\", \"1.4\", \"0.1\", \"0.4\"]}}}"
   ],
   "files": {
-   "objects.json": "cc815916a3c145bd 338",
-   "ops.jsonl": "324675189e652fe0 1015",
+   "objects.json": "b45eb222c7d13fa2 369",
+   "ops.jsonl": "0fb5d52c28f1d0ee 1153",
    "session.json": "0a95e89ed71368fa 557"
   },
   "texts": [],
   "output": {
-   "id": "o3",
+   "id": "sunny-osprey",
    "label": "tmp",
    "sightings": 2,
    "members": [
@@ -6027,19 +6027,19 @@
  },
  "068 obj.merge": {
   "input": {
-   "into": "o2",
-   "from": "o3"
+   "into": "dreamy-jay",
+   "from": "sunny-osprey"
   },
   "ops": [
-   "{\"ts\": 1767323128.912, \"op\": \"merge\", \"into\": \"o2\", \"from\": \"o3\", \"diff\": {\"o2\": {\"add\": [\"1.1\", \"1.4\", \"0.1\", \"0.4\"]}, \"o3\": {\"from\": \"tmp\", \"to\": null, \"remove\": [\"1.1\", \"1.4\", \"0.1\", \"0.4\"]}}}"
+   "{\"ts\": 1767323128.912, \"op\": \"merge\", \"into\": \"dreamy-jay\", \"from\": \"sunny-osprey\", \"diff\": {\"dreamy-jay\": {\"add\": [\"1.1\", \"1.4\", \"0.1\", \"0.4\"]}, \"sunny-osprey\": {\"from\": \"tmp\", \"to\": null, \"remove\": [\"1.1\", \"1.4\", \"0.1\", \"0.4\"]}}}"
   ],
   "files": {
-   "objects.json": "5d7543f3f474be76 291",
-   "ops.jsonl": "25a29d9fdc83724b 1211"
+   "objects.json": "926629297b7cf611 312",
+   "ops.jsonl": "6d7265595767feed 1385"
   },
   "texts": [],
   "output": {
-   "id": "o2",
+   "id": "dreamy-jay",
    "label": "второй jar (café)",
    "sightings": 2,
    "members": [
@@ -6066,16 +6066,16 @@
    ]
   },
   "ops": [
-   "{\"ts\": 1767323130.146, \"op\": \"new\", \"obj\": \"o4\", \"label\": \"box\", \"ids\": [\"3.2\", \"3.3\", \"4.2\", \"4.3\"], \"diff\": {\"o4\": {\"from\": null, \"to\": \"box\", \"add\": [\"3.2\", \"3.3\", \"4.2\", \"4.3\"]}}}"
+   "{\"ts\": 1767323130.146, \"op\": \"new\", \"obj\": \"inner-tapir\", \"label\": \"box\", \"ids\": [\"3.2\", \"3.3\", \"4.2\", \"4.3\"], \"diff\": {\"inner-tapir\": {\"from\": null, \"to\": \"box\", \"add\": [\"3.2\", \"3.3\", \"4.2\", \"4.3\"]}}}"
   ],
   "files": {
-   "objects.json": "83cdd4598ae14b3a 380",
-   "ops.jsonl": "c03f0f253772ad8f 1395",
+   "objects.json": "f59979be367b5746 410",
+   "ops.jsonl": "06173522ee6a936c 1587",
    "session.json": "74a88e972a941d9b 557"
   },
   "texts": [],
   "output": {
-   "id": "o4",
+   "id": "inner-tapir",
    "label": "box",
    "sightings": 2,
    "members": [
@@ -6095,27 +6095,27 @@
  },
  "070 obj.delete": {
   "input": {
-   "obj": "o4"
+   "obj": "inner-tapir"
   },
   "ops": [
-   "{\"ts\": 1767323131.38, \"op\": \"delete\", \"obj\": \"o4\", \"diff\": {\"o4\": {\"from\": \"box\", \"to\": null, \"remove\": [\"3.2\", \"3.3\", \"4.2\", \"4.3\"]}}}"
+   "{\"ts\": 1767323131.38, \"op\": \"delete\", \"obj\": \"inner-tapir\", \"diff\": {\"inner-tapir\": {\"from\": \"box\", \"to\": null, \"remove\": [\"3.2\", \"3.3\", \"4.2\", \"4.3\"]}}}"
   ],
   "files": {
-   "objects.json": "5d7543f3f474be76 291",
-   "ops.jsonl": "b4d2d53f2daf0337 1531"
+   "objects.json": "926629297b7cf611 312",
+   "ops.jsonl": "27fccce356673aee 1741"
   },
   "texts": [],
   "output": {
-   "deleted": "o4"
+   "deleted": "inner-tapir"
   }
  },
  "071 obj.show": {
   "input": {
-   "obj": "o1"
+   "obj": "orderly-dolphin"
   },
   "ops": [],
   "files": {
-   "out/obj-o1.jpg": "3a775d5778160ed6 31438"
+   "out/obj-orderly-dolphin.jpg": "3a775d5778160ed6 31438"
   },
   "texts": [
    "0.0 0.0s 0.94",
@@ -6123,7 +6123,7 @@
    "2.0 1.0s 0.94"
   ],
   "output": {
-   "id": "o1",
+   "id": "orderly-dolphin",
    "label": "red jar",
    "sightings": 3,
    "members": [
@@ -6144,7 +6144,7 @@
    },
    "total": 3,
    "offset": 0,
-   "image": "out/obj-o1.jpg",
+   "image": "out/obj-orderly-dolphin.jpg",
    "hits": [
     {
      "id": "0.0",
@@ -6161,7 +6161,7 @@
       80
      ],
      "area": 2000,
-     "object": "o1"
+     "object": "orderly-dolphin"
     },
     {
      "id": "1.0",
@@ -6178,7 +6178,7 @@
       80
      ],
      "area": 2000,
-     "object": "o1"
+     "object": "orderly-dolphin"
     },
     {
      "id": "2.0",
@@ -6195,26 +6195,26 @@
       80
      ],
      "area": 2000,
-     "object": "o1"
+     "object": "orderly-dolphin"
     }
    ]
   }
  },
  "072 obj.show frames": {
   "input": {
-   "obj": "o1",
+   "obj": "orderly-dolphin",
    "frames": "0-1"
   },
   "ops": [],
   "files": {
-   "out/obj-o1.jpg": "1cd2e4b5f8a96fd2 22365"
+   "out/obj-orderly-dolphin.jpg": "1cd2e4b5f8a96fd2 22365"
   },
   "texts": [
    "0.0 0.0s 0.94",
    "1.0 0.2s 0.94"
   ],
   "output": {
-   "id": "o1",
+   "id": "orderly-dolphin",
    "label": "red jar",
    "sightings": 3,
    "members": [
@@ -6235,7 +6235,7 @@
    },
    "total": 2,
    "offset": 0,
-   "image": "out/obj-o1.jpg",
+   "image": "out/obj-orderly-dolphin.jpg",
    "hits": [
     {
      "id": "0.0",
@@ -6252,7 +6252,7 @@
       80
      ],
      "area": 2000,
-     "object": "o1"
+     "object": "orderly-dolphin"
     },
     {
      "id": "1.0",
@@ -6269,26 +6269,26 @@
       80
      ],
      "area": 2000,
-     "object": "o1"
+     "object": "orderly-dolphin"
     }
    ]
   }
  },
  "073 obj.show offset": {
   "input": {
-   "obj": "o1",
+   "obj": "orderly-dolphin",
    "offset": 1
   },
   "ops": [],
   "files": {
-   "out/obj-o1.jpg": "81d9b446d8b889e6 21517"
+   "out/obj-orderly-dolphin.jpg": "81d9b446d8b889e6 21517"
   },
   "texts": [
    "1.0 0.2s 0.94",
    "2.0 1.0s 0.94"
   ],
   "output": {
-   "id": "o1",
+   "id": "orderly-dolphin",
    "label": "red jar",
    "sightings": 3,
    "members": [
@@ -6309,7 +6309,7 @@
    },
    "total": 3,
    "offset": 1,
-   "image": "out/obj-o1.jpg",
+   "image": "out/obj-orderly-dolphin.jpg",
    "hits": [
     {
      "id": "1.0",
@@ -6326,7 +6326,7 @@
       80
      ],
      "area": 2000,
-     "object": "o1"
+     "object": "orderly-dolphin"
     },
     {
      "id": "2.0",
@@ -6343,21 +6343,21 @@
       80
      ],
      "area": 2000,
-     "object": "o1"
+     "object": "orderly-dolphin"
     }
    ]
   }
  },
  "074 obj.suggest": {
   "input": {
-   "obj": "o1"
+   "obj": "orderly-dolphin"
   },
   "ops": [],
   "files": {
-   "out/suggest-o1.jpg": "de6f57a0910d8dc8 85713"
+   "out/suggest-orderly-dolphin.jpg": "de6f57a0910d8dc8 85713"
   },
   "texts": [
-   "o1 best=1.5",
+   "orderly-dolphin best=1.5",
    "3.0 0.0s sim 0.99",
    "4.0 0.6s sim 0.99",
    "5.0 1.6s sim 0.99",
@@ -6369,7 +6369,7 @@
   ],
   "output": {
    "query": {
-    "id": "o1",
+    "id": "orderly-dolphin",
     "label": "red jar",
     "sightings": 3,
     "members": [
@@ -6389,7 +6389,7 @@
      "container": 0.908
     }
    },
-   "image": "out/suggest-o1.jpg",
+   "image": "out/suggest-orderly-dolphin.jpg",
    "matches": [
     {
      "id": "3.0",
@@ -6532,22 +6532,22 @@
  },
  "075 obj.suggest k threshold": {
   "input": {
-   "obj": "o2",
+   "obj": "dreamy-jay",
    "k": 2,
    "threshold": 0.3
   },
   "ops": [],
   "files": {
-   "out/suggest-o2.jpg": "7087988116584748 23227"
+   "out/suggest-dreamy-jay.jpg": "7087988116584748 23227"
   },
   "texts": [
-   "o2 best=1.1",
+   "dreamy-jay best=1.1",
    "2.1 1.0s sim 1.00",
    "2.4 1.0s sim 1.00"
   ],
   "output": {
    "query": {
-    "id": "o2",
+    "id": "dreamy-jay",
     "label": "второй jar (café)",
     "sightings": 2,
     "members": [
@@ -6564,7 +6564,7 @@
      "container": 0.865
     }
    },
-   "image": "out/suggest-o2.jpg",
+   "image": "out/suggest-dreamy-jay.jpg",
    "matches": [
     {
      "id": "2.1",
@@ -6619,7 +6619,7 @@
    "current": [],
    "matches": [
     {
-     "obj": "o1",
+     "obj": "orderly-dolphin",
      "label": "red jar",
      "sim": 0.994,
      "closest": "0.0",
@@ -6627,7 +6627,7 @@
      "sightings": 3
     },
     {
-     "obj": "o2",
+     "obj": "dreamy-jay",
      "label": "второй jar (café)",
      "sim": 0.559,
      "closest": "1.1",
@@ -6654,11 +6654,11 @@
     "4.0"
    ],
    "current": [
-    "o1"
+    "orderly-dolphin"
    ],
    "matches": [
     {
-     "obj": "o1",
+     "obj": "orderly-dolphin",
      "label": "red jar",
      "sim": 0.987,
      "closest": "1.0",
@@ -6678,8 +6678,8 @@
    "{\"ts\": 1767323141.252, \"op\": \"reject\", \"ids\": [\"5.2\", \"5.3\"], \"diff\": {\"x\": {\"add\": [\"5.2\", \"5.3\"]}}}"
   ],
   "files": {
-   "objects.json": "3583b7dd23fb4549 313",
-   "ops.jsonl": "9bd775869c75ffdd 1633"
+   "objects.json": "5f38be9b87602707 334",
+   "ops.jsonl": "4ac888c6eea0f019 1843"
   },
   "texts": [],
   "output": {
@@ -6696,11 +6696,11 @@
    ]
   },
   "ops": [
-   "{\"ts\": 1767323142.486, \"op\": \"reject\", \"ids\": [\"1.1\", \"1.4\"], \"diff\": {\"x\": {\"add\": [\"1.1\", \"1.4\"]}, \"o2\": {\"remove\": [\"1.1\", \"1.4\"]}}}"
+   "{\"ts\": 1767323142.486, \"op\": \"reject\", \"ids\": [\"1.1\", \"1.4\"], \"diff\": {\"x\": {\"add\": [\"1.1\", \"1.4\"]}, \"dreamy-jay\": {\"remove\": [\"1.1\", \"1.4\"]}}}"
   ],
   "files": {
-   "objects.json": "f13974aee5d7c84d 313",
-   "ops.jsonl": "3992378960014234 1769"
+   "objects.json": "9e930c25a4106fe9 334",
+   "ops.jsonl": "9fb3c24c816c4003 1987"
   },
   "texts": [],
   "output": {
@@ -6718,8 +6718,8 @@
    "{\"ts\": 1767323143.72, \"op\": \"reject\", \"ids\": [\"0.5\"], \"diff\": {\"x\": {\"add\": [\"0.5\"]}}}"
   ],
   "files": {
-   "objects.json": "45eb5123f6651dcf 323",
-   "ops.jsonl": "f364834d10395d42 1856"
+   "objects.json": "7c263eb229b9f149 344",
+   "ops.jsonl": "88eff03fb2ba520a 2074"
   },
   "texts": [],
   "output": {
@@ -6743,15 +6743,15 @@
   },
   "ops": [],
   "files": {
-   "out/show.jpg": "9b41cb2a5b658e2f 3361"
+   "out/show.jpg": "076ebd3c7d6bd5cb 3350"
   },
   "texts": [
-   "o1 red jar",
-   "o2 второй jar (café)",
+   "orderly-dolphin red jar",
+   "dreamy-jay второй jar (café)",
    "#0 kitchen 0.0s",
-   "o1 red jar",
+   "orderly-dolphin red jar",
    "#1 kitchen 0.2s",
-   "o1 red jar",
+   "orderly-dolphin red jar",
    "#2 kitchen 1.0s",
    "#3 pantry 0.0s",
    "#4 pantry 0.6s",
@@ -6775,7 +6775,7 @@
       80
      ],
      "area": 2000,
-     "object": "o1"
+     "object": "orderly-dolphin"
     },
     {
      "id": "0.1",
@@ -6792,7 +6792,7 @@
       90
      ],
      "area": 1500,
-     "object": "o2"
+     "object": "dreamy-jay"
     },
     {
      "id": "1.0",
@@ -6809,7 +6809,7 @@
       80
      ],
      "area": 2000,
-     "object": "o1"
+     "object": "orderly-dolphin"
     },
     {
      "id": "2.0",
@@ -6826,7 +6826,7 @@
       80
      ],
      "area": 2000,
-     "object": "o1"
+     "object": "orderly-dolphin"
     }
    ]
   }
@@ -7788,7 +7788,7 @@
     {
      "ts": 1767323121.508,
      "op": "new",
-     "obj": "o1",
+     "obj": "orderly-dolphin",
      "label": "red jar",
      "ids": [
       "0.0",
@@ -7801,13 +7801,13 @@
      "undoable": true,
      "undone": false,
      "objects": [
-      "o1"
+      "orderly-dolphin"
      ]
     },
     {
      "ts": 1767323122.742,
      "op": "add",
-     "obj": "o1",
+     "obj": "orderly-dolphin",
      "ids": [
       "2.0",
       "2.3",
@@ -7818,13 +7818,13 @@
      "undoable": true,
      "undone": false,
      "objects": [
-      "o1"
+      "orderly-dolphin"
      ]
     },
     {
      "ts": 1767323123.976,
      "op": "remove",
-     "obj": "o1",
+     "obj": "orderly-dolphin",
      "ids": [
       "3.0",
       "3.1"
@@ -7833,13 +7833,13 @@
      "undoable": true,
      "undone": false,
      "objects": [
-      "o1"
+      "orderly-dolphin"
      ]
     },
     {
      "ts": 1767323125.21,
      "op": "new",
-     "obj": "o2",
+     "obj": "dreamy-jay",
      "label": "orange jar",
      "ids": [
       "0.1",
@@ -7849,25 +7849,25 @@
      "undoable": true,
      "undone": false,
      "objects": [
-      "o2"
+      "dreamy-jay"
      ]
     },
     {
      "ts": 1767323126.444,
      "op": "label",
-     "obj": "o2",
+     "obj": "dreamy-jay",
      "label": "второй jar (café)",
      "seq": 4,
      "undoable": true,
      "undone": false,
      "objects": [
-      "o2"
+      "dreamy-jay"
      ]
     },
     {
      "ts": 1767323127.678,
      "op": "new",
-     "obj": "o3",
+     "obj": "sunny-osprey",
      "label": "tmp",
      "ids": [
       "1.1",
@@ -7879,27 +7879,27 @@
      "undoable": true,
      "undone": false,
      "objects": [
-      "o2",
-      "o3"
+      "dreamy-jay",
+      "sunny-osprey"
      ]
     },
     {
      "ts": 1767323128.912,
      "op": "merge",
-     "into": "o2",
-     "from": "o3",
+     "into": "dreamy-jay",
+     "from": "sunny-osprey",
      "seq": 6,
      "undoable": true,
      "undone": false,
      "objects": [
-      "o2",
-      "o3"
+      "dreamy-jay",
+      "sunny-osprey"
      ]
     },
     {
      "ts": 1767323130.146,
      "op": "new",
-     "obj": "o4",
+     "obj": "inner-tapir",
      "label": "box",
      "ids": [
       "3.2",
@@ -7911,18 +7911,18 @@
      "undoable": true,
      "undone": false,
      "objects": [
-      "o4"
+      "inner-tapir"
      ]
     },
     {
      "ts": 1767323131.38,
      "op": "delete",
-     "obj": "o4",
+     "obj": "inner-tapir",
      "seq": 8,
      "undoable": true,
      "undone": false,
      "objects": [
-      "o4"
+      "inner-tapir"
      ]
     },
     {
@@ -7951,7 +7951,7 @@
      "undone": false,
      "objects": [
       "x",
-      "o2"
+      "dreamy-jay"
      ]
     },
     {
@@ -7990,8 +7990,8 @@
    "{\"ts\": 1767323164.698, \"op\": \"undo\", \"of\": 11, \"diff\": {\"x\": {\"remove\": [\"0.5\"]}}}"
   ],
   "files": {
-   "objects.json": "f13974aee5d7c84d 313",
-   "ops.jsonl": "0ebef64231aba765 1939"
+   "objects.json": "9e930c25a4106fe9 334",
+   "ops.jsonl": "4bc557741a9ad010 2157"
   },
   "texts": [],
   "output": {
@@ -8019,8 +8019,8 @@
    "{\"ts\": 1767323165.932, \"op\": \"redo\", \"of\": 11, \"diff\": {\"x\": {\"add\": [\"0.5\"]}}}"
   ],
   "files": {
-   "objects.json": "45eb5123f6651dcf 323",
-   "ops.jsonl": "114b2ecd4f95e8eb 2019"
+   "objects.json": "7c263eb229b9f149 344",
+   "ops.jsonl": "09178d7bf3d3e863 2237"
   },
   "texts": [],
   "output": {
@@ -8049,7 +8049,7 @@
     {
      "ts": 1767323121.508,
      "op": "new",
-     "obj": "o1",
+     "obj": "orderly-dolphin",
      "label": "red jar",
      "ids": [
       "0.0",
@@ -8062,13 +8062,13 @@
      "undoable": true,
      "undone": false,
      "objects": [
-      "o1"
+      "orderly-dolphin"
      ]
     },
     {
      "ts": 1767323122.742,
      "op": "add",
-     "obj": "o1",
+     "obj": "orderly-dolphin",
      "ids": [
       "2.0",
       "2.3",
@@ -8079,13 +8079,13 @@
      "undoable": true,
      "undone": false,
      "objects": [
-      "o1"
+      "orderly-dolphin"
      ]
     },
     {
      "ts": 1767323123.976,
      "op": "remove",
-     "obj": "o1",
+     "obj": "orderly-dolphin",
      "ids": [
       "3.0",
       "3.1"
@@ -8094,13 +8094,13 @@
      "undoable": true,
      "undone": false,
      "objects": [
-      "o1"
+      "orderly-dolphin"
      ]
     },
     {
      "ts": 1767323125.21,
      "op": "new",
-     "obj": "o2",
+     "obj": "dreamy-jay",
      "label": "orange jar",
      "ids": [
       "0.1",
@@ -8110,25 +8110,25 @@
      "undoable": true,
      "undone": false,
      "objects": [
-      "o2"
+      "dreamy-jay"
      ]
     },
     {
      "ts": 1767323126.444,
      "op": "label",
-     "obj": "o2",
+     "obj": "dreamy-jay",
      "label": "второй jar (café)",
      "seq": 4,
      "undoable": true,
      "undone": false,
      "objects": [
-      "o2"
+      "dreamy-jay"
      ]
     },
     {
      "ts": 1767323127.678,
      "op": "new",
-     "obj": "o3",
+     "obj": "sunny-osprey",
      "label": "tmp",
      "ids": [
       "1.1",
@@ -8140,27 +8140,27 @@
      "undoable": true,
      "undone": false,
      "objects": [
-      "o2",
-      "o3"
+      "dreamy-jay",
+      "sunny-osprey"
      ]
     },
     {
      "ts": 1767323128.912,
      "op": "merge",
-     "into": "o2",
-     "from": "o3",
+     "into": "dreamy-jay",
+     "from": "sunny-osprey",
      "seq": 6,
      "undoable": true,
      "undone": false,
      "objects": [
-      "o2",
-      "o3"
+      "dreamy-jay",
+      "sunny-osprey"
      ]
     },
     {
      "ts": 1767323130.146,
      "op": "new",
-     "obj": "o4",
+     "obj": "inner-tapir",
      "label": "box",
      "ids": [
       "3.2",
@@ -8172,18 +8172,18 @@
      "undoable": true,
      "undone": false,
      "objects": [
-      "o4"
+      "inner-tapir"
      ]
     },
     {
      "ts": 1767323131.38,
      "op": "delete",
-     "obj": "o4",
+     "obj": "inner-tapir",
      "seq": 8,
      "undoable": true,
      "undone": false,
      "objects": [
-      "o4"
+      "inner-tapir"
      ]
     },
     {
@@ -8212,7 +8212,7 @@
      "undone": false,
      "objects": [
       "x",
-      "o2"
+      "dreamy-jay"
      ]
     },
     {
@@ -8260,19 +8260,19 @@
  },
  "100 new op clears redo": {
   "input": {
-   "obj": "o2",
+   "obj": "dreamy-jay",
    "label": "orange jar"
   },
   "ops": [
-   "{\"ts\": 1767323168.4, \"op\": \"label\", \"obj\": \"o2\", \"label\": \"orange jar\", \"diff\": {\"o2\": {\"from\": \"второй jar (café)\", \"to\": \"orange jar\"}}}"
+   "{\"ts\": 1767323168.4, \"op\": \"label\", \"obj\": \"dreamy-jay\", \"label\": \"orange jar\", \"diff\": {\"dreamy-jay\": {\"from\": \"второй jar (café)\", \"to\": \"orange jar\"}}}"
   ],
   "files": {
-   "objects.json": "993e3b1c0fcdd7bd 309",
-   "ops.jsonl": "b9c85ad6bed028f1 2165"
+   "objects.json": "d6ddc8471f0c8002 330",
+   "ops.jsonl": "2fc0ca07a4f4aea4 2399"
   },
   "texts": [],
   "output": {
-   "id": "o2",
+   "id": "dreamy-jay",
    "label": "orange jar",
    "sightings": 1,
    "members": [
@@ -8381,7 +8381,7 @@
    ],
    "objects": [
     {
-     "id": "o1",
+     "id": "orderly-dolphin",
      "label": "red jar",
      "sightings": 3,
      "members": [
@@ -8402,7 +8402,7 @@
      }
     },
     {
-     "id": "o2",
+     "id": "dreamy-jay",
      "label": "orange jar",
      "sightings": 1,
      "members": [
@@ -8430,8 +8430,8 @@
    "out/manifest.jpg": "b1af174a8ebb23f4 28273"
   },
   "texts": [
-   "o1 red jar",
-   "o2 orange jar"
+   "orderly-dolphin red jar",
+   "dreamy-jay orange jar"
   ],
   "output": {
    "meta": {
@@ -8511,7 +8511,7 @@
    ],
    "objects": [
     {
-     "id": "o1",
+     "id": "orderly-dolphin",
      "label": "red jar",
      "sightings": 3,
      "members": [
@@ -8532,7 +8532,7 @@
      }
     },
     {
-     "id": "o2",
+     "id": "dreamy-jay",
      "label": "orange jar",
      "sightings": 1,
      "members": [
@@ -8626,7 +8626,7 @@
       80
      ],
      "area": 2000,
-     "object": "o1"
+     "object": "orderly-dolphin"
     },
     {
      "id": "0.1",
@@ -8643,7 +8643,7 @@
       90
      ],
      "area": 1500,
-     "object": "o2"
+     "object": "dreamy-jay"
     }
    ]
   }
@@ -8778,7 +8778,7 @@
       80
      ],
      "area": 2000,
-     "object": "o1",
+     "object": "orderly-dolphin",
      "prompt": "jar",
      "run": "jar",
      "rejected": false,
@@ -8807,7 +8807,7 @@
       90
      ],
      "area": 1500,
-     "object": "o2",
+     "object": "dreamy-jay",
      "prompt": "jar",
      "run": "jar",
      "rejected": false,
@@ -8864,7 +8864,7 @@
       80
      ],
      "area": 2000,
-     "object": "o1",
+     "object": "orderly-dolphin",
      "prompt": "container",
      "run": "container",
      "rejected": false,
@@ -8893,7 +8893,7 @@
       90
      ],
      "area": 1500,
-     "object": "o2",
+     "object": "dreamy-jay",
      "prompt": "container",
      "run": "container",
      "rejected": false,
@@ -8951,7 +8951,7 @@
       80
      ],
      "area": 2000,
-     "object": "o1",
+     "object": "orderly-dolphin",
      "prompt": "jar",
      "run": "jar",
      "rejected": false,
@@ -9037,7 +9037,7 @@
       80
      ],
      "area": 2000,
-     "object": "o1",
+     "object": "orderly-dolphin",
      "prompt": "container",
      "run": "container",
      "rejected": false,
@@ -9095,7 +9095,7 @@
       80
      ],
      "area": 2800,
-     "object": "o1",
+     "object": "orderly-dolphin",
      "prompt": "jar",
      "run": "jar@10,20,90,90",
      "rejected": false,
@@ -9124,7 +9124,7 @@
       80
      ],
      "area": 2000,
-     "object": "o1",
+     "object": "orderly-dolphin",
      "prompt": "jar",
      "run": "jar",
      "rejected": false,
@@ -9209,7 +9209,7 @@
       80
      ],
      "area": 2000,
-     "object": "o1",
+     "object": "orderly-dolphin",
      "prompt": "container",
      "run": "container",
      "rejected": false,
@@ -9624,7 +9624,7 @@
       80
      ],
      "area": 2000,
-     "object": "o1",
+     "object": "orderly-dolphin",
      "prompt": "jar",
      "run": "jar",
      "rejected": false,
@@ -9650,7 +9650,7 @@
       90
      ],
      "area": 1500,
-     "object": "o2",
+     "object": "dreamy-jay",
      "prompt": "jar",
      "run": "jar",
      "rejected": false,
@@ -9701,7 +9701,7 @@
       80
      ],
      "area": 2000,
-     "object": "o1",
+     "object": "orderly-dolphin",
      "prompt": "container",
      "run": "container",
      "rejected": false,
@@ -9727,7 +9727,7 @@
       90
      ],
      "area": 1500,
-     "object": "o2",
+     "object": "dreamy-jay",
      "prompt": "container",
      "run": "container",
      "rejected": false,
@@ -9792,7 +9792,7 @@
       80
      ],
      "area": 2000,
-     "object": "o1",
+     "object": "orderly-dolphin",
      "prompt": "jar",
      "run": "jar",
      "rejected": false,
@@ -9818,7 +9818,7 @@
       90
      ],
      "area": 1500,
-     "object": "o2",
+     "object": "dreamy-jay",
      "prompt": "jar",
      "run": "jar",
      "rejected": false,
@@ -9869,7 +9869,7 @@
       80
      ],
      "area": 2000,
-     "object": "o1",
+     "object": "orderly-dolphin",
      "prompt": "container",
      "run": "container",
      "rejected": false,
@@ -9895,7 +9895,7 @@
       90
      ],
      "area": 1500,
-     "object": "o2",
+     "object": "dreamy-jay",
      "prompt": "container",
      "run": "container",
      "rejected": false,
@@ -9961,7 +9961,7 @@
       80
      ],
      "area": 2000,
-     "object": "o1",
+     "object": "orderly-dolphin",
      "prompt": "jar",
      "run": "jar",
      "rejected": false,
@@ -9985,7 +9985,7 @@
       90
      ],
      "area": 1500,
-     "object": "o2",
+     "object": "dreamy-jay",
      "prompt": "jar",
      "run": "jar",
      "rejected": false,
@@ -10030,7 +10030,7 @@
       80
      ],
      "area": 2000,
-     "object": "o1",
+     "object": "orderly-dolphin",
      "prompt": "jar",
      "run": "jar",
      "rejected": false,
@@ -10100,7 +10100,7 @@
       80
      ],
      "area": 2800,
-     "object": "o1",
+     "object": "orderly-dolphin",
      "prompt": "jar",
      "run": "jar@10,20,90,90",
      "rejected": false,
@@ -10125,7 +10125,7 @@
       80
      ],
      "area": 2000,
-     "object": "o1",
+     "object": "orderly-dolphin",
      "prompt": "jar",
      "run": "jar",
      "rejected": false,
@@ -10275,7 +10275,7 @@
       80
      ],
      "area": 2000,
-     "object": "o1",
+     "object": "orderly-dolphin",
      "prompt": "jar",
      "run": "jar",
      "rejected": false,
@@ -10296,7 +10296,7 @@
       80
      ],
      "area": 2000,
-     "object": "o1",
+     "object": "orderly-dolphin",
      "prompt": "container",
      "run": "container",
      "rejected": false,
@@ -10338,7 +10338,7 @@
       80
      ],
      "area": 2000,
-     "object": "o1",
+     "object": "orderly-dolphin",
      "prompt": "jar",
      "run": "jar",
      "rejected": false,
@@ -10359,7 +10359,7 @@
       80
      ],
      "area": 2000,
-     "object": "o1",
+     "object": "orderly-dolphin",
      "prompt": "container",
      "run": "container",
      "rejected": false,
@@ -10380,7 +10380,7 @@
       80
      ],
      "area": 2000,
-     "object": "o1",
+     "object": "orderly-dolphin",
      "prompt": "jar",
      "run": "jar",
      "rejected": false,
@@ -10401,7 +10401,7 @@
       80
      ],
      "area": 2000,
-     "object": "o1",
+     "object": "orderly-dolphin",
      "prompt": "container",
      "run": "container",
      "rejected": false,
@@ -10835,7 +10835,7 @@
   "output": {
    "objects": [
     {
-     "id": "o1",
+     "id": "orderly-dolphin",
      "label": "red jar",
      "sightings": 3,
      "members": [
@@ -10856,7 +10856,7 @@
      }
     },
     {
-     "id": "o2",
+     "id": "dreamy-jay",
      "label": "orange jar",
      "sightings": 1,
      "members": [
@@ -11083,21 +11083,21 @@
  },
  "122 obj.add extra det": {
   "input": {
-   "obj": "o1",
+   "obj": "orderly-dolphin",
    "ids": [
     "6.1"
    ]
   },
   "ops": [
-   "{\"ts\": 1767323195.548, \"op\": \"add\", \"obj\": \"o1\", \"ids\": [\"6.1\", \"6.0\"], \"diff\": {\"o1\": {\"add\": [\"6.1\", \"6.0\"]}}}"
+   "{\"ts\": 1767323195.548, \"op\": \"add\", \"obj\": \"orderly-dolphin\", \"ids\": [\"6.1\", \"6.0\"], \"diff\": {\"orderly-dolphin\": {\"add\": [\"6.1\", \"6.0\"]}}}"
   ],
   "files": {
-   "objects.json": "4191f750f70046e9 329",
-   "ops.jsonl": "711bb22ac19fd145 2278"
+   "objects.json": "dd5282dac8b6dd55 350",
+   "ops.jsonl": "39e8b4a359d8e074 2538"
   },
   "texts": [],
   "output": {
-   "id": "o1",
+   "id": "orderly-dolphin",
    "label": "red jar",
    "sightings": 4,
    "members": [
@@ -11129,16 +11129,16 @@
    ]
   },
   "ops": [
-   "{\"ts\": 1767323196.782, \"op\": \"new\", \"obj\": \"o5\", \"label\": \"mug\", \"ids\": [\"6.0\", \"6.1\"], \"diff\": {\"o1\": {\"remove\": [\"6.1\", \"6.0\"]}, \"o5\": {\"from\": null, \"to\": \"mug\", \"add\": [\"6.0\", \"6.1\"]}}}"
+   "{\"ts\": 1767323196.782, \"op\": \"new\", \"obj\": \"boreal-bog\", \"label\": \"mug\", \"ids\": [\"6.0\", \"6.1\"], \"diff\": {\"orderly-dolphin\": {\"remove\": [\"6.1\", \"6.0\"]}, \"boreal-bog\": {\"from\": null, \"to\": \"mug\", \"add\": [\"6.0\", \"6.1\"]}}}"
   ],
   "files": {
-   "objects.json": "0efd121e60292787 378",
-   "ops.jsonl": "1e836dccb9d4246f 2468",
+   "objects.json": "906ae2caed0b39f3 407",
+   "ops.jsonl": "9e8b66d4edddf9ff 2757",
    "session.json": "9b6e97f8f9692ec3 768"
   },
   "texts": [],
   "output": {
-   "id": "o5",
+   "id": "boreal-bog",
    "label": "mug",
    "sightings": 1,
    "members": [
@@ -11164,8 +11164,8 @@
    "{\"ts\": 1767323198.016, \"op\": \"reject\", \"ids\": [\"7.0\", \"7.1\"], \"diff\": {\"x\": {\"add\": [\"7.0\", \"7.1\"]}}}"
   ],
   "files": {
-   "objects.json": "be6b250663fc6fa2 398",
-   "ops.jsonl": "6fe1d56007e8fd37 2570"
+   "objects.json": "34ead573468eed32 427",
+   "ops.jsonl": "c0665c26832f17fb 2859"
   },
   "texts": [],
   "output": {
@@ -11238,7 +11238,7 @@
    "clip": "extra.mp4"
   },
   "ops": [
-   "{\"ts\": 1767323200.484, \"op\": \"clip_remove\", \"clip\": \"179dffe5abfe\", \"path\": \"/videos/extra.mp4\", \"frames\": [6, 7], \"deleted\": [\"o5\"], \"changes\": {\"x\": {\"remove\": [\"7.0\", \"7.1\"]}, \"o5\": {\"from\": \"mug\", \"to\": null, \"remove\": [\"6.0\", \"6.1\"]}}}"
+   "{\"ts\": 1767323200.484, \"op\": \"clip_remove\", \"clip\": \"179dffe5abfe\", \"path\": \"/videos/extra.mp4\", \"frames\": [6, 7], \"deleted\": [\"boreal-bog\"], \"changes\": {\"x\": {\"remove\": [\"7.0\", \"7.1\"]}, \"boreal-bog\": {\"from\": \"mug\", \"to\": null, \"remove\": [\"6.0\", \"6.1\"]}}}"
   ],
   "files": {
    "clips/179dffe5abfe/frames/000.jpg": "-",
@@ -11248,8 +11248,8 @@
    "dets/6.1.npz": "-",
    "dets/7.0.npz": "-",
    "dets/7.1.npz": "-",
-   "objects.json": "993e3b1c0fcdd7bd 309",
-   "ops.jsonl": "28ed809f45823cf5 2811",
+   "objects.json": "d6ddc8471f0c8002 330",
+   "ops.jsonl": "e807b8ca2943a0d0 3116",
    "runs.json": "2fcd99ae0e5c201e 2720",
    "sem/0006-41eceaf756.png": "-",
    "sem/0006-f92e777f43.png": "-",
@@ -11268,7 +11268,7 @@
    "detections": 4,
    "stripped": 4,
    "deleted": [
-    "o5"
+    "boreal-bog"
    ]
   }
  },
@@ -11511,7 +11511,7 @@
   "output": {
    "objects": [
     {
-     "id": "o1",
+     "id": "orderly-dolphin",
      "label": "red jar",
      "sightings": 3,
      "members": [
@@ -11532,7 +11532,7 @@
      }
     },
     {
-     "id": "o2",
+     "id": "dreamy-jay",
      "label": "orange jar",
      "sightings": 1,
      "members": [
@@ -11790,7 +11790,7 @@
   ],
   "files": {
    "clips/43c904c7a317/frames/000.jpg": "-",
-   "ops.jsonl": "7a9327b9bd4d6ee9 2962",
+   "ops.jsonl": "58583f7d2cfdd4cf 3267",
    "session.json": "54066dc3eb234a04 1025"
   },
   "texts": [],
@@ -11896,7 +11896,7 @@
    ],
    "objects": [
     {
-     "id": "o1",
+     "id": "orderly-dolphin",
      "label": "red jar",
      "sightings": 3,
      "members": [
@@ -11917,7 +11917,7 @@
      }
     },
     {
-     "id": "o2",
+     "id": "dreamy-jay",
      "label": "orange jar",
      "sightings": 1,
      "members": [
@@ -12058,7 +12058,7 @@
  "153 obj.merge into rejects": {
   "input": {
    "into": "x",
-   "from": "o1"
+   "from": "orderly-dolphin"
   },
   "ops": [],
   "files": {},
@@ -12070,8 +12070,8 @@
  },
  "154 obj.merge itself": {
   "input": {
-   "into": "o1",
-   "from": "o1"
+   "into": "orderly-dolphin",
+   "from": "orderly-dolphin"
   },
   "ops": [],
   "files": {},
@@ -12083,7 +12083,7 @@
  },
  "155 obj.merge unknown": {
   "input": {
-   "into": "o1",
+   "into": "orderly-dolphin",
    "from": "o99"
   },
   "ops": [],
@@ -12116,16 +12116,16 @@
    ]
   },
   "ops": [
-   "{\"ts\": 1767323238.738, \"op\": \"new\", \"obj\": \"o6\", \"label\": \"empty\", \"ids\": [\"2.1\", \"2.4\"], \"diff\": {\"o6\": {\"from\": null, \"to\": \"empty\", \"add\": [\"2.1\", \"2.4\"]}}}"
+   "{\"ts\": 1767323238.738, \"op\": \"new\", \"obj\": \"relaxed-fjord\", \"label\": \"empty\", \"ids\": [\"2.1\", \"2.4\"], \"diff\": {\"relaxed-fjord\": {\"from\": null, \"to\": \"empty\", \"add\": [\"2.1\", \"2.4\"]}}}"
   ],
   "files": {
-   "objects.json": "26ee522b5248d284 380",
-   "ops.jsonl": "ff85b3362151e187 3122",
+   "objects.json": "02cc31c45d4ba328 412",
+   "ops.jsonl": "d41de7cc60e9928a 3449",
    "session.json": "17c7d1e12ccd8b1e 1025"
   },
   "texts": [],
   "output": {
-   "id": "o6",
+   "id": "relaxed-fjord",
    "label": "empty",
    "sightings": 1,
    "members": [
@@ -12143,21 +12143,21 @@
  },
  "158 obj.remove all members": {
   "input": {
-   "obj": "o6",
+   "obj": "relaxed-fjord",
    "ids": [
     "2.1"
    ]
   },
   "ops": [
-   "{\"ts\": 1767323239.972, \"op\": \"remove\", \"obj\": \"o6\", \"ids\": [\"2.1\", \"2.4\"], \"diff\": {\"o6\": {\"remove\": [\"2.1\", \"2.4\"]}}}"
+   "{\"ts\": 1767323239.972, \"op\": \"remove\", \"obj\": \"relaxed-fjord\", \"ids\": [\"2.1\", \"2.4\"], \"diff\": {\"relaxed-fjord\": {\"remove\": [\"2.1\", \"2.4\"]}}}"
   ],
   "files": {
-   "objects.json": "5c005d9d2db35d2c 358",
-   "ops.jsonl": "4fe73b953648b442 3241"
+   "objects.json": "f5054c11c9e20243 390",
+   "ops.jsonl": "c65d1e92634cfaa1 3590"
   },
   "texts": [],
   "output": {
-   "id": "o6",
+   "id": "relaxed-fjord",
    "label": "empty",
    "sightings": 0,
    "members": [],
@@ -12169,25 +12169,25 @@
  },
  "159 obj.suggest empty object": {
   "input": {
-   "obj": "o6"
+   "obj": "relaxed-fjord"
   },
   "ops": [],
   "files": {},
   "texts": [],
   "error": {
    "code": "BAD_REQUEST",
-   "message": "object o6 has no members"
+   "message": "object relaxed-fjord has no members"
   }
  },
  "160 obj.show empty object": {
   "input": {
-   "obj": "o6"
+   "obj": "relaxed-fjord"
   },
   "ops": [],
   "files": {},
   "texts": [],
   "output": {
-   "id": "o6",
+   "id": "relaxed-fjord",
    "label": "empty",
    "sightings": 0,
    "members": [],
@@ -12248,7 +12248,7 @@
     {
      "ts": 1767323121.508,
      "op": "new",
-     "obj": "o1",
+     "obj": "orderly-dolphin",
      "label": "red jar",
      "ids": [
       "0.0",
@@ -12261,13 +12261,13 @@
      "undoable": true,
      "undone": false,
      "objects": [
-      "o1"
+      "orderly-dolphin"
      ]
     },
     {
      "ts": 1767323122.742,
      "op": "add",
-     "obj": "o1",
+     "obj": "orderly-dolphin",
      "ids": [
       "2.0",
       "2.3",
@@ -12278,13 +12278,13 @@
      "undoable": true,
      "undone": false,
      "objects": [
-      "o1"
+      "orderly-dolphin"
      ]
     },
     {
      "ts": 1767323123.976,
      "op": "remove",
-     "obj": "o1",
+     "obj": "orderly-dolphin",
      "ids": [
       "3.0",
       "3.1"
@@ -12293,13 +12293,13 @@
      "undoable": true,
      "undone": false,
      "objects": [
-      "o1"
+      "orderly-dolphin"
      ]
     },
     {
      "ts": 1767323125.21,
      "op": "new",
-     "obj": "o2",
+     "obj": "dreamy-jay",
      "label": "orange jar",
      "ids": [
       "0.1",
@@ -12309,25 +12309,25 @@
      "undoable": true,
      "undone": false,
      "objects": [
-      "o2"
+      "dreamy-jay"
      ]
     },
     {
      "ts": 1767323126.444,
      "op": "label",
-     "obj": "o2",
+     "obj": "dreamy-jay",
      "label": "второй jar (café)",
      "seq": 4,
      "undoable": true,
      "undone": false,
      "objects": [
-      "o2"
+      "dreamy-jay"
      ]
     },
     {
      "ts": 1767323127.678,
      "op": "new",
-     "obj": "o3",
+     "obj": "sunny-osprey",
      "label": "tmp",
      "ids": [
       "1.1",
@@ -12339,27 +12339,27 @@
      "undoable": true,
      "undone": false,
      "objects": [
-      "o2",
-      "o3"
+      "dreamy-jay",
+      "sunny-osprey"
      ]
     },
     {
      "ts": 1767323128.912,
      "op": "merge",
-     "into": "o2",
-     "from": "o3",
+     "into": "dreamy-jay",
+     "from": "sunny-osprey",
      "seq": 6,
      "undoable": true,
      "undone": false,
      "objects": [
-      "o2",
-      "o3"
+      "dreamy-jay",
+      "sunny-osprey"
      ]
     },
     {
      "ts": 1767323130.146,
      "op": "new",
-     "obj": "o4",
+     "obj": "inner-tapir",
      "label": "box",
      "ids": [
       "3.2",
@@ -12371,18 +12371,18 @@
      "undoable": true,
      "undone": false,
      "objects": [
-      "o4"
+      "inner-tapir"
      ]
     },
     {
      "ts": 1767323131.38,
      "op": "delete",
-     "obj": "o4",
+     "obj": "inner-tapir",
      "seq": 8,
      "undoable": true,
      "undone": false,
      "objects": [
-      "o4"
+      "inner-tapir"
      ]
     },
     {
@@ -12411,7 +12411,7 @@
      "undone": false,
      "objects": [
       "x",
-      "o2"
+      "dreamy-jay"
      ]
     },
     {
@@ -12452,19 +12452,19 @@
     {
      "ts": 1767323168.4,
      "op": "label",
-     "obj": "o2",
+     "obj": "dreamy-jay",
      "label": "orange jar",
      "seq": 14,
      "undoable": true,
      "undone": false,
      "objects": [
-      "o2"
+      "dreamy-jay"
      ]
     },
     {
      "ts": 1767323195.548,
      "op": "add",
-     "obj": "o1",
+     "obj": "orderly-dolphin",
      "ids": [
       "6.1",
       "6.0"
@@ -12473,13 +12473,13 @@
      "undoable": true,
      "undone": false,
      "objects": [
-      "o1"
+      "orderly-dolphin"
      ]
     },
     {
      "ts": 1767323196.782,
      "op": "new",
-     "obj": "o5",
+     "obj": "boreal-bog",
      "label": "mug",
      "ids": [
       "6.0",
@@ -12489,8 +12489,8 @@
      "undoable": true,
      "undone": false,
      "objects": [
-      "o1",
-      "o5"
+      "orderly-dolphin",
+      "boreal-bog"
      ]
     },
     {
@@ -12517,7 +12517,7 @@
       7
      ],
      "deleted": [
-      "o5"
+      "boreal-bog"
      ],
      "changes": {
       "x": {
@@ -12526,7 +12526,7 @@
         "7.1"
        ]
       },
-      "o5": {
+      "boreal-bog": {
        "from": "mug",
        "to": null,
        "remove": [
@@ -12559,7 +12559,7 @@
     {
      "ts": 1767323238.738,
      "op": "new",
-     "obj": "o6",
+     "obj": "relaxed-fjord",
      "label": "empty",
      "ids": [
       "2.1",
@@ -12569,13 +12569,13 @@
      "undoable": true,
      "undone": false,
      "objects": [
-      "o6"
+      "relaxed-fjord"
      ]
     },
     {
      "ts": 1767323239.972,
      "op": "remove",
-     "obj": "o6",
+     "obj": "relaxed-fjord",
      "ids": [
       "2.1",
       "2.4"
@@ -12584,7 +12584,7 @@
      "undoable": true,
      "undone": false,
      "objects": [
-      "o6"
+      "relaxed-fjord"
      ]
     }
    ],
@@ -12598,30 +12598,30 @@
  "files: session.json": "{\n \"version\": 1,\n \"config\": {\n  \"group_sim\": 0.6\n },\n \"clips\": [\n  {\n   \"path\": \"/videos/kitchen.mp4\",\n   \"key\": \"5779faad8d86\",\n   \"times\": [\n    0,\n    0.2,\n    1\n   ],\n   \"shape\": [\n    120,\n    160\n   ],\n   \"captured\": \"2026-01-01T10:00:00.000000Z\",\n   \"keyframe_thresh\": 0.4\n  },\n  {\n   \"path\": \"/videos/pantry.mov\",\n   \"key\": \"dcd01881d004\",\n   \"times\": [\n    0,\n    0.6,\n    1.6\n   ],\n   \"shape\": [\n    120,\n    160\n   ],\n   \"captured\": null,\n   \"keyframe_thresh\": 0.4\n  },\n  {\n   \"path\": \"/videos/extra.mp4\",\n   \"key\": \"179dffe5abfe\",\n   \"times\": [\n    0,\n    0.4\n   ],\n   \"shape\": [\n    120,\n    160\n   ],\n   \"captured\": \"2026-01-01T12:00:00.000000Z\",\n   \"keyframe_thresh\": 0.4,\n   \"next_n\": {\n    \"6\": 2,\n    \"7\": 2\n   }\n  },\n  {\n   \"path\": \"/videos/old/kitchen.mp4\",\n   \"key\": \"43c904c7a317\",\n   \"times\": [\n    0\n   ],\n   \"shape\": [\n    120,\n    160\n   ],\n   \"captured\": null,\n   \"keyframe_thresh\": 0.4,\n   \"removed\": 1767323220.228\n  }\n ],\n \"next_obj\": 7,\n \"features\": \"onnx-cardanvil-vision-fp16/f16-concat-v1\"\n}",
  "files: runs.json": "{\n \"0|jar\": {\n  \"ids\": [\n   \"0.0\",\n   \"0.1\",\n   \"0.2\"\n  ],\n  \"presence\": 0.9820137900379085,\n  \"sem\": \"0000-f92e777f43.png\"\n },\n \"1|jar\": {\n  \"ids\": [\n   \"1.0\",\n   \"1.1\",\n   \"1.2\"\n  ],\n  \"presence\": 0.9820137900379085,\n  \"sem\": \"0001-f92e777f43.png\"\n },\n \"2|jar\": {\n  \"ids\": [\n   \"2.0\",\n   \"2.1\",\n   \"2.2\"\n  ],\n  \"presence\": 0.9820137900379085,\n  \"sem\": \"0002-f92e777f43.png\"\n },\n \"3|jar\": {\n  \"ids\": [\n   \"3.0\"\n  ],\n  \"presence\": 0.9820137900379085,\n  \"sem\": \"0003-f92e777f43.png\"\n },\n \"4|jar\": {\n  \"ids\": [\n   \"4.0\"\n  ],\n  \"presence\": 0.9820137900379085,\n  \"sem\": \"0004-f92e777f43.png\"\n },\n \"5|jar\": {\n  \"ids\": [\n   \"5.0\"\n  ],\n  \"presence\": 0.9820137900379085,\n  \"sem\": \"0005-f92e777f43.png\"\n },\n \"0|container\": {\n  \"ids\": [\n   \"0.3\",\n   \"0.4\"\n  ],\n  \"presence\": 0.9820137900379085,\n  \"sem\": \"0000-255a762c36.png\"\n },\n \"1|container\": {\n  \"ids\": [\n   \"1.3\",\n   \"1.4\"\n  ],\n  \"presence\": 0.9820137900379085,\n  \"sem\": \"0001-255a762c36.png\"\n },\n \"2|container\": {\n  \"ids\": [\n   \"2.3\",\n   \"2.4\"\n  ],\n  \"presence\": 0.9820137900379085,\n  \"sem\": \"0002-255a762c36.png\"\n },\n \"3|container\": {\n  \"ids\": [\n   \"3.1\",\n   \"3.2\"\n  ],\n  \"presence\": 0.9820137900379085,\n  \"sem\": \"0003-255a762c36.png\"\n },\n \"4|container\": {\n  \"ids\": [\n   \"4.1\",\n   \"4.2\"\n  ],\n  \"presence\": 0.9820137900379085,\n  \"sem\": \"0004-255a762c36.png\"\n },\n \"5|container\": {\n  \"ids\": [\n   \"5.1\",\n   \"5.2\"\n  ],\n  \"presence\": 0.9820137900379085,\n  \"sem\": \"0005-255a762c36.png\"\n },\n \"3|box\": {\n  \"ids\": [\n   \"3.3\"\n  ],\n  \"presence\": 0.9820137900379085,\n  \"sem\": \"0003-c7d8a6d722.png\"\n },\n \"4|box\": {\n  \"ids\": [\n   \"4.3\"\n  ],\n  \"presence\": 0.9820137900379085,\n  \"sem\": \"0004-c7d8a6d722.png\"\n },\n \"5|box\": {\n  \"ids\": [\n   \"5.3\"\n  ],\n  \"presence\": 0.9820137900379085,\n  \"sem\": \"0005-c7d8a6d722.png\"\n },\n \"0|lid\": {\n  \"ids\": [\n   \"0.5\"\n  ],\n  \"presence\": 0.9820137900379085,\n  \"sem\": \"0000-a53814d71f.png\"\n },\n \"0|Glass  JAR\": {\n  \"ids\": [],\n  \"presence\": 0.01798620996209156,\n  \"sem\": \"0000-fa6c0208b9.png\"\n },\n \"1|jar@10,20,90,90\": {\n  \"ids\": [\n   \"1.5\"\n  ],\n  \"presence\": 0.9525741268224334,\n  \"sem\": null\n },\n \"4|teapot@10,20,90,90\": {\n  \"ids\": [],\n  \"presence\": 0.01798620996209156,\n  \"sem\": null\n },\n \"0|mug\": {\n  \"ids\": [],\n  \"presence\": 0.01798620996209156,\n  \"sem\": \"0000-41eceaf756.png\"\n },\n \"1|mug\": {\n  \"ids\": [],\n  \"presence\": 0.01798620996209156,\n  \"sem\": \"0001-41eceaf756.png\"\n },\n \"2|mug\": {\n  \"ids\": [],\n  \"presence\": 0.01798620996209156,\n  \"sem\": \"0002-41eceaf756.png\"\n },\n \"3|mug\": {\n  \"ids\": [],\n  \"presence\": 0.01798620996209156,\n  \"sem\": \"0003-41eceaf756.png\"\n },\n \"4|mug\": {\n  \"ids\": [],\n  \"presence\": 0.01798620996209156,\n  \"sem\": \"0004-41eceaf756.png\"\n },\n \"5|mug\": {\n  \"ids\": [],\n  \"presence\": 0.01798620996209156,\n  \"sem\": \"0005-41eceaf756.png\"\n },\n \"6|mug\": {\n  \"ids\": [\n   \"6.2\"\n  ],\n  \"presence\": 0.9820137900379085,\n  \"sem\": \"0006-41eceaf756.png\"\n },\n \"7|mug\": {\n  \"ids\": [\n   \"7.2\"\n  ],\n  \"presence\": 0.9820137900379085,\n  \"sem\": \"0007-41eceaf756.png\"\n }\n}",
  "files: dets.json": "[\n {\n  \"id\": \"0.0\",\n  \"frame\": 0,\n  \"t\": 0,\n  \"run\": \"jar\",\n  \"prompt\": \"jar\",\n  \"score\": 0.935,\n  \"box\": [\n   20,\n   30,\n   60,\n   80\n  ]\n },\n {\n  \"id\": \"0.1\",\n  \"frame\": 0,\n  \"t\": 0,\n  \"run\": \"jar\",\n  \"prompt\": \"jar\",\n  \"score\": 0.865,\n  \"box\": [\n   100,\n   40,\n   130,\n   90\n  ]\n },\n {\n  \"id\": \"0.2\",\n  \"frame\": 0,\n  \"t\": 0,\n  \"run\": \"jar\",\n  \"prompt\": \"jar\",\n  \"score\": 0.442,\n  \"box\": [\n   130,\n   96,\n   152,\n   116\n  ]\n },\n {\n  \"id\": \"1.0\",\n  \"frame\": 1,\n  \"t\": 0.2,\n  \"run\": \"jar\",\n  \"prompt\": \"jar\",\n  \"score\": 0.935,\n  \"box\": [\n   22,\n   30,\n   62,\n   80\n  ]\n },\n {\n  \"id\": \"1.1\",\n  \"frame\": 1,\n  \"t\": 0.2,\n  \"run\": \"jar\",\n  \"prompt\": \"jar\",\n  \"score\": 0.865,\n  \"box\": [\n   99,\n   40,\n   129,\n   90\n  ]\n },\n {\n  \"id\": \"1.2\",\n  \"frame\": 1,\n  \"t\": 0.2,\n  \"run\": \"jar\",\n  \"prompt\": \"jar\",\n  \"score\": 0.442,\n  \"box\": [\n   130,\n   96,\n   152,\n   116\n  ]\n },\n {\n  \"id\": \"2.0\",\n  \"frame\": 2,\n  \"t\": 1,\n  \"run\": \"jar\",\n  \"prompt\": \"jar\",\n  \"score\": 0.935,\n  \"box\": [\n   30,\n   30,\n   70,\n   80\n  ]\n },\n {\n  \"id\": \"2.1\",\n  \"frame\": 2,\n  \"t\": 1,\n  \"run\": \"jar\",\n  \"prompt\": \"jar\",\n  \"score\": 0.865,\n  \"box\": [\n   96,\n   40,\n   126,\n   90\n  ]\n },\n {\n  \"id\": \"2.2\",\n  \"frame\": 2,\n  \"t\": 1,\n  \"run\": \"jar\",\n  \"prompt\": \"jar\",\n  \"score\": 0.442,\n  \"box\": [\n   130,\n   96,\n   152,\n   116\n  ]\n },\n {\n  \"id\": \"3.0\",\n  \"frame\": 3,\n  \"t\": 0,\n  \"run\": \"jar\",\n  \"prompt\": \"jar\",\n  \"score\": 0.926,\n  \"box\": [\n   60,\n   40,\n   100,\n   100\n  ]\n },\n {\n  \"id\": \"4.0\",\n  \"frame\": 4,\n  \"t\": 0.6,\n  \"run\": \"jar\",\n  \"prompt\": \"jar\",\n  \"score\": 0.926,\n  \"box\": [\n   60,\n   40,\n   100,\n   100\n  ]\n },\n {\n  \"id\": \"5.0\",\n  \"frame\": 5,\n  \"t\": 1.6,\n  \"run\": \"jar\",\n  \"prompt\": \"jar\",\n  \"score\": 0.926,\n  \"box\": [\n   60,\n   40,\n   100,\n   100\n  ]\n },\n {\n  \"id\": \"0.3\",\n  \"frame\": 0,\n  \"t\": 0,\n  \"run\": \"container\",\n  \"prompt\": \"container\",\n  \"score\": 0.908,\n  \"box\": [\n   20,\n   30,\n   60,\n   80\n  ]\n },\n {\n  \"id\": \"0.4\",\n  \"frame\": 0,\n  \"t\": 0,\n  \"run\": \"container\",\n  \"prompt\": \"container\",\n  \"score\": 0.865,\n  \"box\": [\n   100,\n   40,\n   130,\n   90\n  ]\n },\n {\n  \"id\": \"1.3\",\n  \"frame\": 1,\n  \"t\": 0.2,\n  \"run\": \"container\",\n  \"prompt\": \"container\",\n  \"score\": 0.908,\n  \"box\": [\n   22,\n   30,\n   62,\n   80\n  ]\n },\n {\n  \"id\": \"1.4\",\n  \"frame\": 1,\n  \"t\": 0.2,\n  \"run\": \"container\",\n  \"prompt\": \"container\",\n  \"score\": 0.865,\n  \"box\": [\n   99,\n   40,\n   129,\n   90\n  ]\n },\n {\n  \"id\": \"2.3\",\n  \"frame\": 2,\n  \"t\": 1,\n  \"run\": \"container\",\n  \"prompt\": \"container\",\n  \"score\": 0.908,\n  \"box\": [\n   30,\n   30,\n   70,\n   80\n  ]\n },\n {\n  \"id\": \"2.4\",\n  \"frame\": 2,\n  \"t\": 1,\n  \"run\": \"container\",\n  \"prompt\": \"container\",\n  \"score\": 0.865,\n  \"box\": [\n   96,\n   40,\n   126,\n   90\n  ]\n },\n {\n  \"id\": \"3.1\",\n  \"frame\": 3,\n  \"t\": 0,\n  \"run\": \"container\",\n  \"prompt\": \"container\",\n  \"score\": 0.9,\n  \"box\": [\n   60,\n   40,\n   100,\n   100\n  ]\n },\n {\n  \"id\": \"3.2\",\n  \"frame\": 3,\n  \"t\": 0,\n  \"run\": \"container\",\n  \"prompt\": \"container\",\n  \"score\": 0.803,\n  \"box\": [\n   110,\n   20,\n   150,\n   70\n  ]\n },\n {\n  \"id\": \"4.1\",\n  \"frame\": 4,\n  \"t\": 0.6,\n  \"run\": \"container\",\n  \"prompt\": \"container\",\n  \"score\": 0.9,\n  \"box\": [\n   60,\n   40,\n   100,\n   100\n  ]\n },\n {\n  \"id\": \"4.2\",\n  \"frame\": 4,\n  \"t\": 0.6,\n  \"run\": \"container\",\n  \"prompt\": \"container\",\n  \"score\": 0.803,\n  \"box\": [\n   107,\n   20,\n   147,\n   70\n  ]\n },\n {\n  \"id\": \"5.1\",\n  \"frame\": 5,\n  \"t\": 1.6,\n  \"run\": \"container\",\n  \"prompt\": \"container\",\n  \"score\": 0.9,\n  \"box\": [\n   60,\n   40,\n   100,\n   100\n  ]\n },\n {\n  \"id\": \"5.2\",\n  \"frame\": 5,\n  \"t\": 1.6,\n  \"run\": \"container\",\n  \"prompt\": \"container\",\n  \"score\": 0.803,\n  \"box\": [\n   102,\n   20,\n   142,\n   70\n  ]\n },\n {\n  \"id\": \"3.3\",\n  \"frame\": 3,\n  \"t\": 0,\n  \"run\": \"box\",\n  \"prompt\": \"box\",\n  \"score\": 0.935,\n  \"box\": [\n   110,\n   20,\n   150,\n   70\n  ]\n },\n {\n  \"id\": \"4.3\",\n  \"frame\": 4,\n  \"t\": 0.6,\n  \"run\": \"box\",\n  \"prompt\": \"box\",\n  \"score\": 0.935,\n  \"box\": [\n   107,\n   20,\n   147,\n   70\n  ]\n },\n {\n  \"id\": \"5.3\",\n  \"frame\": 5,\n  \"t\": 1.6,\n  \"run\": \"box\",\n  \"prompt\": \"box\",\n  \"score\": 0.935,\n  \"box\": [\n   102,\n   20,\n   142,\n   70\n  ]\n },\n {\n  \"id\": \"0.5\",\n  \"frame\": 0,\n  \"t\": 0,\n  \"run\": \"lid\",\n  \"prompt\": \"lid\",\n  \"score\": 0.935,\n  \"box\": [\n   24,\n   14,\n   56,\n   28\n  ]\n },\n {\n  \"id\": \"1.5\",\n  \"frame\": 1,\n  \"t\": 0.2,\n  \"run\": \"jar@10,20,90,90\",\n  \"prompt\": \"jar\",\n  \"score\": 0.839,\n  \"box\": [\n   22,\n   30,\n   78,\n   80\n  ]\n },\n {\n  \"id\": \"6.2\",\n  \"frame\": 6,\n  \"t\": 0,\n  \"run\": \"mug\",\n  \"prompt\": \"mug\",\n  \"score\": 0.935,\n  \"box\": [\n   50,\n   50,\n   90,\n   100\n  ]\n },\n {\n  \"id\": \"7.2\",\n  \"frame\": 7,\n  \"t\": 0.4,\n  \"run\": \"mug\",\n  \"prompt\": \"mug\",\n  \"score\": 0.935,\n  \"box\": [\n   50,\n   50,\n   90,\n   100\n  ]\n }\n]",
- "files: objects.json": "{\n \"x\": {\n  \"label\": \"(not an item)\",\n  \"members\": [\n   \"5.2\",\n   \"5.3\",\n   \"1.1\",\n   \"1.4\",\n   \"0.5\"\n  ]\n },\n \"o1\": {\n  \"label\": \"red jar\",\n  \"members\": [\n   \"0.0\",\n   \"0.3\",\n   \"1.0\",\n   \"1.3\",\n   \"1.5\",\n   \"2.0\",\n   \"2.3\"\n  ]\n },\n \"o2\": {\n  \"label\": \"orange jar\",\n  \"members\": [\n   \"0.1\",\n   \"0.4\"\n  ]\n },\n \"o6\": {\n  \"label\": \"empty\",\n  \"members\": []\n }\n}",
+ "files: objects.json": "{\n \"x\": {\n  \"label\": \"(not an item)\",\n  \"members\": [\n   \"5.2\",\n   \"5.3\",\n   \"1.1\",\n   \"1.4\",\n   \"0.5\"\n  ]\n },\n \"orderly-dolphin\": {\n  \"label\": \"red jar\",\n  \"members\": [\n   \"0.0\",\n   \"0.3\",\n   \"1.0\",\n   \"1.3\",\n   \"1.5\",\n   \"2.0\",\n   \"2.3\"\n  ]\n },\n \"dreamy-jay\": {\n  \"label\": \"orange jar\",\n  \"members\": [\n   \"0.1\",\n   \"0.4\"\n  ]\n },\n \"relaxed-fjord\": {\n  \"label\": \"empty\",\n  \"members\": []\n }\n}",
  "files: ops.jsonl": [
-  "{\"ts\": 1767323121.508, \"op\": \"new\", \"obj\": \"o1\", \"label\": \"red jar\", \"ids\": [\"0.0\", \"0.3\", \"1.0\", \"1.3\", \"1.5\"], \"diff\": {\"o1\": {\"from\": null, \"to\": \"red jar\", \"add\": [\"0.0\", \"0.3\", \"1.0\", \"1.3\", \"1.5\"]}}}",
-  "{\"ts\": 1767323122.742, \"op\": \"add\", \"obj\": \"o1\", \"ids\": [\"2.0\", \"2.3\", \"3.0\", \"3.1\"], \"diff\": {\"o1\": {\"add\": [\"2.0\", \"2.3\", \"3.0\", \"3.1\"]}}}",
-  "{\"ts\": 1767323123.976, \"op\": \"remove\", \"obj\": \"o1\", \"ids\": [\"3.0\", \"3.1\"], \"diff\": {\"o1\": {\"remove\": [\"3.0\", \"3.1\"]}}}",
-  "{\"ts\": 1767323125.21, \"op\": \"new\", \"obj\": \"o2\", \"label\": \"orange jar\", \"ids\": [\"0.1\", \"0.4\"], \"diff\": {\"o2\": {\"from\": null, \"to\": \"orange jar\", \"add\": [\"0.1\", \"0.4\"]}}}",
-  "{\"ts\": 1767323126.444, \"op\": \"label\", \"obj\": \"o2\", \"label\": \"второй jar (café)\", \"diff\": {\"o2\": {\"from\": \"orange jar\", \"to\": \"второй jar (café)\"}}}",
-  "{\"ts\": 1767323127.678, \"op\": \"new\", \"obj\": \"o3\", \"label\": \"tmp\", \"ids\": [\"1.1\", \"1.4\", \"0.1\", \"0.4\"], \"diff\": {\"o2\": {\"remove\": [\"0.1\", \"0.4\"]}, \"o3\": {\"from\": null, \"to\": \"tmp\", \"add\": [\"1.1\", \"1.4\", \"0.1\", \"0.4\"]}}}",
-  "{\"ts\": 1767323128.912, \"op\": \"merge\", \"into\": \"o2\", \"from\": \"o3\", \"diff\": {\"o2\": {\"add\": [\"1.1\", \"1.4\", \"0.1\", \"0.4\"]}, \"o3\": {\"from\": \"tmp\", \"to\": null, \"remove\": [\"1.1\", \"1.4\", \"0.1\", \"0.4\"]}}}",
-  "{\"ts\": 1767323130.146, \"op\": \"new\", \"obj\": \"o4\", \"label\": \"box\", \"ids\": [\"3.2\", \"3.3\", \"4.2\", \"4.3\"], \"diff\": {\"o4\": {\"from\": null, \"to\": \"box\", \"add\": [\"3.2\", \"3.3\", \"4.2\", \"4.3\"]}}}",
-  "{\"ts\": 1767323131.38, \"op\": \"delete\", \"obj\": \"o4\", \"diff\": {\"o4\": {\"from\": \"box\", \"to\": null, \"remove\": [\"3.2\", \"3.3\", \"4.2\", \"4.3\"]}}}",
+  "{\"ts\": 1767323121.508, \"op\": \"new\", \"obj\": \"orderly-dolphin\", \"label\": \"red jar\", \"ids\": [\"0.0\", \"0.3\", \"1.0\", \"1.3\", \"1.5\"], \"diff\": {\"orderly-dolphin\": {\"from\": null, \"to\": \"red jar\", \"add\": [\"0.0\", \"0.3\", \"1.0\", \"1.3\", \"1.5\"]}}}",
+  "{\"ts\": 1767323122.742, \"op\": \"add\", \"obj\": \"orderly-dolphin\", \"ids\": [\"2.0\", \"2.3\", \"3.0\", \"3.1\"], \"diff\": {\"orderly-dolphin\": {\"add\": [\"2.0\", \"2.3\", \"3.0\", \"3.1\"]}}}",
+  "{\"ts\": 1767323123.976, \"op\": \"remove\", \"obj\": \"orderly-dolphin\", \"ids\": [\"3.0\", \"3.1\"], \"diff\": {\"orderly-dolphin\": {\"remove\": [\"3.0\", \"3.1\"]}}}",
+  "{\"ts\": 1767323125.21, \"op\": \"new\", \"obj\": \"dreamy-jay\", \"label\": \"orange jar\", \"ids\": [\"0.1\", \"0.4\"], \"diff\": {\"dreamy-jay\": {\"from\": null, \"to\": \"orange jar\", \"add\": [\"0.1\", \"0.4\"]}}}",
+  "{\"ts\": 1767323126.444, \"op\": \"label\", \"obj\": \"dreamy-jay\", \"label\": \"второй jar (café)\", \"diff\": {\"dreamy-jay\": {\"from\": \"orange jar\", \"to\": \"второй jar (café)\"}}}",
+  "{\"ts\": 1767323127.678, \"op\": \"new\", \"obj\": \"sunny-osprey\", \"label\": \"tmp\", \"ids\": [\"1.1\", \"1.4\", \"0.1\", \"0.4\"], \"diff\": {\"dreamy-jay\": {\"remove\": [\"0.1\", \"0.4\"]}, \"sunny-osprey\": {\"from\": null, \"to\": \"tmp\", \"add\": [\"1.1\", \"1.4\", \"0.1\", \"0.4\"]}}}",
+  "{\"ts\": 1767323128.912, \"op\": \"merge\", \"into\": \"dreamy-jay\", \"from\": \"sunny-osprey\", \"diff\": {\"dreamy-jay\": {\"add\": [\"1.1\", \"1.4\", \"0.1\", \"0.4\"]}, \"sunny-osprey\": {\"from\": \"tmp\", \"to\": null, \"remove\": [\"1.1\", \"1.4\", \"0.1\", \"0.4\"]}}}",
+  "{\"ts\": 1767323130.146, \"op\": \"new\", \"obj\": \"inner-tapir\", \"label\": \"box\", \"ids\": [\"3.2\", \"3.3\", \"4.2\", \"4.3\"], \"diff\": {\"inner-tapir\": {\"from\": null, \"to\": \"box\", \"add\": [\"3.2\", \"3.3\", \"4.2\", \"4.3\"]}}}",
+  "{\"ts\": 1767323131.38, \"op\": \"delete\", \"obj\": \"inner-tapir\", \"diff\": {\"inner-tapir\": {\"from\": \"box\", \"to\": null, \"remove\": [\"3.2\", \"3.3\", \"4.2\", \"4.3\"]}}}",
   "{\"ts\": 1767323141.252, \"op\": \"reject\", \"ids\": [\"5.2\", \"5.3\"], \"diff\": {\"x\": {\"add\": [\"5.2\", \"5.3\"]}}}",
-  "{\"ts\": 1767323142.486, \"op\": \"reject\", \"ids\": [\"1.1\", \"1.4\"], \"diff\": {\"x\": {\"add\": [\"1.1\", \"1.4\"]}, \"o2\": {\"remove\": [\"1.1\", \"1.4\"]}}}",
+  "{\"ts\": 1767323142.486, \"op\": \"reject\", \"ids\": [\"1.1\", \"1.4\"], \"diff\": {\"x\": {\"add\": [\"1.1\", \"1.4\"]}, \"dreamy-jay\": {\"remove\": [\"1.1\", \"1.4\"]}}}",
   "{\"ts\": 1767323143.72, \"op\": \"reject\", \"ids\": [\"0.5\"], \"diff\": {\"x\": {\"add\": [\"0.5\"]}}}",
   "{\"ts\": 1767323164.698, \"op\": \"undo\", \"of\": 11, \"diff\": {\"x\": {\"remove\": [\"0.5\"]}}}",
   "{\"ts\": 1767323165.932, \"op\": \"redo\", \"of\": 11, \"diff\": {\"x\": {\"add\": [\"0.5\"]}}}",
-  "{\"ts\": 1767323168.4, \"op\": \"label\", \"obj\": \"o2\", \"label\": \"orange jar\", \"diff\": {\"o2\": {\"from\": \"второй jar (café)\", \"to\": \"orange jar\"}}}",
-  "{\"ts\": 1767323195.548, \"op\": \"add\", \"obj\": \"o1\", \"ids\": [\"6.1\", \"6.0\"], \"diff\": {\"o1\": {\"add\": [\"6.1\", \"6.0\"]}}}",
-  "{\"ts\": 1767323196.782, \"op\": \"new\", \"obj\": \"o5\", \"label\": \"mug\", \"ids\": [\"6.0\", \"6.1\"], \"diff\": {\"o1\": {\"remove\": [\"6.1\", \"6.0\"]}, \"o5\": {\"from\": null, \"to\": \"mug\", \"add\": [\"6.0\", \"6.1\"]}}}",
+  "{\"ts\": 1767323168.4, \"op\": \"label\", \"obj\": \"dreamy-jay\", \"label\": \"orange jar\", \"diff\": {\"dreamy-jay\": {\"from\": \"второй jar (café)\", \"to\": \"orange jar\"}}}",
+  "{\"ts\": 1767323195.548, \"op\": \"add\", \"obj\": \"orderly-dolphin\", \"ids\": [\"6.1\", \"6.0\"], \"diff\": {\"orderly-dolphin\": {\"add\": [\"6.1\", \"6.0\"]}}}",
+  "{\"ts\": 1767323196.782, \"op\": \"new\", \"obj\": \"boreal-bog\", \"label\": \"mug\", \"ids\": [\"6.0\", \"6.1\"], \"diff\": {\"orderly-dolphin\": {\"remove\": [\"6.1\", \"6.0\"]}, \"boreal-bog\": {\"from\": null, \"to\": \"mug\", \"add\": [\"6.0\", \"6.1\"]}}}",
   "{\"ts\": 1767323198.016, \"op\": \"reject\", \"ids\": [\"7.0\", \"7.1\"], \"diff\": {\"x\": {\"add\": [\"7.0\", \"7.1\"]}}}",
-  "{\"ts\": 1767323200.484, \"op\": \"clip_remove\", \"clip\": \"179dffe5abfe\", \"path\": \"/videos/extra.mp4\", \"frames\": [6, 7], \"deleted\": [\"o5\"], \"changes\": {\"x\": {\"remove\": [\"7.0\", \"7.1\"]}, \"o5\": {\"from\": \"mug\", \"to\": null, \"remove\": [\"6.0\", \"6.1\"]}}}",
+  "{\"ts\": 1767323200.484, \"op\": \"clip_remove\", \"clip\": \"179dffe5abfe\", \"path\": \"/videos/extra.mp4\", \"frames\": [6, 7], \"deleted\": [\"boreal-bog\"], \"changes\": {\"x\": {\"remove\": [\"7.0\", \"7.1\"]}, \"boreal-bog\": {\"from\": \"mug\", \"to\": null, \"remove\": [\"6.0\", \"6.1\"]}}}",
   "{\"ts\": 1767323220.228, \"op\": \"clip_remove\", \"clip\": \"43c904c7a317\", \"path\": \"/videos/old/kitchen.mp4\", \"frames\": [8, 8], \"deleted\": [], \"changes\": {}}",
-  "{\"ts\": 1767323238.738, \"op\": \"new\", \"obj\": \"o6\", \"label\": \"empty\", \"ids\": [\"2.1\", \"2.4\"], \"diff\": {\"o6\": {\"from\": null, \"to\": \"empty\", \"add\": [\"2.1\", \"2.4\"]}}}",
-  "{\"ts\": 1767323239.972, \"op\": \"remove\", \"obj\": \"o6\", \"ids\": [\"2.1\", \"2.4\"], \"diff\": {\"o6\": {\"remove\": [\"2.1\", \"2.4\"]}}}",
+  "{\"ts\": 1767323238.738, \"op\": \"new\", \"obj\": \"relaxed-fjord\", \"label\": \"empty\", \"ids\": [\"2.1\", \"2.4\"], \"diff\": {\"relaxed-fjord\": {\"from\": null, \"to\": \"empty\", \"add\": [\"2.1\", \"2.4\"]}}}",
+  "{\"ts\": 1767323239.972, \"op\": \"remove\", \"obj\": \"relaxed-fjord\", \"ids\": [\"2.1\", \"2.4\"], \"diff\": {\"relaxed-fjord\": {\"remove\": [\"2.1\", \"2.4\"]}}}",
   ""
  ],
  "files: dets/0.0.npz (hex)": "504b03041400000008008e18225cb739868c4a0000007a010000080000006d61736b2e6e70799bec17ea1b10c9c850c650ad9e925a9c5ca46ea5a05e536aa8aea3a09e965f54529498179f5f94920a12774bcc294e058a17672416a402f91a46a6063a9a3a0ab50a6403aeff23160000504b03041400000008008e18225c4bb805beab0000008003000007000000656d622e6e70799bec17ea1b10c9c850c650ad9e925a9c5ca46ea5a06e9366a4aea3a09e965f54529498179f5f94920a12774bcc294e058a17672416a402f91ac616263a9a3a0ab50a64032e86410c18195818f818f41826316c663cc2e2c17594bf45e4bd8480ec43856c95667546ad469d283d53035b4305a35d461f8058c1c8d6d0d4204aaf518751ab593d5be5a18280ec7b891691a3fc1e5c475836334e029ac507349311c90e5a9b3fd8c148f73f00504b03041400000008008e18225c47b6102446000000880000000800000064696e6f2e6e70799bec17ea1b10c9c850c650ad9e925a9c5ca46ea5a06e9369a1aea3a09e965f54529498179f5f94920a12774bcc294e058a17672416a402f91a9a3a0ab50a14012e2606080000504b010214001400000008008e18225cb739868c4a0000007a0100000800000000000000000000000000000000006d61736b2e6e7079504b010214001400000008008e18225c4bb805beab00000080030000070000000000000000000000000070000000656d622e6e7079504b010214001400000008008e18225c47b61024460000008800000008000000000000000000000000004001000064696e6f2e6e7079504b05060000000003000300a1000000ac0100000000",
@@ -12683,7 +12683,7 @@
   "out/masks/0.3.png",
   "out/masks/0.4.png",
   "out/masks/0.5.png",
-  "out/obj-o1.jpg",
+  "out/obj-orderly-dolphin.jpg",
   "out/semantic-box.jpg",
   "out/semantic-jar.jpg",
   "out/semantic-mug.jpg",
@@ -12692,8 +12692,8 @@
   "out/show.jpg",
   "out/similar-0.0.jpg",
   "out/similar-3.2.jpg",
-  "out/suggest-o1.jpg",
-  "out/suggest-o2.jpg",
+  "out/suggest-dreamy-jay.jpg",
+  "out/suggest-orderly-dolphin.jpg",
   "out/todo-crops.jpg",
   "out/todo-groups.jpg",
   "out/todo.jpg",

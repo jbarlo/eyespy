@@ -135,22 +135,22 @@ test("session.ops snapshot replayed on createDetections + createLabelling", asyn
 
   type Mut = [name: string, run: () => ResultAsync<unknown, LabellingError>, obj: string];
   const muts: Mut[] = [
-    ["obj.new (aliases expand)", () => lab.create("red jar", ["0.0", "1.0"], ctx), "o1"],
-    ["obj.add", () => lab.add("o1", ["2.0", "3.0"], ctx), "o1"],
-    ["obj.remove", () => lab.remove("o1", ["3.0"], ctx), "o1"],
-    ["obj.new second", () => lab.create("orange jar", ["0.1"], ctx), "o2"],
-    ["obj.label unicode", () => lab.relabel("o2", "второй jar (café)"), "o2"],
-    ["obj.new takes from another object", () => lab.create("tmp", ["1.1", "0.1"], ctx), "o3"],
-    ["obj.merge", () => lab.merge("o2", "o3"), "o2"],
-    ["obj.new box", () => lab.create("box", ["3.2", "4.2"], ctx), "o4"],
+    ["obj.new (aliases expand)", () => lab.create("red jar", ["0.0", "1.0"], ctx), "orderly-dolphin"],
+    ["obj.add", () => lab.add("orderly-dolphin", ["2.0", "3.0"], ctx), "orderly-dolphin"],
+    ["obj.remove", () => lab.remove("orderly-dolphin", ["3.0"], ctx), "orderly-dolphin"],
+    ["obj.new second", () => lab.create("orange jar", ["0.1"], ctx), "dreamy-jay"],
+    ["obj.label unicode", () => lab.relabel("dreamy-jay", "второй jar (café)"), "dreamy-jay"],
+    ["obj.new takes from another object", () => lab.create("tmp", ["1.1", "0.1"], ctx), "sunny-osprey"],
+    ["obj.merge", () => lab.merge("dreamy-jay", "sunny-osprey"), "dreamy-jay"],
+    ["obj.new box", () => lab.create("box", ["3.2", "4.2"], ctx), "inner-tapir"],
   ];
   for (const [name, run, obj] of muts) {
     okv(await run());
     sameLine(name);
     sameSummary(name, obj);
   }
-  assert.deepEqual(okv(await lab.delete("o4")), undefined);
-  assert.deepEqual({ deleted: "o4" }, out("obj.delete"));
+  assert.deepEqual(okv(await lab.delete("inner-tapir")), undefined);
+  assert.deepEqual({ deleted: "inner-tapir" }, out("obj.delete"));
   sameLine("obj.delete");
 
   // session composes obj.show and obj.suggest. These rebuild them from labelling and detections.
@@ -161,9 +161,9 @@ test("session.ops snapshot replayed on createDetections + createLabelling", asyn
   ] as const) {
     const o = out<Record<string, unknown> & { total: number; hits: { id: string }[] }>(name);
     const { total, offset: _o, image: _i, hits, ...summary } = o;
-    assert.deepEqual(okv(lab.summary("o1")), summary);
+    assert.deepEqual(okv(lab.summary("orderly-dolphin")), summary);
     const ms = dets.collapse(
-      okv(lab.get("o1"))
+      okv(lab.get("orderly-dolphin"))
         .members.map((m) => okv(dets.get(m)))
         .filter((d) => !frames || frames.has(d.frame)),
       ctx.aliasIou,
@@ -177,8 +177,8 @@ test("session.ops snapshot replayed on createDetections + createLabelling", asyn
   }
 
   for (const [name, obj, k, th] of [
-    ["obj.suggest", "o1", 8, TH],
-    ["obj.suggest k threshold", "o2", 2, 0.3],
+    ["obj.suggest", "orderly-dolphin", 8, TH],
+    ["obj.suggest k threshold", "dreamy-jay", 2, 0.3],
   ] as const) {
     const c = okv(lab.centroid(obj));
     const cands = dets.all().filter((d) => d.score >= th && !lab.ownerOf(d.id));
@@ -271,9 +271,9 @@ test("session.ops snapshot replayed on createDetections + createLabelling", asyn
   assert.equal(r.redo, null);
   sameLine("redo");
   assert.deepEqual(mine(lab.history()), mine(out<HistoryView>("data.history after undo/redo")));
-  okv(await lab.relabel("o2", "orange jar"));
+  okv(await lab.relabel("dreamy-jay", "orange jar"));
   sameLine("new op clears redo");
-  sameSummary("new op clears redo", "o2");
+  sameSummary("new op clears redo", "dreamy-jay");
   assert.deepEqual(errv(await lab.redo()), { kind: "nothing-to-redo" });
 
   const mintAll = (runs: Fixture["extra"]) => {
@@ -293,12 +293,12 @@ test("session.ops snapshot replayed on createDetections + createLabelling", asyn
     }
   };
   mintAll(FIX.extra);
-  okv(await lab.add("o1", ["6.1"], ctx));
+  okv(await lab.add("orderly-dolphin", ["6.1"], ctx));
   sameLine("obj.add extra det");
-  sameSummary("obj.add extra det", "o1");
+  sameSummary("obj.add extra det", "orderly-dolphin");
   okv(await lab.create("mug", ["6.0"], ctx));
   sameLine("obj.new extra only");
-  sameSummary("obj.new extra only", "o5");
+  sameSummary("obj.new extra only", "boreal-bog");
   assert.deepEqual(okv(await lab.reject(["7.0"], ctx)), out("reject extra det"));
   sameLine("reject extra det");
 
@@ -345,9 +345,9 @@ test("session.ops snapshot replayed on createDetections + createLabelling", asyn
   assert.deepEqual(errv(lab.summary("o99")), { kind: "no-object", id: "o99" });
   assert.deepEqual(errv(await lab.delete("x")), { kind: "delete-reject" });
   assert.deepEqual(errv(await lab.delete("o99")), { kind: "no-object", id: "o99" });
-  assert.deepEqual(errv(await lab.merge("x", "o1")), { kind: "merge-reject" });
-  assert.deepEqual(errv(await lab.merge("o1", "o1")), { kind: "merge-self" });
-  assert.deepEqual(errv(await lab.merge("o1", "o99")), { kind: "no-object", id: "o99" });
+  assert.deepEqual(errv(await lab.merge("x", "orderly-dolphin")), { kind: "merge-reject" });
+  assert.deepEqual(errv(await lab.merge("orderly-dolphin", "orderly-dolphin")), { kind: "merge-self" });
+  assert.deepEqual(errv(await lab.merge("orderly-dolphin", "o99")), { kind: "no-object", id: "o99" });
   assert.deepEqual(errv(lab.match(["9.9"], 5, ctx)), { kind: "no-detection", id: "9.9" });
 
   const empty = okv(await lab.create("empty", ["2.1"], ctx)).id;

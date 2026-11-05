@@ -15,6 +15,17 @@ export const fmtBytes = (n: number) =>
       ? `${(n / 2 ** 20).toFixed(0)}\u00a0MB`
       : `${(n / 2 ** 10).toFixed(0)}\u00a0KB`;
 
+/** An object as objName writes it, with the id muted. */
+export function ObjName({ id, label }: { readonly id: string; readonly label: string }) {
+  return label ? (
+    <>
+      {label} <span className="muted">· {id}</span>
+    </>
+  ) : (
+    <span className="muted">{id}</span>
+  );
+}
+
 /** A detection's region cut from its keyframe (client-side, at display size), with its box drawn. */
 export function Crop({
   det,

@@ -1,5 +1,6 @@
 /** Labelling edits and the questions asked about the selection. Destructive edits confirm first. */
 import { ResultAsync } from "neverthrow";
+import { objName } from "../objects.ts";
 import type { Box } from "../types.ts";
 import { failure, sessionOf } from "./context.ts";
 import type { Ctx } from "./context.ts";
@@ -10,7 +11,7 @@ import type { ViewActions } from "./view.ts";
 export function createEditActions(ctx: Ctx, r: Runner, view: ViewActions, triage: TriageActions) {
   const { selection, frames, objects, layers } = ctx.stores;
   const ids = () => selection.getState().ids;
-  const label = (oid: string) => ctx.select.objById().get(oid)?.label ?? "";
+  const name = (id: string) => objName({ id, label: ctx.select.objById().get(id)?.label });
 
   async function newObject(text: string, list = ids()) {
     if (!list.length) return undefined;
@@ -31,18 +32,17 @@ export function createEditActions(ctx: Ctx, r: Runner, view: ViewActions, triage
     return res;
   }
   const removeFrom = (obj: string, list = ids()) =>
-    r.run(`Remove from ${obj}`, (s) => s.ops.obj.remove({ obj, ids: [...list] }));
+    r.run(`Remove from ${name(obj)}`, (s) => s.ops.obj.remove({ obj, ids: [...list] }));
   const rename = (obj: string, text: string) => r.run("Rename", (s) => s.ops.obj.label({ obj, label: text }));
   async function merge(into: string, from: string) {
     if (into === from) return undefined;
-    if (!(await r.ask(`Merge ${from} “${label(from)}” into ${into} “${label(into)}”?`, "Merge"))) return undefined;
+    if (!(await r.ask(`Merge ${name(from)} into ${name(into)}?`, "Merge"))) return undefined;
     const res = await r.run("Merge", (s) => s.ops.obj.merge({ into, from }));
     if (res) view.focusObject(into);
     return res;
   }
   async function deleteObject(obj: string) {
-    if (!(await r.ask(`Delete ${obj} “${label(obj)}”? Its detections go back to the todo list.`, "Delete")))
-      return undefined;
+    if (!(await r.ask(`Delete ${name(obj)}? Its detections go back to the todo list.`, "Delete"))) return undefined;
     const res = await r.run("Delete object", (s) => s.ops.obj.delete({ obj }));
     if (res) view.focusObject(null);
     return res;

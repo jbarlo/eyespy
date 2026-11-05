@@ -1,7 +1,7 @@
 /** Each reply as the text a command prints. */
 import type { Outputs } from "eyespy-core/api";
 import { placeOf } from "eyespy-core/video/pure";
-import { hitLine, hitsBlock, objLine, ranges } from "./lines.ts";
+import { hitLine, hitsBlock, idWidth, objLine, objLines, ranges } from "./lines.ts";
 
 type O = Outputs;
 
@@ -109,9 +109,13 @@ export const objSuggest = (r: O["obj.suggest"]): string =>
 
 export const objMatch = (r: O["obj.match"]): string => {
   const cur = r.current.length ? `currently in ${r.current.join(", ")}\n` : "";
+  const width = idWidth(
+    r.matches.map((m) => m.obj),
+    5,
+  );
   const rows = r.matches.map(
     (m) =>
-      `${m.obj.padEnd(5)} sim ${m.sim.toFixed(2)}  closest ${m.closest} (${m.closest_sim.toFixed(2)})  ${m.sightings} sightings  ${m.label}`,
+      `${m.obj.padEnd(width)} sim ${m.sim.toFixed(2)}  closest ${m.closest} (${m.closest_sim.toFixed(2)})  ${m.sightings} sightings  ${m.label}`,
   );
   return cur + (rows.length ? rows.join("\n") : "(no objects yet)");
 };
@@ -137,7 +141,7 @@ export const manifest = (r: O["manifest"]): string =>
     ? [
         ...r.items.map((i) => `${String(i.count).padStart(3)}  ${i.label}`),
         "",
-        ...r.objects.map(objLine),
+        ...objLines(r.objects),
         ...(r.image ? [`image: ${r.image}`] : []),
       ].join("\n")
     : "(no objects yet)";

@@ -53,4 +53,4 @@ export { FEATURE_CACHE_CHOICES, FEATURE_DISK_CHOICES } from "./settings.ts";
 export type { SessionRow, StorageSummary } from "./storage.ts";
 export { clipsStorage } from "./storage.ts";
 export type { StageHandle, StageStats } from "./stage.ts";
-export { objColor, REJECT_COLOR, REJECTED, TODO_COLOR } from "./objects.ts";
+export { objColor, objName, pickObject, REJECT_COLOR, REJECTED, TODO_COLOR } from "./objects.ts";

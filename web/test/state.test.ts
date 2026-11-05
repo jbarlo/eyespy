@@ -1,9 +1,10 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { masksOf } from "../src/state/detections.ts";
+import { objName, pickObject } from "../src/state/objects.ts";
 import { EXAMPLES } from "../src/state/examples.ts";
 import { parseSpec, toSpec } from "../src/state/frames.ts";
-import type { DetRow } from "../src/state/types.ts";
+import type { DetRow, Obj } from "../src/state/types.ts";
 import { AGREED, det, frame, sessionHandlers, settle, setup, UserError } from "./fakes.ts";
 
 test("open: loads the session, ready, threshold from config, remembers the OPFS name, polls", async () => {
@@ -709,4 +710,29 @@ test("copyNotice: a notice's text goes to the clipboard; a clipboard failure is 
     /Couldn't copy to the clipboard: Document is not focused\./,
   );
   assert.equal(host.copied.length, 1);
+});
+
+test("objects read label first; the picker finds one by its line, id or label", () => {
+  const obj = (id: string, label: string) => ({ id, label }) as never as Obj;
+  const objs = [
+    obj("calm-otter", "zucchini"),
+    obj("o3", "jar"),
+    obj("dreamy-jay", "jar"),
+    obj("sunny-osprey", "glass · jar"),
+  ];
+  assert.equal(objName(objs[0] as Obj), "zucchini · calm-otter");
+  assert.equal(objName({ id: "o3" }), "o3");
+  assert.equal(objName({ id: "o3", label: "" }), "o3");
+  const pick = (s: string) => pickObject(objs, s);
+  assert.equal(pick("zucchini · calm-otter"), "calm-otter", "a datalist line");
+  assert.equal(pick("jar · dreamy-jay"), "dreamy-jay", "the line, not the first object with the label");
+  assert.equal(pick("glass · jar · sunny-osprey"), "sunny-osprey", "a label holding the separator");
+  assert.equal(pick("calm-otter"), "calm-otter", "a word id");
+  assert.equal(pick("  Calm-Otter "), "calm-otter", "typed with capitals");
+  assert.equal(pick("o3"), "o3", "a legacy id");
+  assert.equal(pick("o3 · jar"), "o3", "a legacy line as the old datalist wrote it");
+  assert.equal(pick("ZUCCHINI"), "calm-otter", "a whole label");
+  assert.equal(pick("zucc"), "calm-otter", "part of a label");
+  assert.equal(pick("jar"), "o3", "a label that repeats gives the first");
+  assert.equal(pick("nothing"), undefined);
 });

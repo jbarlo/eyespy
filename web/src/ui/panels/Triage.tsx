@@ -1,5 +1,6 @@
 /** Triage: one look-alike group at a time; A / N / X / S decide it. */
-import { Crop, Panel } from "../common.tsx";
+import { objName } from "../../state/index.ts";
+import { Crop, ObjName, Panel } from "../common.tsx";
 import { useActions, useDerived, useSlice } from "../context.tsx";
 
 export function TriagePanel() {
@@ -60,9 +61,15 @@ export function TriagePanel() {
               type="button"
               disabled={!top}
               onClick={() => top && void a.assign(top.obj)}
-              title={top ? `Assign to ${top.obj} ${top.label}` : "No objects yet"}
+              title={top ? `Assign to ${objName({ id: top.obj, label: top.label })}` : "No objects yet"}
             >
-              <kbd>A</kbd> Assign{top ? ` to ${top.obj} · ${top.label}` : ""}
+              <kbd>A</kbd> Assign
+              {top && (
+                <>
+                  {" "}
+                  to <ObjName id={top.obj} label={top.label} />
+                </>
+              )}
             </button>
             <button type="button" onClick={() => void a.newObject(newLabel)}>
               <kbd>N</kbd> New object “{newLabel}”

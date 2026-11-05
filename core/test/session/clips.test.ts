@@ -16,8 +16,8 @@ async function twoClips(o: Opened) {
   await c.find({ prompt: "box", frames: "3-5" });
   const dets = (await c.data.dets({ mask: "none" })).dets;
   const on = (f: number) => dets.filter((d) => d.frame === f).map((d) => d.id);
-  const both = await c.obj.new({ label: "jar", ids: [on(0)[0] ?? "", on(3)[0] ?? ""] }); // o1, on both clips
-  const pantryOnly = await c.obj.new({ label: "box", ids: [on(4).at(-1) ?? ""] }); // o2, pantry only
+  const both = await c.obj.new({ label: "jar", ids: [on(0)[0] ?? "", on(3)[0] ?? ""] }); // orderly-dolphin, on both clips
+  const pantryOnly = await c.obj.new({ label: "box", ids: [on(4).at(-1) ?? ""] }); // dreamy-jay, pantry only
   await c.reject({ ids: [on(5)[0] ?? "", on(1).at(-1) ?? ""] });
   return { both, pantryOnly, dets };
 }
@@ -39,12 +39,12 @@ test("remove: a tombstone; frame numbers elsewhere stay; data, files and labels 
     const { both, dets } = await twoClips(o);
     const pantryDets = dets.filter((d) => d.frame >= 3).length;
     const r = await c.clips.remove({ clip: "pantry.mov" });
-    assert.deepEqual([r.key, r.frames, r.detections, r.deleted], [PANTRY_KEY, [3, 5], pantryDets, ["o2"]]);
-    // the pantry's detections left every object and the rejects. o2 had nothing else, so it is gone
+    assert.deepEqual([r.key, r.frames, r.detections, r.deleted], [PANTRY_KEY, [3, 5], pantryDets, ["dreamy-jay"]]);
+    // the pantry's detections left every object and the rejects. dreamy-jay had nothing else, so it is gone
     const objs = await c.data.objects();
     assert.deepEqual(
       objs.objects.map((x) => [x.id, x.members]),
-      [["o1", both.members.filter((m) => !m.startsWith("3."))]],
+      [["orderly-dolphin", both.members.filter((m) => !m.startsWith("3."))]],
     );
     assert.ok(objs.rejected.every((id) => Number(id.split(".")[0]) < 3));
     assert.deepEqual(
@@ -147,7 +147,7 @@ test("a removal interrupted after its tombstone is finished at the next open", a
     assert.ok(objs.objects.every((x) => x.members.every((m) => Number(m.split(".")[0]) < 3)));
     assert.deepEqual(
       objs.objects.map((x) => x.id),
-      ["o1"],
+      ["orderly-dolphin"],
     );
     assert.equal((await c.data.history()).ops.at(-1)?.op, "clip_remove");
     assert.ok(![...p.host.store.files.keys()].some((k) => k.startsWith(`clips/${PANTRY_KEY}/`)));
@@ -175,8 +175,24 @@ test("features {clear, clip}: drops one clip's stored features, keeps its detect
       [],
     );
     assert.equal((await c.data.dets({ mask: "none" })).dets.length, dets);
-    assert.deepEqual((await c.data.objects()).objects.find((x) => x.id === "o1")?.members, both.members);
+    assert.deepEqual((await c.data.objects()).objects.find((x) => x.id === "orderly-dolphin")?.members, both.members);
     assert.equal((await failure(c.features({ clear: true, clip: "nope.mov" }))).code, "BAD_REQUEST");
+  } finally {
+    o.close();
+  }
+});
+
+test("manifest crops: a word-pair id leaves its long label less room on the tile", async () => {
+  const o = await openEngine();
+  try {
+    const { both } = await twoClips(o);
+    const label = "a very long label that goes on and on";
+    await o.caller.obj.label({ obj: both.id, label });
+    o.host.codec.takeTexts();
+    await o.caller.manifest({ crops: true });
+    const caption = o.host.codec.takeTexts().find((t) => t.startsWith(both.id));
+    assert.equal(caption, `orderly-dolphin ${label.slice(0, 16)}`);
+    assert.ok((caption?.length ?? 0) <= 32);
   } finally {
     o.close();
   }

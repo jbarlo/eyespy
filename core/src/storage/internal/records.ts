@@ -153,7 +153,7 @@ export const encodeRuns = (runs: readonly RunRecord[]): object =>
     runs.map((r) => [`${r.frame}|${runLabel(r)}`, { ids: r.ids, presence: r.presence, sem: r.heatmap }] as const),
   );
 
-const owner = z.custom<Owner>((v) => typeof v === "string" && isOwner(v), "not an object id (o<n> or x)");
+const owner = z.custom<Owner>((v) => typeof v === "string" && isOwner(v), "not an object id (calm-otter, o<n> or x)");
 const ObjectsSchema = z.record(owner, z.object({ label: z.string(), members: z.array(detId) }));
 
 /** objects.json in file order. A missing reject set (a new session has no objects.json) is added at the end. */

@@ -16,7 +16,11 @@ export const crops = {
   short: "c",
   description: "Image is a close-up sheet of each detection instead of frame overlays",
 } as const;
-export const objArg = { type: "string", required: true, description: "Object id, e.g. o3" } as const;
+export const objArg = {
+  type: "string",
+  required: true,
+  description: "Object id, e.g. calm-otter (o3 in an older session)",
+} as const;
 export const ids = (description: string) => ({ type: "string", required: true, variadic: true, description }) as const;
 export const k = (n: number, description: string) => ({ type: "number", short: "k", default: n, description }) as const;
 export const frameArg = { type: "number", required: true, description: "Keyframe index" } as const;

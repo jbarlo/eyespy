@@ -31,13 +31,13 @@ async function build(): Promise<MemStore> {
     await step(() => c.find({ prompt: "lid", frames: "0-2" }));
     await step(() => c.obj.new({ label: "red jar", ids: ["0.0", "3.0"] }));
     await step(() => c.obj.new({ label: "orange jar", ids: ["0.1", "1.1"] }));
-    await step(() => c.obj.label({ obj: "o2", label: "orange jar (small)" }));
+    await step(() => c.obj.label({ obj: "dreamy-jay", label: "orange jar (small)" }));
     await step(() => c.obj.new({ label: "green box", ids: ["3.2"] }));
     await step(() => c.reject({ ids: ["0.2"] }));
     await step(() => c.reject({ prompt: "lid" }));
     await step(() => c.undo({}));
     await step(() => c.redo({}));
-    await step(() => c.obj.add({ obj: "o1", ids: ["1.0", "2.0"] }));
+    await step(() => c.obj.add({ obj: "orderly-dolphin", ids: ["1.0", "2.0"] }));
     return o.host.store;
   } finally {
     o.close();

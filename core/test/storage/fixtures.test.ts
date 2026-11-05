@@ -43,8 +43,8 @@ const DECODED = {
   "session-fake": {
     dets: "85315fba40a97e48ed6a2a39d5ec1ccf",
     runs: "f28e47fb70177de4c1557354f68f6f1b",
-    objects: "eb0dc5b1137719e4067019321043d380",
-    history: "6738d686f75da660c1871e5ccc279292",
+    objects: "051ddcd1d6a4c7800b2705d161bdaba2",
+    history: "1ea8724ee7763bff42e8f2522638f85a",
     nextObj: 4,
   },
 };

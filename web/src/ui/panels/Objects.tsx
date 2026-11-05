@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { objColor } from "../../state/index.ts";
-import { Crop, Panel } from "../common.tsx";
+import { objColor, objName } from "../../state/index.ts";
+import { Crop, ObjName, Panel } from "../common.tsx";
 import { useActions, useDerived, useSlice } from "../context.tsx";
 
 export function ObjectsPanel() {
@@ -65,8 +65,9 @@ export function ObjectsPanel() {
               >
                 {best ? <Crop det={best} size={40} label={`${o.id} best view`} /> : <span className="crop ph" />}
                 <i className="sw" style={{ background: objColor(o.id) }} />
-                <span className="oid">{o.id}</span>
-                <span className="olabel">{o.label}</span>
+                <span className="olabel" title={objName(o)}>
+                  <ObjName id={o.id} label={o.label} />
+                </span>
                 <span className="muted">{o.sightings}×</span>
               </button>
             </li>
@@ -83,7 +84,7 @@ export function ObjectsDatalist() {
   return (
     <datalist id="objects-list">
       {objects.map((o) => (
-        <option key={o.id} value={`${o.id} · ${o.label}`} />
+        <option key={o.id} value={objName(o)} />
       ))}
     </datalist>
   );

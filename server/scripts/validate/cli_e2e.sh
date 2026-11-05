@@ -64,19 +64,20 @@ A=$(first_id 0-3 jar 0); B=$(first_id 0-3 jar 9); C=$(first_id 0-3 jar 10); D=$(
 echo "ids: A=$A B=$B C=$C D=$D E=$E F=$F"
 run ok crop "$A"
 run ok similar "$A" -k 3
-run ok obj new "glass jar" "$A" "$B"
-run ok obj add o1 "$C"
-run ok obj new "second jar" "$D"
-run ok obj label o2 "второй jar (café)"                # non-ASCII label, rendered via SVG text
-run ok obj merge o1 o2
-run ok obj new "tmp" "$C"                               # o3: ids are never reused (o2 was merged away)
-run err obj show o2
-run ok obj remove o3 "$C"
-run ok obj delete o3
+run ok obj new "glass jar" "$A" "$B"; O1=${out%% *}      # an object row starts with its id
+run ok obj add "$O1" "$C"
+run ok obj new "second jar" "$D"; O2=${out%% *}
+run ok obj label "$O2" "второй jar (café)"                # non-ASCII label, rendered via SVG text
+run ok obj merge "$O1" "$O2"
+run ok obj new "tmp" "$C"; O3=${out%% *}                  # ids are never reused (O2 was merged away)
+[ "$O3" != "$O2" ] || { echo "FAIL id $O2 reused"; fail=$((fail + 1)); }
+run err obj show "$O2"
+run ok obj remove "$O3" "$C"
+run ok obj delete "$O3"
 run err obj delete x
 run err obj show o99
-run ok obj show o1
-run ok obj suggest o1 -k 4
+run ok obj show "$O1"
+run ok obj suggest "$O1" -k 4
 run ok reject "$E"
 run ok reject -p bottle "$F"
 run ok show -f 0-3

@@ -41,7 +41,7 @@
   "output": {
    "objects": [
     {
-     "id": "o1",
+     "id": "orderly-dolphin",
      "label": "red jar",
      "sightings": 4,
      "members": [
@@ -63,7 +63,7 @@
      }
     },
     {
-     "id": "o2",
+     "id": "dreamy-jay",
      "label": "orange jar (small)",
      "sightings": 2,
      "members": [
@@ -81,7 +81,7 @@
      }
     },
     {
-     "id": "o3",
+     "id": "sunny-osprey",
      "label": "green box",
      "sightings": 1,
      "members": [
@@ -115,7 +115,7 @@
     {
      "ts": 1767323053.638,
      "op": "new",
-     "obj": "o1",
+     "obj": "orderly-dolphin",
      "label": "red jar",
      "ids": [
       "0.0",
@@ -127,13 +127,13 @@
      "undoable": true,
      "undone": false,
      "objects": [
-      "o1"
+      "orderly-dolphin"
      ]
     },
     {
      "ts": 1767323054.872,
      "op": "new",
-     "obj": "o2",
+     "obj": "dreamy-jay",
      "label": "orange jar",
      "ids": [
       "0.1",
@@ -145,25 +145,25 @@
      "undoable": true,
      "undone": false,
      "objects": [
-      "o2"
+      "dreamy-jay"
      ]
     },
     {
      "ts": 1767323056.106,
      "op": "label",
-     "obj": "o2",
+     "obj": "dreamy-jay",
      "label": "orange jar (small)",
      "seq": 2,
      "undoable": true,
      "undone": false,
      "objects": [
-      "o2"
+      "dreamy-jay"
      ]
     },
     {
      "ts": 1767323057.34,
      "op": "new",
-     "obj": "o3",
+     "obj": "sunny-osprey",
      "label": "green box",
      "ids": [
       "3.2",
@@ -173,7 +173,7 @@
      "undoable": true,
      "undone": false,
      "objects": [
-      "o3"
+      "sunny-osprey"
      ]
     },
     {
@@ -229,7 +229,7 @@
     {
      "ts": 1767323063.51,
      "op": "add",
-     "obj": "o1",
+     "obj": "orderly-dolphin",
      "ids": [
       "1.0",
       "1.3",
@@ -240,7 +240,7 @@
      "undoable": true,
      "undone": false,
      "objects": [
-      "o1"
+      "orderly-dolphin"
      ]
     }
    ],
@@ -460,7 +460,7 @@
       80
      ],
      "area": 2000,
-     "object": "o1"
+     "object": "orderly-dolphin"
     },
     {
      "id": "0.1",
@@ -477,7 +477,7 @@
       90
      ],
      "area": 1500,
-     "object": "o2"
+     "object": "dreamy-jay"
     },
     {
      "id": "1.0",
@@ -494,7 +494,7 @@
       80
      ],
      "area": 2000,
-     "object": "o1"
+     "object": "orderly-dolphin"
     },
     {
      "id": "1.1",
@@ -511,7 +511,7 @@
       90
      ],
      "area": 1500,
-     "object": "o2"
+     "object": "dreamy-jay"
     },
     {
      "id": "2.0",
@@ -528,7 +528,7 @@
       80
      ],
      "area": 2000,
-     "object": "o1"
+     "object": "orderly-dolphin"
     },
     {
      "id": "2.1",
@@ -561,7 +561,7 @@
       100
      ],
      "area": 2400,
-     "object": "o1"
+     "object": "orderly-dolphin"
     },
     {
      "id": "4.0",
@@ -601,18 +601,18 @@
  "007 undo": {
   "input": {},
   "ops": [
-   "{\"ts\": 1767323053.638, \"op\": \"undo\", \"of\": 8, \"diff\": {\"o1\": {\"remove\": [\"1.0\", \"1.3\", \"2.0\", \"2.3\"]}}}"
+   "{\"ts\": 1767323053.638, \"op\": \"undo\", \"of\": 8, \"diff\": {\"orderly-dolphin\": {\"remove\": [\"1.0\", \"1.3\", \"2.0\", \"2.3\"]}}}"
   ],
   "files": {
-   "objects.json": "f03244ddbf9816c4 372",
-   "ops.jsonl": "108f0a26da8df428 1344"
+   "objects.json": "f2c60619601693f1 403",
+   "ops.jsonl": "6d918e91c8a359d7 1461"
   },
   "texts": [],
   "output": {
    "undone": {
     "ts": 1767323063.51,
     "op": "add",
-    "obj": "o1",
+    "obj": "orderly-dolphin",
     "ids": [
      "1.0",
      "1.3",
@@ -640,9 +640,9 @@
    "out/manifest.jpg": "48eed3c29a2476ab 37818"
   },
   "texts": [
-   "o1 red jar",
-   "o2 orange jar (small)",
-   "o3 green box"
+   "orderly-dolphin red jar",
+   "dreamy-jay orange jar (small)",
+   "sunny-osprey green box"
   ],
   "output": {
    "meta": {
@@ -726,7 +726,7 @@
    ],
    "objects": [
     {
-     "id": "o1",
+     "id": "orderly-dolphin",
      "label": "red jar",
      "sightings": 2,
      "members": [
@@ -744,7 +744,7 @@
      }
     },
     {
-     "id": "o2",
+     "id": "dreamy-jay",
      "label": "orange jar (small)",
      "sightings": 2,
      "members": [
@@ -762,7 +762,7 @@
      }
     },
     {
-     "id": "o3",
+     "id": "sunny-osprey",
      "label": "green box",
      "sightings": 1,
      "members": [

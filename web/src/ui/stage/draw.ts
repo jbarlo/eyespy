@@ -128,7 +128,8 @@ export function drawScene(c: HTMLCanvasElement, g: CanvasRenderingContext2D, s: 
   g.textBaseline = "top";
   for (const { det: d, kind, color } of s.visible) {
     if (kind !== "object" || !d.object) continue;
-    const text = `${d.object} ${s.objects.get(d.object)?.label ?? ""}`.slice(0, 32);
+    // the label alone: neighbouring tags collide with the id beside it, and hovering shows both
+    const text = (s.objects.get(d.object)?.label || d.object).slice(0, 32);
     const tw = g.measureText(text).width;
     g.fillStyle = "rgba(0,0,0,0.7)";
     g.fillRect(d.box[0], d.box[1] - font * 1.4, tw + 8 * px, font * 1.4);
