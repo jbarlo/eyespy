@@ -48,7 +48,7 @@ page.on("pageerror", (e) => errors.push(e.message));
 page.on("console", (m) => {
   if (m.text().includes("can't decode") || m.text().includes("track ")) say("page:", m.text());
 });
-const url = `${srv.url}/?debug&models=/models&runtime=/nm&session=${o.session}&detector=fp32&tracker`;
+const url = `${srv.url}/?debug&models=/models&runtime=/nm&session=${o.session}&detector=fp16&tracker`;
 const ready = () => page.evaluate(() => window.eyespyReady!.then(() => true));
 const status = () => page.evaluate(() => window.eyespy!.track.status());
 await page.goto(url);

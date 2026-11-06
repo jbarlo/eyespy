@@ -3,7 +3,7 @@
  * each clip's tracking grid, and the place on that grid being shown. Tracks are what the tracker made of a seed, and they
  * can jump onto another object, so nothing here calls a track that object.
  */
-import { COVER_SCORE } from "eyespy-core/tracking/pure";
+import { CONVERGED_FRAMES, COVER_SCORE } from "eyespy-core/tracking/pure";
 import { slice } from "./slice.ts";
 import type { Outputs } from "../engine/port.ts";
 import type { Rle } from "./types.ts";
@@ -71,7 +71,11 @@ export function rleBox(counts: readonly number[], w: number): TrackDraw["box"] |
 const overlapAt = (proposals: TrackProposals | null, track: string, at: number): boolean =>
   (proposals?.groups ?? [])
     .flatMap((g) => g.tracks)
-    .some((t) => t.track === track && t.converged_with.some((c) => c.first <= at && at <= c.last));
+    .some(
+      (t) =>
+        t.track === track &&
+        t.converged_with.some((c) => c.frames >= CONVERGED_FRAMES && c.first <= at && at <= c.last),
+    );
 
 /** Why a track's mask on this place looks unsure. */
 export const unsureAt = (

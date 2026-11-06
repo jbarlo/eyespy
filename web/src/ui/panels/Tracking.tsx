@@ -2,6 +2,7 @@
  * Video tracking in plain words: what the queue is doing, pause and stop, the tracks, and the slider over the frames
  * between keyframes. Only with `?models=<base>&tracker`. A track is the tracker's guess, and the text says so.
  */
+import type { ReactNode } from "react";
 import type { Clip, TrackRow } from "../../state/index.ts";
 import { nextInLine, objColor, trackingPhase, trackOfDet } from "../../state/index.ts";
 import { Crop, fmtBytes, Panel, useNativeInput, VideoInput } from "../common.tsx";
@@ -142,10 +143,10 @@ export function TrackingPanel() {
   const limit = useSlice("engine", (s) => s.config.auto_tracks);
   const show = useSlice("tracking", (s) => s.show);
   const clips = useSlice("frames", (s) => s.clips);
-  const dets = useSlice("detections", (s) => s.dets.length);
   const place = useDerived((s) => s.trackPlace());
   const cuts = useSlice("tracking", (s) => (place ? (s.grids.get(place.clip)?.cuts.length ?? 0) : 0));
   const flagged = (clips ?? []).filter((c) => c.tracking?.keyframes_only);
+  const canTrack = (clips ?? []).some((c) => c.detections > 0 && !c.tracking?.keyframes_only);
   const bytes = (clips ?? []).reduce(
     (n, c) => n + (c.tracking ? c.tracking.trunk_bytes + c.tracking.frame_bytes + c.tracking.track_bytes : 0),
     0,
@@ -200,7 +201,7 @@ export function TrackingPanel() {
         )}
       </div>
       {tracks.length > 0 && phase.kind !== "stopped" && phase.kind !== "finished" && <PauseStop />}
-      {(phase.kind === "stopped" || (phase.kind === "off" && dets > 0)) && (
+      {(phase.kind === "stopped" || (phase.kind === "off" && canTrack)) && (
         <span className="track-buttons">
           <button type="button" data-track-again onClick={() => void a.trackAgain()}>
             {phase.kind === "stopped" ? "Start tracking again" : "Track what was found"}
@@ -257,9 +258,42 @@ export function TrackingPanel() {
   );
 }
 
+/** Its own component, so its native input listener attaches when the slider first exists. */
+function TrackSlider({
+  at,
+  n,
+  t,
+  children,
+}: {
+  readonly at: number;
+  readonly n: number;
+  readonly t: number;
+  readonly children: ReactNode;
+}) {
+  const a = useActions();
+  const go = (v: string) => a.setTrackAt(Number(v));
+  const slider = useNativeInput(go);
+  return (
+    <div className="slider">
+      <input
+        ref={slider}
+        type="range"
+        min={0}
+        max={n - 1}
+        step={1}
+        value={at}
+        data-track-slider
+        aria-label="Tracked frames"
+        aria-valuetext={`Frame ${at + 1} of ${n}, ${t.toFixed(1)} seconds`}
+        onChange={(e) => go(e.currentTarget.value)}
+      />
+      {children}
+    </div>
+  );
+}
+
 /** Under the keyframes: the slider over every frame tracking uses, or the flag of a clip that has only keyframes. */
 export function TrackScrub() {
-  const a = useActions();
   const place = useDerived((s) => s.trackPlace());
   const draws = useDerived((s) => s.trackDraws().length);
   const clipKey = useDerived((s) => s.currentFrame()?.clipKey);
@@ -273,8 +307,10 @@ export function TrackScrub() {
         )
       : false,
   );
-  const go = (v: string) => a.setTrackAt(Number(v));
-  const slider = useNativeInput(go);
+  const moving = useSlice(
+    "tracking",
+    (s) => nextInLine(s.status?.tracks ?? []) !== null || (s.status?.waiting ?? 0) > 0,
+  );
   if (clip?.tracking?.keyframes_only)
     return clip.tracking.can_prepare ? (
       <div className="scrub track-scrub" data-keyframes-only>
@@ -289,19 +325,7 @@ export function TrackScrub() {
   return (
     <div className="scrub track-scrub">
       <span className="muted small track-scrub-label">Tracked frames</span>
-      <div className="slider">
-        <input
-          ref={slider}
-          type="range"
-          min={0}
-          max={n - 1}
-          step={1}
-          value={place.at}
-          data-track-slider
-          aria-label="Tracked frames"
-          aria-valuetext={`Frame ${place.at + 1} of ${n}, ${place.slot.t.toFixed(1)} seconds`}
-          onChange={(e) => go(e.currentTarget.value)}
-        />
+      <TrackSlider at={place.at} n={n} t={place.slot.t}>
         <div className="ticks" aria-hidden="true">
           {(cuts ?? []).flatMap((c) => {
             const k = times.findIndex((s) => s.t >= c);
@@ -310,9 +334,16 @@ export function TrackScrub() {
               : [<i key={c} title="cut" style={{ left: `calc(${n > 1 ? k / (n - 1) : 0} * (100% - 14px) + 7px)` }} />];
           })}
         </div>
-      </div>
+      </TrackSlider>
       <span className="frame-no" aria-live="polite" data-track-place>
-        {place.at + 1}/{n} · {place.slot.t.toFixed(1)} s · {reached ? `${plural(draws, "mask")}` : "not tracked yet"}
+        {place.at + 1}/{n} · {place.slot.t.toFixed(1)} s ·{" "}
+        {reached
+          ? draws
+            ? plural(draws, "mask")
+            : "nothing seen here"
+          : moving
+            ? "not tracked yet"
+            : "no tracks here"}
       </span>
     </div>
   );
