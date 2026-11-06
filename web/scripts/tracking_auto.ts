@@ -41,7 +41,8 @@ const started = Date.now();
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 const say = (...a: unknown[]) => console.log(`[${((Date.now() - started) / 1000).toFixed(0)}s]`, ...a);
 
-const srv = await serve(pageMounts());
+// A fixed port keeps the origin, and with it a persistent profile's copy of the models.
+const srv = await serve(pageMounts(), Number(process.env.EYESPY_WEB_PORT ?? 41908));
 const { page, close } = await launch({ userDataDir: o.profile });
 const errors: string[] = [];
 page.on("pageerror", (e) => errors.push(e.message));
