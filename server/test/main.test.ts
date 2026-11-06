@@ -118,7 +118,7 @@ test("server: bad args or env → one line and the usage, exit 2 (no stack trace
   assert.equal(
     bad.out(),
     "eyespy-server: --detector: must be fp32 or fp16\n" +
-      "usage: eyespy-server --session <dir> [--models <dir>] [--idle-minutes N] [--detector fp32|fp16] [--cpu] [--feature-disk-mb N]\n",
+      "usage: eyespy-server --session <dir> [--models <dir>] [--idle-minutes N] [--detector fp32|fp16] [--cpu] [--feature-disk-mb N] [--tracker]\n",
   );
   const nan = server(["--session", "/nonexistent"], { EYESPY_FEATURE_CACHE_MB: "lots" });
   assert.equal(await nan.exited, 2);

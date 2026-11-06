@@ -1150,3 +1150,60 @@ button.info {
     height: auto;
   }
 }
+
+/* Video tracking */
+.track-buttons {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+}
+.statusbar .track-buttons button {
+  padding: 0 6px;
+}
+.list.tracks {
+  max-height: 320px;
+  overflow-y: auto;
+}
+.track-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.track-row[data-first] .track-pick {
+  border-color: var(--accent);
+}
+.track-pick {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  text-align: left;
+}
+.track-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.track-count {
+  font-variant-numeric: tabular-nums;
+}
+.track-flag {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  border-left: 3px solid var(--accent);
+  padding-left: 8px;
+}
+.track-scrub-label {
+  min-width: 5.5em;
+}
+.legend i.legend-solid {
+  background: #7dd3fc;
+}
+.legend i.legend-unsure {
+  background: transparent;
+  outline: 1px solid #7dd3fc;
+  outline-offset: -1px;
+}

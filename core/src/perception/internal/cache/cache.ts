@@ -29,7 +29,7 @@ import { FeatureState } from "./state.cache.ts";
 export type CachePorts = {
   readonly store: FeatureStore;
   readonly frames: FrameImages;
-  readonly encode: (img: RGB) => ResultAsync<Features, PerceptionError>;
+  readonly encode: (img: RGB, i: FrameNo) => ResultAsync<Features, PerceptionError>;
   readonly clock: Clock;
   readonly logger: Logger;
 };
@@ -156,7 +156,7 @@ export function createFeatureCache(p: CachePorts, opts: CacheOptions): FeatureCa
         if (permanent(e)) st.markFailed(i, e);
         return e;
       })
-      .andThen((img) => p.encode(img))
+      .andThen((img) => p.encode(img, i))
       .andThen((f) => (st.persist ? persistFrame(i, ref, f) : okAsync(false)).map((written) => ({ f, written })))
       .map(({ f, written }) => {
         st.markEncoded(i);

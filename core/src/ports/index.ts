@@ -4,7 +4,7 @@
  */
 export type { Clock, HostFailure, HostInfo, Logger, Timers } from "./host.ts";
 export { hostFailure } from "./host.ts";
-export type { Feeds, Model, ModelRuntime, RuntimeInfo, Tensor } from "./runtime.ts";
+export type { ChainStep, Feeds, Model, ModelChain, ModelRuntime, RuntimeInfo, Tensor } from "./runtime.ts";
 export type { SessionStore, StoredFile } from "./store.ts";
 export type { ClipFormat, ClipSource, OpenOptions, Timing } from "./video.ts";
 export type { ImageCodec, Rgb3, TextItem } from "./codec.ts";

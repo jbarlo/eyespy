@@ -14,9 +14,13 @@
  *      and can't be undone.
  *   4. detections.drop, then delete each dets/<id>.npz and mask PNG and each run's heatmap, a few at a time. Their
  *      order doesn't matter because the tombstone is already on disk. Then write dets.json and runs.json.
- *   5. perception.forget and video.forget clear RAM. removeClipFiles deletes frames and features last.
- * A crash after step 2 leaves a tombstone with data: detections in its frames, or objects holding them. At session
- * creation, `recoverRemovals` runs steps 3 to 5 again for every such clip. Steps 3 to 5 skip what is already gone.
+ *   5. Its tracks leave tracks.json, whose seeds are gone now.
+ *   6. perception.forget and video.forget clear RAM. removeClipFiles deletes frames, features, trunks and tracks last.
+ * A crash after step 2 leaves a tombstone with data: detections in its frames, objects holding them, or tracks. At
+ * session creation, `recoverRemovals` runs steps 3 to 6 again for every such clip. They skip what is already gone.
+ *
+ * Reviving a clip brings back its keyframes and tracking grid, with the same places on them, and no detections. So no
+ * track comes back either, and a new one files its data under a new id.
  */
 import type { ResultAsync } from "neverthrow";
 import { okAsync } from "neverthrow";
@@ -29,10 +33,15 @@ import type { AddReply, ClipsRemoveReply, SessionError } from "../types.ts";
 import type { Kit } from "./context.ts";
 import { parallel, sequence } from "./context.ts";
 import { writeIndex, writeMeta } from "./persist.ts";
+import { dropClipTracks } from "./tracks.ts";
 
 export const addClip = (k: Kit, ctx: Ctx, ref: string, fps: number | null): ResultAsync<AddReply, SessionError> =>
   k.modules.video
-    .addClip(ref, { keyframeThresh: ctx.cfg.keyframe_thresh, fps })
+    .addClip(ref, {
+      keyframeThresh: ctx.cfg.keyframe_thresh,
+      fps,
+      trackFps: k.modules.tracking ? ctx.cfg.track_fps : null,
+    })
     .andThen((added) => writeMeta(k).map(() => added))
     .map(({ clip, first, revived }) => ({
       clip: clip.path,
@@ -44,7 +53,7 @@ export const addClip = (k: Kit, ctx: Ctx, ref: string, fps: number | null): Resu
 
 type Purged = { readonly detections: number; readonly stripped: number; readonly deleted: readonly ObjectId[] };
 
-/** Steps 3 to 5 of removal (see the header) for a tombstoned clip. */
+/** Steps 3 to 6 of removal (see the header) for a tombstoned clip. */
 const purge = (k: Kit, clip: Clip): ResultAsync<Purged, SessionError> => {
   const { video, labelling, detections, perception } = k.modules;
   const fr = video.clipFrames(clip.key);
@@ -58,8 +67,10 @@ const purge = (k: Kit, clip: Clip): ResultAsync<Purged, SessionError> => {
         parallel(gone.runs, (r) => (r.heatmap === null ? okAsync(undefined) : k.stores.heatmaps.remove(r.heatmap))),
       )
       .andThen(() => writeIndex(k))
+      .andThen(() => dropClipTracks(k, clip.key))
       .andThen(() => {
         perception.forget(fr);
+        perception.forgetTrunks(clip.key);
         video.forget(fr);
         return k.stores.removeClipFiles(clip.key);
       })
@@ -86,11 +97,12 @@ const interrupted = (k: Kit, clip: Clip): boolean => {
   const fs = new Set(k.modules.video.clipFrames(clip.key));
   return (
     k.modules.detections.inFrames(fs).length > 0 ||
-    [...k.modules.labelling.owners().keys()].some((id) => fs.has(frameOf(id)))
+    [...k.modules.labelling.owners().keys()].some((id) => fs.has(frameOf(id))) ||
+    k.tracks.index().tracks.some((t) => t.clip === clip.key)
   );
 };
 
-/** Finishes steps 3 to 5 of every removal that stopped after writing its tombstone. */
+/** Finishes steps 3 to 6 of every removal that stopped after writing its tombstone. */
 export const recoverRemovals = (k: Kit): ResultAsync<number, SessionError> => {
   const todo = k.modules.video.clips().filter((c) => c.removed !== null && interrupted(k, c));
   return sequence(todo, (c) =>

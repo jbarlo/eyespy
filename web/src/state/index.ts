@@ -15,6 +15,8 @@ export type App = {
   readonly select: Selectors;
   readonly actions: Actions;
   readonly assets: AssetCaches;
+  /** Whether the engine was opened with video tracking. */
+  readonly tracking: boolean;
   /** Stop the reactions and close the session. */
   readonly dispose: () => void;
 };
@@ -30,6 +32,7 @@ export function createStores(deps: StateDeps): App {
     select,
     actions,
     assets: deps.assets,
+    tracking: deps.tracking,
     dispose: () => {
       stopReactions();
       actions.closeSession();
@@ -42,6 +45,8 @@ export type { Imaging, Sprites } from "./assets/index.ts";
 export { browserImaging, createAssetCaches } from "./assets/index.ts";
 export type { Selectors } from "./selectors.ts";
 export { computeVisible, refKey } from "./selectors.ts";
+export type { TrackDraw, TrackRow } from "./tracking.ts";
+export { nextInLine, trackingPhase, trackOfDet } from "./tracking.ts";
 export type { StoreStates } from "./stores.ts";
 export type * from "./ports.ts";
 export type * from "./types.ts";

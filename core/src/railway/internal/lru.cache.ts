@@ -19,6 +19,9 @@ export class Lru<K, V> {
   get size(): number {
     return this.m.size;
   }
+  clear(): void {
+    this.m.clear();
+  }
   delete(k: K): void {
     this.m.delete(k);
   }

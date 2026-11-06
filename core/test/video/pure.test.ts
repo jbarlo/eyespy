@@ -3,6 +3,8 @@ import { createHash } from "node:crypto";
 import { test } from "node:test";
 import {
   placeOf,
+  shotAround,
+  trackGridTimes,
   CONTENT_KEY_RANGE,
   contentKey,
   contentKeyOf,
@@ -199,4 +201,22 @@ test("placeOf: a photo by position, a video frame by seconds to one decimal", ()
   assert.equal(placeOf({ t: 3, photo: true }), "photo 3");
   assert.equal(placeOf({ t: 1.25 }), "1.3s");
   assert.equal(placeOf({ t: 0, photo: false }), "0.0s");
+});
+
+test("trackGridTimes: both frames of a cut join the grid, and a sample between them goes", () => {
+  assert.deepEqual(trackGridTimes([0], 3, 2), [0, 0.5, 1, 1.5, 2, 2.5]);
+  // The cut lies between the stream frames at 1.4 and 1.6, so the sample at 1.5 could show either shot.
+  assert.deepEqual(trackGridTimes([0], 3, 2, [1.6], 0.2), [0, 0.5, 1, 1.4, 1.6, 2, 2.5]);
+  // A keyframe on the far side stays.
+  assert.deepEqual(trackGridTimes([0, 1.6], 3, 2, [1.6], 0.2), [0, 0.5, 1, 1.4, 1.6, 2, 2.5]);
+});
+
+test("shotAround: the grid stretch between the cuts around a place", () => {
+  const times = [0, 0.5, 1, 1.4, 1.6, 2, 2.5, 3.4, 3.6];
+  const cuts = [1.6, 3.6];
+  assert.deepEqual(shotAround(times, cuts, 0), { first: 0, last: 3 });
+  assert.deepEqual(shotAround(times, cuts, 3), { first: 0, last: 3 });
+  assert.deepEqual(shotAround(times, cuts, 4), { first: 4, last: 7 });
+  assert.deepEqual(shotAround(times, cuts, 8), { first: 8, last: 8 });
+  assert.deepEqual(shotAround(times, [], 5), { first: 0, last: 8 });
 });

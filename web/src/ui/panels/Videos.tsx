@@ -75,6 +75,12 @@ export function VideosPanel() {
                   {fmtBytes(c.frame_bytes)} keyframe images · {c.feature_bytes ? fmtBytes(c.feature_bytes) : "no"}{" "}
                   features stored
                 </span>
+                {c.tracking && !c.tracking.keyframes_only && (
+                  <span className="muted" data-clip-tracking-bytes>
+                    Tracking: {fmtBytes(c.tracking.trunk_bytes)} analysed frames · {fmtBytes(c.tracking.frame_bytes)}{" "}
+                    pictures · {fmtBytes(c.tracking.track_bytes)} tracks
+                  </span>
+                )}
               </button>
               <span className="video-actions">
                 {c.feature_bytes > 0 && (

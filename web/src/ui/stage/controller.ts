@@ -5,7 +5,7 @@
  * sprites.
  */
 import type { StoreApi } from "zustand/vanilla";
-import type { App, Box, Det, StageHandle, StageStats } from "../../state/index.ts";
+import type { App, Box, Det, StageHandle, StageStats, TrackDraw, Visible } from "../../state/index.ts";
 import { computeVisible, objName, refKey, REJECTED } from "../../state/index.ts";
 import { drawScene, fillBand, sameScene, sizeCanvas } from "./draw.ts";
 import type { Scene } from "./draw.ts";
@@ -27,7 +27,16 @@ type Drag = {
   readonly shift: boolean;
 };
 
+const NOTHING: readonly Det[] = [];
+const NO_VISIBLE: readonly Visible[] = [];
 const DRAG_BOX = "rgb(255,255,255)";
+
+/** A tracked mask's tooltip: it says what it is, and never that it is that object for sure. */
+const trackTip = (t: TrackDraw): readonly string[] => [
+  `tracked from a detection, not checked · score ${t.score.toFixed(1)}`,
+  ...(t.unsure === "score" ? ["less sure: the tracker gave it a low score here"] : []),
+  ...(t.unsure === "overlap" ? ["less sure: another track was on the same thing around here"] : []),
+];
 const SEARCH_BOX = "rgb(34,211,238)";
 
 export function createStageController(o: {
@@ -55,6 +64,12 @@ export function createStageController(o: {
     if (f) view = fitView(f.w, f.h, wrap.clientWidth, wrap.clientHeight);
   }
 
+  /** The store key of the picture shown between keyframes, or null when a keyframe is shown. */
+  const betweenKey = (): string | null => {
+    const place = sel.trackPlace();
+    return place?.between ? refKey(place.slot.image) : null;
+  };
+
   /** The heatmap for the shown frame and heatmap prompt, if its layer is on (starts loading it if needed). */
   function heat(frameNo: number): ImageBitmap | null {
     const { layers, semPrompt } = stores.layers.getState();
@@ -71,20 +86,27 @@ export function createStageController(o: {
     const f = frame();
     const { ids, obj, hover, searchRect } = stores.selection.getState();
     const selected = new Set([...ids, ...((obj && sel.objById().get(obj)?.members) || [])]);
+    const between = betweenKey();
     return {
       frame: f,
-      bitmap: f ? actions.frameBitmapNow(f.frame) : null,
+      // while a frame between keyframes loads, the last picture stays, so scrubbing doesn't flash
+      bitmap: between
+        ? (actions.imageBitmapNow(between) ?? (drawn?.bitmap?.width ? drawn.bitmap : null))
+        : f
+          ? actions.frameBitmapNow(f.frame)
+          : null,
       view,
       dpr: devicePixelRatio || 1,
       layers: stores.layers.getState().layers,
-      dets: (f && sel.detsByFrame().get(f.frame)) || [],
-      visible: sel.visible(),
+      dets: between ? NOTHING : (f && sel.detsByFrame().get(f.frame)) || NOTHING,
+      visible: between ? NO_VISIBLE : sel.visible(),
       masks: sel.frameMasks(),
       hover: hover ? (sel.detById().get(hover) ?? null) : null,
       selected,
       objects: sel.objById(),
-      heat: f ? heat(f.frame) : null,
+      heat: f && !between ? heat(f.frame) : null,
       boxes: [...(rect ? [[rect, DRAG_BOX] as const] : []), ...(searchRect ? [[searchRect, SEARCH_BOX] as const] : [])],
+      tracks: sel.trackDraws(),
     };
   }
 
@@ -156,10 +178,23 @@ export function createStageController(o: {
     return toFrame(view, e.clientX - r.left, e.clientY - r.top);
   };
 
+  /** The topmost tracked mask under a frame point. */
+  function pickTrack(x: number, y: number): TrackDraw | null {
+    const f = frame();
+    if (!f) return null;
+    return (
+      sel
+        .trackDraws()
+        .findLast((t) =>
+          assets.sprites.hit(t.id, t.rle, [0, 0, t.rle.w, t.rle.h], (x / f.w) * t.rle.w, (y / f.h) * t.rle.h),
+        ) ?? null
+    );
+  }
+
   /** The smallest shown (or selected) region under a frame point. */
   function pick(x: number, y: number): Det | null {
     const f = frame();
-    if (!f) return null;
+    if (!f || betweenKey()) return null;
     const ids = stores.selection.getState().ids;
     const masks = sel.frameMasks();
     const cands = new Map<string, Det>(sel.visible().map((v) => [v.det.id, v.det]));
@@ -213,7 +248,17 @@ export function createStageController(o: {
     const p = pick(x, y);
     actions.setHover(p?.id ?? null);
     if (!p) {
-      if (tip.getState().tip) tip.setState({ tip: null });
+      const t = pickTrack(x, y);
+      if (t) {
+        const r = wrap.getBoundingClientRect();
+        tip.setState({
+          tip: {
+            x: e.clientX - r.left + 14,
+            y: e.clientY - r.top + 14,
+            lines: [`${t.label} · ${t.track}`, ...trackTip(t)],
+          },
+        });
+      } else if (tip.getState().tip) tip.setState({ tip: null });
       return;
     }
     const o = p.object && p.object !== REJECTED ? sel.objById().get(p.object) : undefined;
@@ -240,7 +285,11 @@ export function createStageController(o: {
       if (p) {
         if (e.shiftKey) actions.toggleSelect(p.id);
         else actions.select([p.id]);
-      } else if (!e.shiftKey) actions.clearSelection();
+        return;
+      }
+      const t = pickTrack(x, y);
+      if (t) actions.select([t.det]);
+      else if (!e.shiftKey) actions.clearSelection();
       return;
     }
     if (d.mode !== "rect" || !rect) return;
@@ -298,6 +347,11 @@ export function createStageController(o: {
     }),
     stores.selection.subscribe((s, p) => {
       if (s.ids !== p.ids || s.obj !== p.obj || s.hover !== p.hover || s.searchRect !== p.searchRect) schedule();
+    }),
+    stores.tracking.subscribe((s, p) => {
+      if (s.at !== p.at) onFrames();
+      if (s.at !== p.at || s.masks !== p.masks || s.show !== p.show || s.grids !== p.grids || s.status !== p.status)
+        schedule();
     }),
     stores.layers.subscribe((s, p) => {
       if (s.layers !== p.layers || s.threshold !== p.threshold || s.semPrompt !== p.semPrompt) schedule();

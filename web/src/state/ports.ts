@@ -4,7 +4,7 @@
  * here as values and state turns them into notices.
  */
 import type { ResultAsync } from "neverthrow";
-import type { EngineError, EngineEvent, EngineOps, EyespyApi } from "../engine/port.ts";
+import type { EngineError, EngineEvent, EngineOps, EyespyApi, Outputs } from "../engine/port.ts";
 import type { AddResult, Detector, SessionLocation, Usage } from "./types.ts";
 
 export type { EngineError, EngineEvent, EyespyApi };
@@ -16,6 +16,8 @@ export type EngineSession = {
   /** A stored file's bytes (null when it's gone). */
   readonly file: (key: string) => ResultAsync<Uint8Array | null, EngineError>;
   readonly addFile: (file: File) => ResultAsync<AddResult, EngineError>;
+  /** Gives a keyframes-only clip its tracking frames, from its video file picked again. */
+  readonly prepareFile: (file: File, clip: string) => ResultAsync<Outputs["track"]["prepare"], EngineError>;
   /** The JSON wrapper published as window.eyespy (the console panel calls ops by name through it). */
   readonly api: EyespyApi;
   readonly dispose: () => void;

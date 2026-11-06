@@ -14,6 +14,9 @@ export const DEFAULT_CONFIG = {
   presence: 0.5,
   active: 0.5,
   idle_minutes: 30,
+  track_fps: 2,
+  track_recheck: 1.5,
+  auto_tracks: 64,
 } as const;
 export type ConfigKey = keyof typeof DEFAULT_CONFIG;
 export type Config = Readonly<Record<ConfigKey, number>>;
@@ -113,6 +116,31 @@ export const CONFIG_META: Readonly<Record<ConfigKey, ConfigMeta>> = {
     help:
       "CLI only: the background server exits after this many idle minutes once encoding is done, which frees its " +
       "GPU memory; the next command starts it again. The browser app has no server and ignores it.",
+  },
+  track_fps: {
+    int: false,
+    doc: "tracking frames per second per clip, on top of its keyframes; applies to clips added later",
+    label: "Tracking rate",
+    help:
+      "How many frames a second video tracking follows objects on. Higher follows fast motion better, and each " +
+      "frame costs a GPU encode and disk space. Only videos added after the change use it, and only with tracking on.",
+  },
+  track_recheck: {
+    int: false,
+    doc: "seconds between looks for a tracked object that has left the frame, 0 to look on every frame; applies to tracks started later",
+    label: "Tracking re-check",
+    help:
+      "A tracked object that leaves the frame stops costing a GPU pass per frame, and tracking looks for it again " +
+      "this often. Longer saves more work and can miss an object that comes back only briefly. 0 looks on every frame.",
+  },
+  auto_tracks: {
+    int: true,
+    doc: "most tracks auto tracking queues per clip; applies to auto tracking started later",
+    label: "Auto tracking limit",
+    help:
+      "When tracking is started for everything a search found, each detection not on a track yet starts one, up to " +
+      "this many per clip, best scores first. Each costs GPU time on every frame it stays in view. Raise it for " +
+      "crowded clips you are willing to wait for. Tracks you ask for yourself don't count.",
   },
 };
 export const isConfigKey = (k: string): k is ConfigKey => Object.hasOwn(DEFAULT_CONFIG, k);

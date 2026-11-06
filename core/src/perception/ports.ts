@@ -27,12 +27,16 @@ export interface FeatureStore {
 export interface FrameImages {
   liveFrames(): readonly FrameNo[];
   ref(i: FrameNo): Result<FrameRef, NoKeyframe>;
+  /** Where a keyframe's trunk is filed. */
+  trackRef(i: FrameNo): FrameRef | null;
   image(i: FrameNo): ResultAsync<RGB, FrameAccessError>;
 }
 
 export type PerceptionPorts = {
   readonly runtime: ModelRuntime;
   readonly features: FeatureStore;
+  /** Stored trunks, in the same shape as features but with FrameRefs on the tracking grid. Needed with visionParts. */
+  readonly trunks?: FeatureStore;
   readonly frames: FrameImages;
   /** Timing logs. */
   readonly clock: Clock;

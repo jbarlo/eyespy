@@ -4,12 +4,23 @@ import type { RGB, Shape } from "../../pixels/index.ts";
 import type { ClipFormat, HostFailure, OpenOptions } from "../../ports/index.ts";
 import { hostFailure } from "../../ports/index.ts";
 import type { VideoPorts } from "../ports.ts";
-import type { Clip, ClipKey, ClipTiming, FrameAccessError, FrameNo, FrameRef, FrameSlot, NoKeyframe } from "../pure.ts";
-import { isClipKey, isFrameNo, parseFrameSpec } from "../pure.ts";
+import type {
+  Clip,
+  ClipKey,
+  ClipTiming,
+  FrameAccessError,
+  FrameNo,
+  FrameRef,
+  FrameSlot,
+  MissingTrackFrame,
+  NoKeyframe,
+  TrackSlot,
+} from "../pure.ts";
+import { isClipKey, isFrameNo, parseFrameSpec, shotAround, trackGridTimes } from "../pure.ts";
 import { invariant } from "../../invariant/index.ts";
 import type { AddedClip, RemovedClip, Video, VideoError, VideoOptions } from "../types.ts";
 import { Lru } from "./images.cache.ts";
-import { keyframeRate, pickKeyframes } from "./keyframes.ts";
+import { CUT_STEP, keyframeRate, pickKeyframesTimed } from "./keyframes.ts";
 import type { Timeline } from "./timeline.ts";
 import {
   appended,
@@ -113,9 +124,79 @@ export class VideoImpl implements Video {
     for (const i of frames) this.images.delete(i);
   }
 
+  trackGrid(key: ClipKey): readonly TrackSlot[] {
+    const k = positionOf(this.tl, key);
+    const clip = this.tl.clips[k];
+    if (!clip) return [];
+    const fr = framesAt(this.tl, k);
+    const keyframes = new Map(clip.times.map((t, j) => [t, fr[j] ?? null] as const));
+    return (clip.trackTimes ?? clip.times).map((t, at) => ({ at, t, keyframe: keyframes.get(t) ?? null }));
+  }
+  trackCuts(key: ClipKey): readonly number[] {
+    return this.tl.clips[positionOf(this.tl, key)]?.trackCuts ?? [];
+  }
+  trackShot(key: ClipKey, at: number): { readonly first: number; readonly last: number } {
+    return shotAround(
+      this.trackGrid(key).map((s) => s.t),
+      this.trackCuts(key),
+      at,
+    );
+  }
+  trackRef(i: FrameNo): FrameRef | null {
+    return slot(this.tl, i).match(
+      (s) => {
+        const at = (s.clip.trackTimes ?? s.clip.times).indexOf(s.t);
+        return at < 0 ? null : { clipKey: s.clip.key, index: at };
+      },
+      () => null,
+    );
+  }
+  trackImage(key: ClipKey, at: number): ResultAsync<RGB, FrameAccessError | MissingTrackFrame> {
+    const missing: MissingTrackFrame = { kind: "missing-track-frame", clip: key, at };
+    const place = this.trackGrid(key)[at];
+    if (!place) return errAsync(missing);
+    if (place.keyframe !== null) return this.image(place.keyframe);
+    return this.ports.frames
+      .readTrack({ clipKey: key, index: at })
+      .andThen((bytes): ResultAsync<RGB, HostFailure | MissingTrackFrame> =>
+        bytes === null
+          ? errAsync(missing)
+          : ResultAsync.fromPromise(this.ports.decoder.decode(bytes), (e) => hostFailure("codec", "decode", e)),
+      );
+  }
+
+  prepareTrack(ref: string, key: ClipKey, trackFps: number): ResultAsync<Clip, VideoError> {
+    const k = positionOf(this.tl, key);
+    const old = this.tl.clips[k];
+    if (!old) return errAsync({ kind: "no-clip", ref: key });
+    if (old.trackTimes) return okAsync(old);
+    if (old.timing.kind === "stills") return errAsync({ kind: "clip-of-stills", path: old.path });
+    const src = this.ports.source;
+    return Result.fromThrowable(
+      () => src.resolve(ref),
+      (e): VideoError => hostFailure("video", "resolve", e),
+    )().asyncAndThen((path) =>
+      ResultAsync.fromPromise(src.exists(path), (e) => hostFailure("video", "exists", e))
+        .andThen((exists) => (exists ? this.key(path) : errAsync<ClipKey, VideoError>({ kind: "no-such-file", path })))
+        .andThen((got) => (got === key ? okAsync(path) : errAsync<string, VideoError>({ kind: "other-video", path })))
+        .andThen(() => this.open(path, openOptions(old.timing)))
+        .andThen((format) => this.keyframeTimes(path, format, old.keyframeThresh ?? 0, true))
+        .andThen(({ duration, cuts }) => {
+          const grid =
+            duration === null ? [...old.times] : trackGridTimes(old.times, duration, trackFps, cuts, CUT_STEP);
+          return this.extractTrack(key, path, old.times, grid).map(() => {
+            const clip: Clip = { ...old, trackTimes: grid, ...(cuts.length ? { trackCuts: cuts } : {}) };
+            this.tl = withClip(this.tl, k, clip);
+            this.ports.logger.log(`prepared ${path}: ${grid.length} tracking frames`);
+            return clip;
+          });
+        }),
+    );
+  }
+
   addClip(
     ref: string,
-    opts: { readonly keyframeThresh: number; readonly fps?: number | null },
+    opts: { readonly keyframeThresh: number; readonly fps?: number | null; readonly trackFps?: number | null },
   ): ResultAsync<AddedClip, VideoError> {
     const src = this.ports.source;
     return Result.fromThrowable(
@@ -130,7 +211,7 @@ export class VideoImpl implements Video {
           if (old && old.removed === null) return errAsync({ kind: "clip-already-present", path });
           return old
             ? this.revive(k, old, path)
-            : this.addNew(key, path, opts.keyframeThresh, { fps: opts.fps ?? null });
+            : this.addNew(key, path, opts.keyframeThresh, { fps: opts.fps ?? null }, opts.trackFps ?? null);
         }),
     );
   }
@@ -143,6 +224,7 @@ export class VideoImpl implements Video {
   private revive(k: number, old: Clip, path: string): ResultAsync<AddedClip, VideoError> {
     return this.open(path, openOptions(old.timing))
       .andThen(() => this.extract(old.key, path, old.times))
+      .andThen(() => this.extractTrack(old.key, path, old.times, old.trackTimes))
       .map(() => {
         const clip: Clip = { ...old, path, removed: null };
         this.tl = withClip(this.tl, k, clip);
@@ -152,11 +234,23 @@ export class VideoImpl implements Video {
       });
   }
 
-  private addNew(key: ClipKey, path: string, thresh: number, open: OpenOptions): ResultAsync<AddedClip, VideoError> {
+  private addNew(
+    key: ClipKey,
+    path: string,
+    thresh: number,
+    open: OpenOptions,
+    trackFps: number | null,
+  ): ResultAsync<AddedClip, VideoError> {
     return this.open(path, open).andThen((format) =>
-      this.keyframeTimes(path, format, thresh)
-        .andThen((times) => this.extract(key, path, times).map(() => times))
-        .map((times) => {
+      this.keyframeTimes(path, format, thresh, trackFps !== null)
+        .andThen(({ times, duration, cuts }) => {
+          const grid =
+            trackFps && duration !== null ? trackGridTimes(times, duration, trackFps, cuts, CUT_STEP) : undefined;
+          return this.extract(key, path, times)
+            .andThen(() => this.extractTrack(key, path, times, grid))
+            .map(() => ({ times, grid, cuts }));
+        })
+        .map(({ times, grid, cuts }) => {
           const { w, h, captured } = format;
           const clip: Clip = {
             path,
@@ -166,6 +260,8 @@ export class VideoImpl implements Video {
             shape: [h, w],
             captured,
             keyframeThresh: thresh,
+            ...(grid ? { trackTimes: grid } : {}),
+            ...(grid && cuts.length ? { trackCuts: cuts } : {}),
             removed: null,
             reserved: new Map(),
           };
@@ -194,10 +290,19 @@ export class VideoImpl implements Video {
    * picker runs over the grey stream and returns its sample times, as for a video. The host's frameJpeg finds the
    * frame at or after each time.
    */
-  private keyframeTimes(path: string, f: ClipFormat, thresh: number): ResultAsync<readonly number[], HostFailure> {
+  private keyframeTimes(
+    path: string,
+    f: ClipFormat,
+    thresh: number,
+    withCuts: boolean,
+  ): ResultAsync<
+    { readonly times: readonly number[]; readonly duration: number | null; readonly cuts: readonly number[] },
+    HostFailure
+  > {
     const { timing } = f;
-    if (timing.kind === "stills") return okAsync(Array.from({ length: timing.count }, (_, i) => i));
-    return pickKeyframes(this.ports.source, path, f, thresh, keyframeRate(timing));
+    if (timing.kind === "stills")
+      return okAsync({ times: Array.from({ length: timing.count }, (_, i) => i), duration: null, cuts: [] });
+    return pickKeyframesTimed(this.ports.source, path, f, thresh, keyframeRate(timing), undefined, withCuts);
   }
 
   /** Stores the JPEG of each keyframe not stored yet, one at a time. */
@@ -217,6 +322,35 @@ export class VideoImpl implements Video {
                   ).andThen((jpeg) => frames.write(ref, jpeg)),
             );
         }),
+      okAsync(undefined),
+    );
+  }
+
+  /** Stores the JPEG of each grid frame that isn't a keyframe and isn't stored yet, one at a time. */
+  private extractTrack(
+    clipKey: ClipKey,
+    path: string,
+    keyframes: readonly number[],
+    grid: readonly number[] | undefined,
+  ): ResultAsync<void, HostFailure> {
+    const { frames, source } = this.ports;
+    const own = new Set(keyframes);
+    return (grid ?? []).reduce<ResultAsync<void, HostFailure>>(
+      (acc, t, index) =>
+        own.has(t)
+          ? acc
+          : acc.andThen(() => {
+              const ref: FrameRef = { clipKey, index };
+              return frames
+                .hasTrack(ref)
+                .andThen((has) =>
+                  has
+                    ? okAsync(undefined)
+                    : ResultAsync.fromPromise(source.frameJpeg(path, t), (e) =>
+                        hostFailure("video", "frameJpeg", e),
+                      ).andThen((jpeg) => frames.writeTrack(ref, jpeg)),
+                );
+            }),
       okAsync(undefined),
     );
   }

@@ -6,6 +6,7 @@ import { push, toArray } from "./internal/stack.kernel.ts";
 export type { Stack } from "./internal/stack.kernel.ts";
 export { push, toArray } from "./internal/stack.kernel.ts";
 export { Lru } from "./internal/lru.cache.ts";
+export { Memo } from "./internal/memo.cache.ts";
 
 /**
  * Runs `f` over `xs` one at a time and stops at the first Err. Results come in input order. Use it where order

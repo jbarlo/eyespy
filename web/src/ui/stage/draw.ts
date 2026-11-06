@@ -1,5 +1,5 @@
 /** Canvas drawing from a scene snapshot, with no store reads. */
-import type { Box, Det, Frame, Layers, Mask, Obj, Sprites, Visible } from "../../state/index.ts";
+import type { Box, Det, Frame, Layers, Mask, Obj, Sprites, TrackDraw, Visible } from "../../state/index.ts";
 import { REJECT_COLOR } from "../../state/index.ts";
 import { sameView } from "./view.ts";
 import type { View } from "./view.ts";
@@ -21,6 +21,8 @@ export type Scene = {
   readonly heat: ImageBitmap | null;
   /** Drag boxes with their colours (rect select in progress, the region-search box). */
   readonly boxes: readonly (readonly [Box, string])[];
+  /** Tracked masks on the frame, each stretched over it. */
+  readonly tracks: readonly TrackDraw[];
 };
 
 const WHITE = "rgb(255,255,255)";
@@ -56,8 +58,34 @@ export function sameScene(a: Scene, b: Scene): boolean {
     sameSet(a.selected, b.selected) &&
     a.objects === b.objects &&
     a.heat === b.heat &&
-    sameBoxes(a.boxes, b.boxes)
+    sameBoxes(a.boxes, b.boxes) &&
+    a.tracks === b.tracks
   );
+}
+
+/**
+ * Tracked masks over the frame. A solid track is filled. A less sure one is only an outline, with "?" on its tag, so it
+ * doesn't read as the same claim. Each has a tag, as there is no object list to tell them apart on a frame.
+ */
+function drawTracks(g: CanvasRenderingContext2D, s: Scene, sprites: Sprites, font: number, px: number) {
+  const f = s.frame;
+  if (!f) return;
+  g.imageSmoothingEnabled = true;
+  for (const t of s.tracks) {
+    g.drawImage(sprites.sprite(t.id, t.rle, t.color, t.unsure ? "edge" : "fill", 1), 0, 0, f.w, f.h);
+    if (t.selected) g.drawImage(sprites.sprite(t.id, t.rle, SELECTED, "edge", 2), 0, 0, f.w, f.h);
+  }
+  g.imageSmoothingEnabled = false;
+  for (const t of s.tracks) {
+    const x = (t.box[0] / t.rle.w) * f.w;
+    const y = (t.box[1] / t.rle.h) * f.h;
+    const text = `${t.label.slice(0, 32)} · ${t.track}${t.unsure ? " ?" : ""}`;
+    const tw = g.measureText(text).width;
+    g.fillStyle = "rgba(0,0,0,0.7)";
+    g.fillRect(x, y - font * 1.4, tw + 8 * px, font * 1.4);
+    g.fillStyle = t.color;
+    g.fillText(text, x + 4 * px, y - font * 1.25);
+  }
 }
 
 /** Draw the scene; true when the keyframe image itself was drawn (not the loading placeholder). */
@@ -136,6 +164,7 @@ export function drawScene(c: HTMLCanvasElement, g: CanvasRenderingContext2D, s: 
     g.fillStyle = color;
     g.fillText(text, d.box[0] + 4 * px, d.box[1] - font * 1.25);
   }
+  drawTracks(g, s, sprites, font, px);
   for (const [r, css] of s.boxes) {
     g.strokeStyle = css;
     g.lineWidth = 2 * px;

@@ -2,9 +2,11 @@
 import { useEffect, useRef } from "react";
 import { objColor } from "../state/index.ts";
 import { useActions, useApp, useAssetVersion, useDerived, useSlice } from "./context.tsx";
+import { TrackScrub } from "./panels/Tracking.tsx";
 
 export function Filmstrip() {
-  const { assets, select } = useApp();
+  const app = useApp();
+  const { assets, select } = app;
   const a = useActions();
   const fr = useSlice("frames", (s) => s.frames);
   const current = useSlice("frames", (s) => s.current);
@@ -93,6 +95,7 @@ export function Filmstrip() {
           {focus ? ` · ${focus} on ${pres.size}` : ""}
         </span>
       </div>
+      {app.tracking && <TrackScrub />}
     </div>
   );
 }

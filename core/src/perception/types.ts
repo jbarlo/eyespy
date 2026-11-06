@@ -1,9 +1,9 @@
 import type { ResultAsync } from "neverthrow";
 import type { Mask, RGB } from "../pixels/index.ts";
 import type { HostFailure, RuntimeInfo } from "../ports/index.ts";
-import type { FrameAccessError, FrameNo } from "../video/pure.ts";
+import type { ClipKey, FrameAccessError, FrameNo, FrameRef } from "../video/pure.ts";
 import type { PerceptionPorts } from "./ports.ts";
-import type { Appearance, Detected, DetectorPrecision, Features } from "./pure.ts";
+import type { Appearance, Detected, DetectorPrecision, Features, Trunk } from "./pure.ts";
 
 export type PerceptionOptions = {
   readonly detector: DetectorPrecision;
@@ -22,6 +22,15 @@ export type PerceptionOptions = {
    * overwritten.
    */
   readonly storedFeatureFormat: string | null;
+  /**
+   * Use the vision parts instead of the whole vision graph, for tracking. Encoding a keyframe then also stores its
+   * trunk. Without it nothing here touches a part or a trunk.
+   */
+  readonly visionParts?: boolean;
+  /** Disk budget for stored trunks in MB. Defaults to DEFAULT_TRUNK_DISK_MB. */
+  readonly trunkDiskMB?: number;
+  /** The format stamp of the stored trunks (session.json `trunks`). Files of any other format read as absent. */
+  readonly storedTrunkFormat?: string | null;
   /** Log detect's timings per stage through the Logger, timed with the Clock. */
   readonly profile?: boolean;
 };
@@ -137,7 +146,15 @@ export interface Perception {
   hold(frames: readonly FrameNo[]): () => void;
   stats(): ResultAsync<CacheStats, PerceptionError>;
   provenance(): ResultAsync<Provenance, PerceptionError>;
-  readonly formats: { readonly features: string };
+  /** The stored trunk at a place on a tracking grid, or null if it has to be encoded. Needs visionParts. */
+  trunk(ref: FrameRef): ResultAsync<Trunk | null, PerceptionError>;
+  /** Runs the vision parts without the neck and stores the trunk if its budget has room. Needs visionParts. */
+  encodeTrunk(ref: FrameRef, img: RGB): ResultAsync<Trunk, PerceptionError>;
+  /** Drops a removed clip's trunks from the books. */
+  forgetTrunks(key: ClipKey): void;
+  /** Frees the vision parts. The next encode loads them again. */
+  releaseVision(): ResultAsync<void, PerceptionError>;
+  readonly formats: { readonly features: string; readonly trunks: string };
 }
 
 export type CreatePerception = (ports: PerceptionPorts, opts: PerceptionOptions) => Perception;

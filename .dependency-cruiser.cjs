@@ -5,7 +5,7 @@
  * through DOMAIN and LEAVES. tsPreCompilationDeps makes type-only edges visible, and value rules exclude them with
  * dependencyTypesNot.
  */
-const DOMAIN = ["storage", "video", "perception", "detections", "labelling", "render", "session"];
+const DOMAIN = ["storage", "video", "perception", "tracking", "detections", "labelling", "render", "session"];
 /** Value-importable from anywhere. */
 const LEAVES = ["pixels", "ports", "invariant", "railway"];
 const any = (/** @type {string[]} */ xs) => `(${xs.join("|")})`;

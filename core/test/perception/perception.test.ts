@@ -489,7 +489,10 @@ test("provenance: the manifest models/runtime block (without host info), cached"
     }),
   );
   assert.equal((await r.p.provenance())._unsafeUnwrap(), p);
-  assert.deepEqual(r.p.formats, { features: "onnx-cardanvil-vision-fp16/f16-concat-v1" });
+  assert.deepEqual(r.p.formats, {
+    features: "onnx-cardanvil-vision-fp16/f16-concat-v1",
+    trunks: "onnx-cardanvil-vision-parts/f16-trunk-v1",
+  });
 });
 
 test("a detector export without pred_masks is model-output-missing, not a throw", async () => {

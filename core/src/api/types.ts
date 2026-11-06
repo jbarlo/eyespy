@@ -55,6 +55,18 @@ import type {
   StatusReply,
   TodoReply,
   TodoReq,
+  TrackAutoReq,
+  TrackFramesReply,
+  TrackFramesReq,
+  TrackIdsReq,
+  TrackMasksReply,
+  TrackMasksReq,
+  TrackPrepareReply,
+  TrackPrepareReq,
+  TrackPrioritiseReq,
+  TrackProposalsReply,
+  TrackStartReq,
+  TrackStatusReply,
   UndoReply,
 } from "../session/index.ts";
 import type { OpPath } from "./pure.ts";
@@ -100,6 +112,17 @@ export type OpIo = {
   readonly gaps: Io<FrameSpecReq & WithCfg, GapsReply>;
   readonly manifest: Io<ManifestReq & WithCfg, ManifestReply>;
   readonly shutdown: Io<void, { readonly ok: true }>;
+  readonly "track.start": Io<TrackStartReq & WithCfg, TrackStatusReply>;
+  readonly "track.auto": Io<TrackAutoReq & WithCfg, TrackStatusReply>;
+  readonly "track.proposals": Io<WithCfg, TrackProposalsReply>;
+  readonly "track.prioritise": Io<TrackPrioritiseReq & WithCfg, TrackStatusReply>;
+  readonly "track.pause": Io<WithCfg, TrackStatusReply>;
+  readonly "track.resume": Io<WithCfg, TrackStatusReply>;
+  readonly "track.cancel": Io<TrackIdsReq & WithCfg, TrackStatusReply>;
+  readonly "track.status": Io<WithCfg, TrackStatusReply>;
+  readonly "track.prepare": Io<TrackPrepareReq & WithCfg, TrackPrepareReply>;
+  readonly "track.frames": Io<TrackFramesReq & WithCfg, TrackFramesReply>;
+  readonly "track.masks": Io<TrackMasksReq & WithCfg, TrackMasksReply>;
   readonly "data.frames": Io<Empty | undefined, DataFramesReply>;
   readonly "data.dets": Io<DataDetsReq | undefined, DataDetsReply>;
   readonly "data.runs": Io<DataRunsReq | undefined, DataRunsReply>;

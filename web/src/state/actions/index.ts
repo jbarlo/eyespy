@@ -12,6 +12,7 @@ import { createLicenceActions } from "./licence.ts";
 import { createRunner } from "./run.ts";
 import { createSessionActions } from "./session.ts";
 import { createSettingsActions } from "./settings.ts";
+import { createTrackingActions } from "./tracking.ts";
 import { createTriageActions } from "./triage.ts";
 import { createViewActions } from "./view.ts";
 
@@ -23,9 +24,10 @@ export function createActions(ctx: Ctx) {
   const view = createViewActions(ctx, runner);
   const triage = createTriageActions(ctx, runner, view);
   const licence = createLicenceActions(ctx);
-  const session = createSessionActions(ctx, runner, triage, licence);
+  const tracking = createTrackingActions(ctx, runner, () => session.loadClips());
+  const session = createSessionActions(ctx, runner, triage, licence, tracking);
   const edit = createEditActions(ctx, runner, view, triage);
-  const find = createFindActions(ctx, runner, view, refresh);
+  const find = createFindActions(ctx, runner, view, refresh, tracking.afterFind);
   const settings = createSettingsActions(ctx, runner, session.loadClips);
   return {
     notify: runner.notify,
@@ -40,6 +42,7 @@ export function createActions(ctx: Ctx) {
     ...find,
     ...settings,
     ...licence,
+    ...tracking,
   };
 }
 
@@ -55,8 +58,24 @@ function watch<S, const T extends readonly unknown[]>(store: StoreApi<S>, pick: 
 }
 
 export function installReactions(ctx: Ctx, actions: Actions): () => void {
-  const { selection, objects, triage } = ctx.stores;
+  const { selection, objects, triage, frames, tracking } = ctx.stores;
+  const followTracks = ctx.deps.tracking
+    ? [
+        watch(
+          selection,
+          (s) => [s.ids, s.obj],
+          () => void actions.followSelection(),
+        ),
+        // a keyframe chosen elsewhere (filmstrip, keys) leaves any place between keyframes
+        frames.subscribe((s, p) => {
+          if (s.current === p.current) return;
+          tracking.setState({ at: null });
+          actions.syncTracking();
+        }),
+      ]
+    : [];
   const offs = [
+    ...followTracks,
     // rank again after a new selection or an edit that cleared the ranking (runMatch skips a ranking it already has)
     watch(
       selection,

@@ -88,6 +88,13 @@ export function createViewActions(ctx: Ctx, r: Runner) {
     void ctx.assets.bitmaps.load(key);
     return null;
   }
+  /** A stored picture by its key if it's ready, else starts loading it and returns null. */
+  function imageBitmapNow(key: string): ImageBitmap | null {
+    const b = ctx.assets.bitmaps.peek(key);
+    if (b?.width) return b;
+    void ctx.assets.bitmaps.load(key);
+    return null;
+  }
   /**
    * A detection's crop with its box outlined, as a bitmap of `size` CSS px at pixel ratio `dpr`, or null if it can't be
    * read.
@@ -130,6 +137,7 @@ export function createViewActions(ctx: Ctx, r: Runner) {
     loadMasks,
     frameBitmap,
     frameBitmapNow,
+    imageBitmapNow,
     cropBitmap,
     requestThumbs,
     watchClips: (on: boolean) => frames.setState({ clipsWatched: on }),

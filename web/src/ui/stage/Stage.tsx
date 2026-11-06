@@ -15,6 +15,8 @@ export function Stage() {
   const [tip] = useState(() => createStore<TipState>()(() => ({ tip: null })));
   const f = useDerived((s) => s.currentFrame());
   const nvis = useDerived((s) => s.visible().length);
+  const place = useDerived((s) => s.trackPlace());
+  const ntracks = useDerived((s) => s.trackDraws().length);
   const tool = useSlice("layers", (s) => s.tool);
   const handle = useSlice("stage", (s) => s.handle);
 
@@ -31,7 +33,13 @@ export function Stage() {
       <canvas
         ref={cv}
         role="img"
-        aria-label={f ? `Keyframe ${f.frame} at ${f.t.toFixed(1)} s, ${nvis} regions shown` : "No keyframe"}
+        aria-label={
+          place?.between
+            ? `Tracked frame at ${place.slot.t.toFixed(1)} s, ${ntracks} tracked masks shown`
+            : f
+              ? `Keyframe ${f.frame} at ${f.t.toFixed(1)} s, ${nvis} regions shown`
+              : "No keyframe"
+        }
         style={{ cursor: toolOf(tool).cursor }}
       />
       <Tooltip store={tip} />
@@ -59,6 +67,18 @@ export function Stage() {
           <i style={{ background: REJECT_COLOR }} />
           rejected
         </span>
+        {app.tracking && (
+          <>
+            <span>
+              <i className="legend-solid" />
+              tracked
+            </span>
+            <span>
+              <i className="legend-unsure" />
+              tracked, less sure
+            </span>
+          </>
+        )}
       </div>
     </div>
   );

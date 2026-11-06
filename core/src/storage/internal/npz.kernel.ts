@@ -41,7 +41,7 @@ export function readNpy(buf: Uint8Array): Result<NpyArray, string> {
   const data: NpyData | null =
     dtype === "|u1" || dtype === "|b1" || dtype === "<u1"
       ? raw
-      : dtype === "<f2" && width(2)
+      : (dtype === "<f2" || dtype === "<u2") && width(2)
         ? new Uint16Array(ab)
         : dtype === "<f4" && width(4)
           ? new Float32Array(ab)
@@ -108,10 +108,10 @@ export function dosDateTime(ms: number): number {
  * Works like np.savez_compressed, at deflate level 6. Every entry's time is `ms` as UTC. fflate reads local time,
  * so this overwrites its fields in the local headers and the central directory afterwards.
  */
-export function writeNpz(arrays: ReadonlyArray<readonly [string, NpyArray]>, ms: number): Uint8Array {
+export function writeNpz(arrays: ReadonlyArray<readonly [string, NpyArray]>, ms: number, level: 0 | 6 = 6): Uint8Array {
   const files: Record<string, Uint8Array> = {};
   for (const [k, a] of arrays) files[`${k}.npy`] = writeNpy(a);
-  const zip = zipSync(files, { level: 6 });
+  const zip = zipSync(files, { level });
   const dv = new DataView(zip.buffer, zip.byteOffset, zip.byteLength);
   const t = dosDateTime(ms);
   let off = 0;

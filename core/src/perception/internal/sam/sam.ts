@@ -4,15 +4,23 @@
  * which are FEATURE_PLANES.
  */
 import { err, ok, Result, type ResultAsync } from "neverthrow";
-import { at } from "../../../invariant/index.ts";
+import { at, invariant } from "../../../invariant/index.ts";
 import type { RGB } from "../../../pixels/index.ts";
 import type { Feeds, Tensor } from "../../../ports/index.ts";
-import { FEATURE_PLANES, MODEL_FILES, type DetectorPrecision, type Features } from "../../pure.ts";
+import {
+  FEATURE_PLANES,
+  MODEL_FILES,
+  TRUNK_LEN,
+  type DetectorPrecision,
+  type Features,
+  type Trunk,
+} from "../../pure.ts";
 import type { PerceptionError } from "../../types.ts";
 import { isFeatures } from "../features.ts";
-import { Memo } from "../memo.cache.ts";
+import { Memo } from "../../../railway/index.ts";
 import { float32Output, type Models } from "../models.ts";
 import { concatF16, SAM_SIZE, samPixels, splitF32, type DetectorOutput } from "./pixels.kernel.ts";
+import type { VisionParts } from "./parts.cache.ts";
 import { PlanesPool } from "./planes.cache.ts";
 import { parseTokenizer } from "./tokenizer.ts";
 import type { ClipTokenizer } from "./tokenizer.kernel.ts";
@@ -20,6 +28,10 @@ import type { ClipTokenizer } from "./tokenizer.kernel.ts";
 export interface Sam {
   /** Vision features of one image, rounded to fp16, the cache format. */
   readonly encode: (img: RGB) => ResultAsync<Features, PerceptionError>;
+  /** Features and trunk of one image, through the vision parts. */
+  readonly encodeWithTrunk: (img: RGB) => ResultAsync<{ features: Features; trunk: Trunk }, PerceptionError>;
+  /** The trunk alone, through the vision parts. */
+  readonly encodeTrunk: (img: RGB) => ResultAsync<Trunk, PerceptionError>;
   /** One detector call on Features. */
   readonly detectRaw: (features: Features, prompt: string) => ResultAsync<DetectorOutput, PerceptionError>;
   readonly detectorFile: string;
@@ -27,7 +39,7 @@ export interface Sam {
 
 type TextFeeds = { readonly features: Tensor; readonly mask: Tensor };
 
-export function createSam(models: Models, precision: DetectorPrecision): Sam {
+export function createSam(models: Models, precision: DetectorPrecision, parts: VisionParts | null): Sam {
   const detectorFile = MODEL_FILES.detector[precision];
   const tokenizer = new Memo<"tok", ClipTokenizer, PerceptionError>();
   const texts = new Memo<string, TextFeeds, PerceptionError>();
@@ -55,25 +67,46 @@ export function createSam(models: Models, precision: DetectorPrecision): Sam {
       }),
     );
 
-  const encode = (img: RGB): ResultAsync<Features, PerceptionError> =>
-    models
-      .run(MODEL_FILES.vision, {
-        pixel_values: { type: "float32", data: samPixels(img), dims: [1, 3, SAM_SIZE, SAM_SIZE] },
-      })
-      .andThen((r) =>
-        Result.combine(FEATURE_PLANES.map((p) => float32Output(r, MODEL_FILES.vision, p.name, p.len))).andThen(
-          (planes) => {
-            const f = concatF16(planes);
-            return isFeatures(f)
-              ? ok(f)
-              : err<Features, PerceptionError>({
-                  kind: "model-output-missing",
-                  model: MODEL_FILES.vision,
-                  output: FEATURE_PLANES.map((p) => p.name).join("+"),
-                });
-          },
-        ),
+  const pixels = (img: RGB): Tensor => ({ type: "float32", data: samPixels(img), dims: [1, 3, SAM_SIZE, SAM_SIZE] });
+
+  /** The feature planes of a vision output, as the fp16 cache format. */
+  const featuresOf = (r: Feeds, file: string): Result<Features, PerceptionError> =>
+    Result.combine(FEATURE_PLANES.map((p) => float32Output(r, file, p.name, p.len))).andThen((planes) => {
+      const f = concatF16(planes);
+      return isFeatures(f)
+        ? ok(f)
+        : err<Features, PerceptionError>({
+            kind: "model-output-missing",
+            model: file,
+            output: FEATURE_PLANES.map((p) => p.name).join("+"),
+          });
+    });
+
+  const trunkOf = (img: RGB): ResultAsync<Tensor, PerceptionError> => {
+    invariant(parts !== null, "the vision parts are off");
+    return parts.trunk(pixels(img));
+  };
+
+  const trunkBits = (t: Tensor): Result<Trunk, PerceptionError> =>
+    t.data instanceof Uint16Array && t.data.length === TRUNK_LEN
+      ? ok(t.data)
+      : err({ kind: "model-output-missing", model: MODEL_FILES.visionParts.parts.at(-1) ?? "", output: "trunk" });
+
+  const encodeWithTrunk = (img: RGB) =>
+    trunkOf(img).andThen((t) => {
+      invariant(parts !== null, "the vision parts are off");
+      return trunkBits(t).asyncAndThen((trunk) =>
+        parts
+          .neck(t)
+          .andThen((r) => featuresOf(r, MODEL_FILES.visionParts.neck))
+          .map((features) => ({ features, trunk })),
       );
+    });
+
+  const encode = (img: RGB): ResultAsync<Features, PerceptionError> =>
+    parts
+      ? encodeWithTrunk(img).map((r) => r.features)
+      : models.run(MODEL_FILES.vision, { pixel_values: pixels(img) }).andThen((r) => featuresOf(r, MODEL_FILES.vision));
 
   const detectRaw = (features: Features, prompt: string): ResultAsync<DetectorOutput, PerceptionError> =>
     textFeatures(prompt).andThen((t) => {
@@ -107,5 +140,11 @@ export function createSam(models: Models, precision: DetectorPrecision): Sam {
         );
     });
 
-  return { encode, detectRaw, detectorFile };
+  return {
+    encode,
+    encodeWithTrunk,
+    encodeTrunk: (img) => trunkOf(img).andThen(trunkBits),
+    detectRaw,
+    detectorFile,
+  };
 }

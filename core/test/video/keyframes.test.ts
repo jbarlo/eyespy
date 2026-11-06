@@ -6,6 +6,8 @@ import { pickKeyframes } from "../../src/video/internal/keyframes.ts";
 import {
   hanning,
   laplacianVar,
+  cutSignals,
+  cutTimes,
   phaseCorrelateFrames,
   pickTimes,
   streamHeight,
@@ -123,4 +125,18 @@ test("pickKeyframes: a grey-stream failure is a HostFailure", async () => {
     op: "grayStream",
     message: "decoder exited 1",
   });
+});
+
+test("a cut is another picture at no shift; the same picture moved is none", () => {
+  const w = 360; // The stream's size: the noise floor of the peak depends on it, and the threshold was measured there.
+  const h = 202;
+  let seed = 7;
+  const noise = () => Uint8Array.from({ length: w * h }, () => (seed = (seed * 48271) % 2147483647) % 256);
+  const shot = noise();
+  const moved = shot.map((_, i) => shot[(i + 2) % (w * h)] ?? 0);
+  const other = noise();
+  const stream = new Uint8Array([...shot, ...moved, ...other]);
+  const signals = cutSignals(stream, w, h);
+  assert.ok((signals[0]?.mad ?? 0) > 60, "the moved noise differs as much as a cut, so only the peak tells them apart");
+  assert.deepEqual(cutTimes(stream, w, h, 5), [0.4]);
 });

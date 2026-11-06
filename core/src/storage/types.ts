@@ -11,7 +11,9 @@ import type {
   OutputSink,
   SessionMeta,
   StoredFrames,
+  TrackingBytes,
 } from "../session/ports.ts";
+import type { TrackStore } from "../tracking/ports.ts";
 import type { FrameStore } from "../video/ports.ts";
 import type { ClipKey, FrameRef } from "../video/pure.ts";
 
@@ -57,10 +59,13 @@ export interface SessionFolder {
   readonly meta: MetaStore;
   readonly frames: FrameFiles;
   readonly features: FeatureFiles;
+  readonly trunks: FeatureStore;
+  readonly tracks: TrackStore;
   readonly detections: DetectionStore;
   readonly labels: LabelLog;
   readonly heatmaps: HeatmapStore;
   readonly outputs: OutputSink;
+  trackingBytes(clip: ClipKey, tracks: readonly string[]): ResultAsync<TrackingBytes, HostFailure>;
   /** Deletes clips/<key>/ and everything under it. */
   removeClipFiles(key: ClipKey): ResultAsync<void, HostFailure>;
 }

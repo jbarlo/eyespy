@@ -6,6 +6,7 @@ import { useActions, useDerived, useSlice } from "../../context.tsx";
 import { HELP } from "../../help.ts";
 import { Info } from "../../Info.tsx";
 import { useOwnerText } from "../owner.ts";
+import { TrackNote } from "../Tracking.tsx";
 import { SimilarList } from "./SimilarList.tsx";
 
 function ObjectPicker({
@@ -63,6 +64,7 @@ export function SelectionProps() {
         <strong>{sel.length}</strong> detection{sel.length === 1 ? "" : "s"} selected
         {sel.length > 0 && <> · {[...new Set(sel.map(ownerText))].join(", ")}</>}
       </p>
+      <TrackNote dets={ids} />
       <div className="crops">
         {sel.slice(0, 12).map((d) => (
           <figure key={d.id}>

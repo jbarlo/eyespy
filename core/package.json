@@ -18,6 +18,8 @@
     "./video/pure": "./src/video/pure.ts",
     "./perception": "./src/perception/index.ts",
     "./perception/pure": "./src/perception/pure.ts",
+    "./tracking": "./src/tracking/index.ts",
+    "./tracking/pure": "./src/tracking/pure.ts",
     "./detections": "./src/detections/index.ts",
     "./detections/pure": "./src/detections/pure.ts",
     "./labelling": "./src/labelling/index.ts",

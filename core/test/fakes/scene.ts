@@ -36,6 +36,8 @@ export type SceneClip = {
   duration: number;
   /** Camera pan of the grey stream in px per stream frame (at its 360 px width). It sets the keyframe count. */
   pan: number;
+  /** Times where the grey stream cuts to another picture. */
+  cuts?: readonly number[];
   /** What FakeVideo.open reports (default: a video). */
   timing?: Timing;
   objects: readonly SceneObject[];

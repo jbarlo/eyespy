@@ -168,7 +168,10 @@
     "group_window": 8,
     "presence": 0.5,
     "active": 0.5,
-    "idle_minutes": 30
+    "idle_minutes": 30,
+    "track_fps": 2,
+    "track_recheck": 1.5,
+    "auto_tracks": 64
    },
    "defaults": {
     "keyframe_thresh": 0.4,
@@ -180,7 +183,10 @@
     "group_window": 8,
     "presence": 0.5,
     "active": 0.5,
-    "idle_minutes": 30
+    "idle_minutes": 30,
+    "track_fps": 2,
+    "track_recheck": 1.5,
+    "auto_tracks": 64
    }
   }
  },
@@ -205,7 +211,10 @@
     "group_window": 8,
     "presence": 0.5,
     "active": 0.5,
-    "idle_minutes": 30
+    "idle_minutes": 30,
+    "track_fps": 2,
+    "track_recheck": 1.5,
+    "auto_tracks": 64
    },
    "defaults": {
     "keyframe_thresh": 0.4,
@@ -217,7 +226,10 @@
     "group_window": 8,
     "presence": 0.5,
     "active": 0.5,
-    "idle_minutes": 30
+    "idle_minutes": 30,
+    "track_fps": 2,
+    "track_recheck": 1.5,
+    "auto_tracks": 64
    }
   }
  },
@@ -242,7 +254,10 @@
     "group_window": 3,
     "presence": 0.5,
     "active": 0.5,
-    "idle_minutes": 30
+    "idle_minutes": 30,
+    "track_fps": 2,
+    "track_recheck": 1.5,
+    "auto_tracks": 64
    },
    "defaults": {
     "keyframe_thresh": 0.4,
@@ -254,7 +269,10 @@
     "group_window": 8,
     "presence": 0.5,
     "active": 0.5,
-    "idle_minutes": 30
+    "idle_minutes": 30,
+    "track_fps": 2,
+    "track_recheck": 1.5,
+    "auto_tracks": 64
    }
   }
  },
@@ -279,7 +297,10 @@
     "group_window": 8,
     "presence": 0.5,
     "active": 0.5,
-    "idle_minutes": 30
+    "idle_minutes": 30,
+    "track_fps": 2,
+    "track_recheck": 1.5,
+    "auto_tracks": 64
    },
    "defaults": {
     "keyframe_thresh": 0.4,
@@ -291,7 +312,10 @@
     "group_window": 8,
     "presence": 0.5,
     "active": 0.5,
-    "idle_minutes": 30
+    "idle_minutes": 30,
+    "track_fps": 2,
+    "track_recheck": 1.5,
+    "auto_tracks": 64
    }
   }
  },
@@ -313,7 +337,10 @@
     "group_window": 8,
     "presence": 0.5,
     "active": 0.5,
-    "idle_minutes": 30
+    "idle_minutes": 30,
+    "track_fps": 2,
+    "track_recheck": 1.5,
+    "auto_tracks": 64
    },
    "defaults": {
     "keyframe_thresh": 0.4,
@@ -325,7 +352,10 @@
     "group_window": 8,
     "presence": 0.5,
     "active": 0.5,
-    "idle_minutes": 30
+    "idle_minutes": 30,
+    "track_fps": 2,
+    "track_recheck": 1.5,
+    "auto_tracks": 64
    }
   }
  },
@@ -339,7 +369,7 @@
   "texts": [],
   "error": {
    "code": "BAD_REQUEST",
-   "message": "unknown setting nope; known: keyframe_thresh, score_floor, threshold, nms_iou, alias_iou, group_sim, group_window, presence, active, idle_minutes"
+   "message": "unknown setting nope; known: keyframe_thresh, score_floor, threshold, nms_iou, alias_iou, group_sim, group_window, presence, active, idle_minutes, track_fps, track_recheck, auto_tracks"
   }
  },
  "014 config non-number": {
@@ -8332,7 +8362,10 @@
      "group_window": 8,
      "presence": 0.5,
      "active": 0.5,
-     "idle_minutes": 30
+     "idle_minutes": 30,
+     "track_fps": 2,
+     "track_recheck": 1.5,
+     "auto_tracks": 64
     },
     "models": {
      "segmentation": {
@@ -8462,7 +8495,10 @@
      "group_window": 8,
      "presence": 0.5,
      "active": 0.5,
-     "idle_minutes": 30
+     "idle_minutes": 30,
+     "track_fps": 2,
+     "track_recheck": 1.5,
+     "auto_tracks": 64
     },
     "models": {
      "segmentation": {
@@ -11847,7 +11883,10 @@
      "group_window": 8,
      "presence": 0.5,
      "active": 0.5,
-     "idle_minutes": 30
+     "idle_minutes": 30,
+     "track_fps": 2,
+     "track_recheck": 1.5,
+     "auto_tracks": 64
     },
     "models": {
      "segmentation": {

@@ -12,8 +12,9 @@ import { Dialog } from "./Dialog.tsx";
 
 const asDetector = (v: string): Detector => (v === "fp16" ? "fp16" : "fp32");
 const plural = (n: number, w: string) => `${n} ${w}${n === 1 ? "" : "s"}`;
-/** Session settings the app shows, without idle_minutes, which configures only the CLI's server. */
-const SHOWN_SETTINGS = CONFIG_KEYS.filter((k) => k !== "idle_minutes");
+/** Session settings the app shows, without idle_minutes (the CLI's server only) and those of tracking (dev only). */
+const HIDDEN_SETTINGS: ReadonlySet<string> = new Set(["idle_minutes", "track_fps", "track_recheck", "auto_tracks"]);
+const SHOWN_SETTINGS = CONFIG_KEYS.filter((k) => !HIDDEN_SETTINGS.has(k));
 
 export function SettingsDialog() {
   const a = useActions();

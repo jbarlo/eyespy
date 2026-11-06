@@ -5,11 +5,15 @@ import type { FrameNo } from "../../video/pure.ts";
 import type { SessionDeps } from "../ports.ts";
 import type { Ctx } from "../pure.ts";
 import type { SessionError, SessionOptions } from "../types.ts";
-import type { SessionState } from "./state.ts";
+import type { SessionState, TrackBook } from "./state.ts";
 
 export { parallel, sequence } from "../../railway/index.ts";
 
-export type Kit = SessionDeps & { readonly state: SessionState; readonly opts: SessionOptions };
+export type Kit = SessionDeps & {
+  readonly state: SessionState;
+  readonly tracks: TrackBook;
+  readonly opts: SessionOptions;
+};
 
 /** Labelling's per-query settings from the effective config. */
 export const labelCtx = (ctx: Ctx) => ({ aliasIou: ctx.cfg.alias_iou });

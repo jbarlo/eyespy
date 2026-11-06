@@ -9,7 +9,17 @@ import { invariant } from "../../invariant/index.ts";
 import type { Commit, LabelLog } from "../../labelling/ports.ts";
 import type { Clock, HostFailure, SessionStore } from "../../ports/index.ts";
 import { hostFailure } from "../../ports/index.ts";
-import type { DetectionStore, HeatmapStore, MetaStore, OutputSink, SessionMeta } from "../../session/ports.ts";
+import type { FeatureStore } from "../../perception/ports.ts";
+import type { StoredSeed, TrackPlace, TrackStore } from "../../tracking/ports.ts";
+import type { AssocData, TrackDirection, TrackIndex, TrackMask, TrackedFrame } from "../../tracking/pure.ts";
+import type {
+  DetectionStore,
+  HeatmapStore,
+  MetaStore,
+  OutputSink,
+  SessionMeta,
+  TrackingBytes,
+} from "../../session/ports.ts";
 import type { ClipKey, FrameNo, FrameRef } from "../../video/pure.ts";
 import type { StoragePorts } from "../ports.ts";
 import type { FeatureFiles, FrameFiles, SessionFolder, SessionRecords, StorageError } from "../types.ts";
@@ -27,9 +37,27 @@ import {
   maskKey,
   outKey,
   semKey,
+  seedKey,
+  trackDir,
+  trackFrameDir,
+  trackFrameKey,
+  trackMaskKey,
+  trackMemoryKey,
+  trunkDir,
+  trunkKey,
 } from "./keys.ts";
 import { decodeMetaText, metaText } from "./meta.ts";
 import { encodeLine, parseLog } from "./oplog.ts";
+import {
+  decodeAssoc,
+  decodeMask,
+  decodeMemory,
+  decodeSeed,
+  decodeTrackIndex,
+  encodeMask,
+  encodeMemory,
+  encodeSeed,
+} from "./tracks.ts";
 import type { DetMeta } from "./records.ts";
 import {
   decodeDetIndex,
@@ -153,7 +181,26 @@ class Folder implements SessionFolder {
     has: (r: FrameRef) => this.exists(frameKey(r)),
     size: (r: FrameRef) => this.size(frameKey(r)),
     locate: (r: FrameRef) => this.store.locate(frameKey(r)),
+    readTrack: (r: FrameRef) => this.bytes(trackFrameKey(r)),
+    writeTrack: (r: FrameRef, jpeg: Uint8Array) => this.writeBytes(trackFrameKey(r), jpeg),
+    hasTrack: (r: FrameRef) => this.exists(trackFrameKey(r)),
+    locateTrack: (r: FrameRef) => this.store.locate(trackFrameKey(r)),
   };
+
+  /** What one clip's tracking takes on disk: its tracking frames' JPEGs, its trunks and these tracks' files. */
+  trackingBytes(clip: ClipKey, tracks: readonly string[]): ResultAsync<TrackingBytes, HostFailure> {
+    const total = (dir: string) =>
+      host("list", () => this.store.list(dir)).map((files) => files.reduce((a, f) => a + f.size, 0));
+    return total(trackFrameDir(clip)).andThen((frames) =>
+      total(trunkDir(clip)).andThen((trunks) =>
+        ResultAsync.combine(tracks.map((track) => total(trackDir({ clip, track })))).map((sizes) => ({
+          frames,
+          trunks,
+          tracks: sizes.reduce((a, b) => a + b, 0),
+        })),
+      ),
+    );
+  }
 
   readonly features: FeatureFiles = {
     read: (r: FrameRef) => this.bytes(featKey(r)),
@@ -163,6 +210,20 @@ class Folder implements SessionFolder {
     size: (r: FrameRef) => this.size(featKey(r)),
     list: (clipKey: ClipKey) =>
       host("list", () => this.store.list(featDir(clipKey))).map((files) =>
+        files.flatMap((f) => {
+          const index = featIndex(f.name);
+          return index === null ? [] : [{ ref: { clipKey, index }, bytes: f.size, mtime: f.mtime }];
+        }),
+      ),
+  };
+
+  readonly trunks: FeatureStore = {
+    read: (r: FrameRef) => this.bytes(trunkKey(r)),
+    write: (r: FrameRef, b: Uint8Array) => this.writeBytes(trunkKey(r), b),
+    has: (r: FrameRef) => this.exists(trunkKey(r)),
+    remove: (r: FrameRef) => this.remove(trunkKey(r)),
+    list: (clipKey: ClipKey) =>
+      host("list", () => this.store.list(trunkDir(clipKey))).map((files) =>
         files.flatMap((f) => {
           const index = featIndex(f.name);
           return index === null ? [] : [{ ref: { clipKey, index }, bytes: f.size, mtime: f.mtime }];
@@ -202,6 +263,24 @@ class Folder implements SessionFolder {
           return entry;
         });
     },
+  };
+
+  readonly tracks: TrackStore = {
+    readIndex: () => this.text(KEYS.tracks).map(decodeTrackIndex),
+    writeIndex: (i: TrackIndex) => this.writeText(KEYS.tracks, jsonText(i)),
+    readAssoc: () => this.text(KEYS.assoc).map(decodeAssoc),
+    writeAssoc: (a: AssocData) => this.writeText(KEYS.assoc, jsonText(a)),
+    writeSeed: (at: TrackPlace, s: StoredSeed) => this.writeBytes(seedKey(at), encodeSeed(s, this.clock.now())),
+    readSeed: (at: TrackPlace) => this.bytes(seedKey(at)).map((b) => (b ? decodeSeed(b) : null)),
+    writeMask: (at: TrackPlace, frame: number, m: TrackMask) =>
+      this.writeBytes(trackMaskKey(at, frame), encodeMask(m, this.clock.now())),
+    readMask: (at: TrackPlace, frame: number) =>
+      this.bytes(trackMaskKey(at, frame)).map((b) => (b ? decodeMask(b) : null)),
+    writeMemory: (at: TrackPlace, d: TrackDirection, frame: number, recent: readonly TrackedFrame[]) =>
+      this.writeBytes(trackMemoryKey(at, d, frame), encodeMemory(recent, this.clock.now())),
+    readMemory: (at: TrackPlace, d: TrackDirection, frame: number) =>
+      this.bytes(trackMemoryKey(at, d, frame)).map((b) => (b ? decodeMemory(b) : null)),
+    removeMemory: (at: TrackPlace, d: TrackDirection, frame: number) => this.remove(trackMemoryKey(at, d, frame)),
   };
 
   readonly heatmaps: HeatmapStore = {

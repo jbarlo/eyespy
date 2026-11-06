@@ -9,6 +9,10 @@ export interface FrameStore {
   read(ref: FrameRef): ResultAsync<Uint8Array | null, HostFailure>;
   write(ref: FrameRef, jpeg: Uint8Array): ResultAsync<void, HostFailure>;
   has(ref: FrameRef): ResultAsync<boolean, HostFailure>;
+  /** The JPEG of a tracking frame that isn't a keyframe, with `index` its place on the tracking grid. */
+  readTrack(ref: FrameRef): ResultAsync<Uint8Array | null, HostFailure>;
+  writeTrack(ref: FrameRef, jpeg: Uint8Array): ResultAsync<void, HostFailure>;
+  hasTrack(ref: FrameRef): ResultAsync<boolean, HostFailure>;
 }
 
 interface ImageDecoder {

@@ -21,6 +21,8 @@ import type { SettingsState } from "./settings.ts";
 import type { Slice } from "./slice.ts";
 import { createStageStore } from "./stage.ts";
 import type { StageState } from "./stage.ts";
+import { createTrackingStore } from "./tracking.ts";
+import type { TrackingState } from "./tracking.ts";
 import { createTriageStore } from "./triage.ts";
 import type { TriageState } from "./triage.ts";
 
@@ -37,6 +39,7 @@ export type StoreStates = {
   readonly settings: SettingsState;
   readonly stage: StageState;
   readonly licence: LicenceState;
+  readonly tracking: TrackingState;
 };
 
 export type Stores = { readonly [K in keyof StoreStates]: Slice<StoreStates[K]> };
@@ -54,6 +57,7 @@ export function createStoreSet(prefs: Prefs, query: Query): Stores {
     settings: createSettingsStore(prefs, query),
     stage: createStageStore(),
     licence: createLicenceStore(),
+    tracking: createTrackingStore(),
   };
 }
 
@@ -61,4 +65,4 @@ export function createStoreSet(prefs: Prefs, query: Query): Stores {
  * Session data, which resets when another session opens. The other stores are app-scoped (view preferences, settings,
  * notices, the mounted Stage, the licence answer) and keep their state; each still has reset().
  */
-export const SESSION_SCOPED = ["engine", "frames", "detections", "objects", "selection", "triage"] as const;
+export const SESSION_SCOPED = ["engine", "frames", "detections", "objects", "selection", "triage", "tracking"] as const;

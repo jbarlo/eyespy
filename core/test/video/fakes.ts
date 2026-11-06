@@ -24,6 +24,16 @@ export class MemFrames implements FrameStore {
   has(ref: FrameRef) {
     return this.run("has", () => this.files.has(MemFrames.key(ref)));
   }
+  readonly trackFiles = new Map<string, Uint8Array>();
+  readTrack(ref: FrameRef) {
+    return this.run("read", () => this.trackFiles.get(MemFrames.key(ref)) ?? null);
+  }
+  writeTrack(ref: FrameRef, jpeg: Uint8Array) {
+    return this.run("write", () => void this.trackFiles.set(MemFrames.key(ref), jpeg));
+  }
+  hasTrack(ref: FrameRef) {
+    return this.run("has", () => this.trackFiles.has(MemFrames.key(ref)));
+  }
 }
 
 export type Wired = {

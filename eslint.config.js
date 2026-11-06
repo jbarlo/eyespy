@@ -30,6 +30,7 @@ const CORE_MODULES = [
   "storage",
   "video",
   "perception",
+  "tracking",
   "detections",
   "labelling",
   "render",

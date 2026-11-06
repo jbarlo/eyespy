@@ -9,11 +9,24 @@
  *              queries get logit -20 and an empty mask, below any score floor.
  *   dino       pooler_output from the `appearance` callback on each 224² crop (default: a colour signature, so
  *              crops of one scene object match across frames).
+ *   vision parts  part_00 hashes the pixels into a header as vision does, and each part passes its input on. The neck
+ *              makes the features out of the header, so a Find sees what it sees through the whole graph.
+ *   tracker    every graph outputs the right shape. neck's f72 holds the trunk's first value. decoder's pointer holds
+ *              its call number + 1, and memenc's tokens hold its call number + 1, so a test can tell whose memory it
+ *              reads. Every run lands in `trackerRuns`. The tables are built so that a memory block's position holds
+ *              its temporal row + 1 and the first value of a pointer's position is sin(offset / maxOffset).
  */
 import { createHash } from "node:crypto";
-import { APPEARANCE_DIM, FEATURE_PLANES, MASK_SIZE, MODEL_FILES } from "../../src/perception/pure.ts";
+import {
+  APPEARANCE_DIM,
+  FEATURE_PLANES,
+  MASK_SIZE,
+  MODEL_FILES,
+  TRUNK_LEN,
+  VISION_PART_STEPS,
+} from "../../src/perception/pure.ts";
 import { SAM_SIZE } from "../../src/perception/internal/sam/pixels.kernel.ts";
-import type { RGB } from "../../src/pixels/index.ts";
+import { f16ToF32, type RGB } from "../../src/pixels/index.ts";
 import type { Model, ModelRuntime, Tensor } from "../../src/ports/index.ts";
 import { decodeStamp, stampPoint, type FrameStamp } from "./stamp.ts";
 
@@ -37,10 +50,27 @@ export type DetectContext = {
   image: string;
 };
 
+/** The tracker decoder's answer, for the nth decoder call (from 0). Default: score 1.5, iou 0.8, mask logits +1. */
+export type TrackerDecoderScript = (n: number) => { score?: number; iou?: number; logit?: number; mask?: Uint8Array };
+/** One tracker graph run, with its feeds. */
+export type TrackerRun = { file: string; feeds: Record<string, Tensor> };
+
 export type FakeRuntimeOptions = {
   detector?: (q: DetectContext) => DetectorScript;
   appearance?: (crop: RGB) => Float32Array;
+  trackerDecoder?: TrackerDecoderScript;
 };
+
+const TRACKER_FILES: readonly string[] = [
+  MODEL_FILES.tracker.tables,
+  ...[MODEL_FILES.tracker.graphs.fp32, MODEL_FILES.tracker.graphs.fp16].flatMap((g) => [
+    g.neck,
+    g.maskEmbed,
+    g.decoder,
+    g.memenc,
+    ...g.attention,
+  ]),
+];
 
 export const QUERIES = 200;
 export const VERY_NEGATIVE = -20;
@@ -200,16 +230,42 @@ function stampOf(px: Float32Array): FrameStamp | null {
   return decodeStamp(vals);
 }
 
+/** The 8 small integers that vision leaves in features_288: has-stamp, the scene stamp and a pixel hash. */
+function visionHeader(px: Float32Array): number[] {
+  const stamp = stampOf(px);
+  const h = hashValues(px);
+  const cs = stamp ? Math.round(stamp.t * 100) : 0;
+  const header = [stamp ? 1 : 0, stamp?.clip ?? 0, (cs >> 8) & 0xff, cs & 0xff];
+  for (let k = 0; k < 4; k++) header.push((h >>> (8 * k)) & 0xff);
+  return header;
+}
+
+function visionOutputs(header: readonly number[]): Record<string, Tensor> {
+  const names = ["features_288", "features_144", "features_72"];
+  const out: Record<string, Tensor> = {};
+  FEATURE_PLANES.map((p) => p.dims).forEach((dims, k) => {
+    const data = new Float32Array(dims.reduce<number>((a, b) => a * b, 1));
+    if (k === 0) data.set(header);
+    out[names[k]!] = f32(data, [...dims]);
+  });
+  return out;
+}
+
 export class FakeModelRuntime implements ModelRuntime {
   loads: string[] = [];
+  releases: string[] = [];
   calls: Record<string, number> = {};
   detections: DetectContext[] = [];
+  trackerRuns: TrackerRun[] = [];
   private detector: (q: DetectContext) => DetectorScript;
   private appearance: (crop: RGB) => Float32Array;
+  private trackerDecoder: TrackerDecoderScript;
+  private trackerCalls = { decoder: 0, memenc: 0 };
 
   constructor(opts: FakeRuntimeOptions = {}) {
     this.detector = opts.detector ?? (() => ({ presence: -4, queries: [] }));
     this.appearance = opts.appearance ?? colorSignature;
+    this.trackerDecoder = opts.trackerDecoder ?? (() => ({}));
   }
 
   async load(name: string): Promise<Model> {
@@ -220,6 +276,9 @@ export class FakeModelRuntime implements ModelRuntime {
       run: async (feeds) => {
         this.calls[name] = (this.calls[name] ?? 0) + 1;
         return run(feeds);
+      },
+      release: async () => {
+        this.releases.push(name);
       },
     };
   }
@@ -245,24 +304,92 @@ export class FakeModelRuntime implements ModelRuntime {
       [MODEL_FILES.detector.fp32]: detector,
       [MODEL_FILES.detector.fp16]: detector,
       [MODEL_FILES.appearance]: (feeds) => this.dino(feeds),
+      ...Object.fromEntries(
+        MODEL_FILES.visionParts.parts.map((file, k) => [
+          file,
+          (feeds: Record<string, Tensor>) => this.visionPart(k, feeds),
+        ]),
+      ),
+      [MODEL_FILES.visionParts.neck]: (feeds) => this.visionNeck(feeds),
+      ...Object.fromEntries(
+        TRACKER_FILES.map((file) => [
+          file,
+          (feeds: Record<string, Tensor>) => {
+            this.trackerRuns.push({ file, feeds });
+            return this.tracker(file, feeds);
+          },
+        ]),
+      ),
     };
   }
 
+  private visionPart(k: number, feeds: Record<string, Tensor>): Record<string, Tensor> {
+    const step = VISION_PART_STEPS[k];
+    if (!step) throw new Error(`fake runtime: no vision part ${k}`);
+    const input = tensorOf(feeds, step.input);
+    const last = k === VISION_PART_STEPS.length - 1;
+    const dims = last ? [1, 1024, 72, 72] : [1, 72, 72, 1024];
+    if (k > 0) return { [step.output]: { type: "float16", data: input.data, dims } };
+    const trunk = new Uint16Array(TRUNK_LEN);
+    trunk.set(visionHeader(floats(input)));
+    return { [step.output]: { type: "float16", data: trunk, dims } };
+  }
+
+  private visionNeck(feeds: Record<string, Tensor>): Record<string, Tensor> {
+    const trunk = tensorOf(feeds, MODEL_FILES.visionParts.trunk).data;
+    if (!(trunk instanceof Uint16Array)) throw new Error("fake runtime: the trunk is fp16");
+    return visionOutputs(Array.from(trunk.subarray(0, 8)));
+  }
+
+  private tracker(file: string, feeds: Record<string, Tensor>): Record<string, Tensor> {
+    const name = file.replace("tracker/", "").replace(/(_fp16|_fp32)?\.onnx$/, "");
+    const mask = MASK_SIZE * MASK_SIZE;
+    if (name === "tables") {
+      const tpos = new Float32Array(7 * 64);
+      for (let r = 0; r < 7; r++) tpos.fill(r + 1, r * 64, (r + 1) * 64);
+      const tprojW = new Float32Array(64 * 256);
+      tprojW[0] = 1;
+      return {
+        mem_pos: f32(new Float32Array(5184 * 64), [5184, 64]),
+        mem_tpos: f32(tpos, [7, 64]),
+        tproj_w: f32(tprojW, [64, 256]),
+        tproj_b: f32(new Float32Array(64), [64]),
+        no_mask: f32(new Float32Array(256).fill(0.5), [256]),
+      };
+    }
+    if (name === "neck") {
+      const trunk = tensorOf(feeds, "trunk").data;
+      const first = (trunk instanceof Uint16Array ? f16ToF32(trunk.subarray(0, 1)) : (trunk as Float32Array))[0] ?? 0;
+      return {
+        s0: f32(new Float32Array(32 * mask), [1, 32, MASK_SIZE, MASK_SIZE]),
+        s1: f32(new Float32Array((64 * mask) / 4), [1, 64, MASK_SIZE / 2, MASK_SIZE / 2]),
+        f72: f32(new Float32Array(256 * 5184).fill(first), [1, 256, 72, 72]),
+      };
+    }
+    if (name === "mask_embed") return { dense: f32(new Float32Array(256 * 5184), [1, 256, 72, 72]) };
+    if (name === "decoder") {
+      const n = this.trackerCalls.decoder++;
+      const s = this.trackerDecoder(n);
+      return {
+        low_res: f32(
+          s.mask ? Float32Array.from(s.mask, (v) => (v ? 1 : -1)) : new Float32Array(mask).fill(s.logit ?? 1),
+          [1, 1, MASK_SIZE, MASK_SIZE],
+        ),
+        iou: f32(Float32Array.of(s.iou ?? 0.8), [1, 1]),
+        score: f32(Float32Array.of(s.score ?? 1.5), [1, 1, 1]),
+        pointer: f32(new Float32Array(256).fill(n + 1), [1, 256]),
+      };
+    }
+    if (name === "memenc") {
+      const n = this.trackerCalls.memenc++;
+      return { mem: f32(new Float32Array(64 * 5184).fill(n + 1), [1, 64, 72, 72]) };
+    }
+    const dims = name === "attn_l3" ? [1, 256, 72, 72] : [1, 5184, 256];
+    return { y: f32(new Float32Array(256 * 5184), dims) };
+  }
+
   private vision(feeds: Record<string, Tensor>): Record<string, Tensor> {
-    const px = floats(tensorOf(feeds, "pixel_values"));
-    const stamp = stampOf(px);
-    const h = hashValues(px);
-    const cs = stamp ? Math.round(stamp.t * 100) : 0;
-    const header = [stamp ? 1 : 0, stamp?.clip ?? 0, (cs >> 8) & 0xff, cs & 0xff];
-    for (let k = 0; k < 4; k++) header.push((h >>> (8 * k)) & 0xff);
-    const names = ["features_288", "features_144", "features_72"];
-    const out: Record<string, Tensor> = {};
-    FEATURE_PLANES.map((p) => p.dims).forEach((dims, k) => {
-      const data = new Float32Array(dims.reduce<number>((a, b) => a * b, 1));
-      if (k === 0) data.set(header);
-      out[names[k]!] = f32(data, [...dims]);
-    });
-    return out;
+    return visionOutputs(visionHeader(floats(tensorOf(feeds, "pixel_values"))));
   }
 
   private text(feeds: Record<string, Tensor>): Record<string, Tensor> {

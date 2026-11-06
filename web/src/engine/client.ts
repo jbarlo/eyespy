@@ -20,6 +20,7 @@ type EyespyOptions = {
   models?: ModelManifest; // defaults to the production manifest
   runtime?: RuntimeAssets;
   detector?: "fp32" | "fp16";
+  tracker?: "fp32" | "fp16";
   onEvent?: (e: EngineEvent) => void;
   featureCacheMB?: number;
   persistFeatures?: boolean;
@@ -43,6 +44,7 @@ export async function createEyespy(o: EyespyOptions = {}) {
     runtime: absolutize(o.runtime ?? PRODUCTION_RUNTIME, base),
     session: o.session ?? { opfs: "default" },
     detector: o.detector,
+    tracker: o.tracker,
     featureCacheMB: o.featureCacheMB,
     persistFeatures: o.persistFeatures,
     featureDiskMB: o.featureDiskMB,
@@ -55,7 +57,9 @@ export async function createEyespy(o: EyespyOptions = {}) {
     const file = (key: string) => ResultAsync.fromPromise(port.readFile(key), toEngineError);
     const addFile = (f: File, input: Omit<Inputs["add"], "video"> = {}) =>
       ResultAsync.fromPromise(port.register(f), toEngineError).andThen((video) => ops.add({ ...input, video }));
-    return { port, client, info, api, ops, file, addFile, dispose };
+    const prepareFile = (f: File, clip: string) =>
+      ResultAsync.fromPromise(port.register(f), toEngineError).andThen((video) => ops.track.prepare({ video, clip }));
+    return { port, client, info, api, ops, file, addFile, prepareFile, dispose };
   } catch (e) {
     dispose();
     throw e;
@@ -68,6 +72,7 @@ type EngineHandle = Awaited<ReturnType<typeof createEyespy>>;
 type EngineConfig = {
   models?: ModelManifest;
   runtime?: RuntimeAssets;
+  tracker?: "fp32" | "fp16";
   host?: Record<string, string | null>;
   /** Sees every engine event of every session (window.eyespyEvents). */
   tap?: (e: EngineEvent) => void;

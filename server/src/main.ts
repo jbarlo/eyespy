@@ -40,7 +40,7 @@ if (parsed.isErr()) {
   process.stderr.write(`eyespy-server: ${parsed.error}\n${USAGE}\n`);
   process.exit(2);
 }
-const { root, models, detector, cpu, idleMinutes, featureCacheMB, featureDiskMB, profile } = parsed.value;
+const { root, models, detector, cpu, idleMinutes, featureCacheMB, featureDiskMB, profile, tracker } = parsed.value;
 const sock = path.join(root, SESSION_MARKER, SERVER_SOCKET);
 if (!socketPathFits(sock, process.platform)) {
   process.stderr.write(`eyespy-server: ${SOCKET_TOO_LONG}: ${sock}\n`);
@@ -100,6 +100,8 @@ const opened = await composeEngine(
   },
   {
     detector,
+    // Off unless asked for. Needs the graphs under tracker/ and vision/ in the model folder (tools/models/README.md).
+    ...(tracker ? { tracker: { precision: cpu ? ("fp32" as const) : ("fp16" as const) } } : {}),
     profile,
     featureCacheMB,
     featureDiskMB,

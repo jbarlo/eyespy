@@ -29,6 +29,8 @@ const ClipSchema = z.object({
   times: z.array(z.number()),
   fps: z.number().positive().optional(),
   stills: z.literal(true).optional(),
+  track_times: z.array(z.number()).optional(),
+  track_cuts: z.array(z.number()).optional(),
   shape: z.tuple([z.number(), z.number()]),
   captured: z.string().nullable().optional(),
   keyframe_thresh: z.number().nullable().optional(),
@@ -41,6 +43,9 @@ const MetaSchema = z.object({
   clips: z.array(z.unknown()),
   next_obj: z.number().int().optional(),
   features: z.string().optional(),
+  trunks: z.string().optional(),
+  tracks: z.string().optional(),
+  assoc: z.string().optional(),
 });
 
 /** Decoded session.json: the session part and next_obj. */
@@ -79,6 +84,8 @@ const decodeClip = (v: unknown, k: number): Result<Clip, StorageError> => {
     shape: d.shape,
     captured: d.captured ?? null,
     keyframeThresh: d.keyframe_thresh ?? null,
+    ...(d.track_times ? { trackTimes: d.track_times } : {}),
+    ...(d.track_cuts ? { trackCuts: d.track_cuts } : {}),
     removed: d.removed === undefined || d.removed === null ? null : { at: d.removed },
     reserved: counters(d.next_n),
   });
@@ -96,7 +103,12 @@ function decodeMeta(value: unknown): Result<DecodedMeta, StorageError> {
         version: d.version,
         config,
         clips,
-        formats: { features: d.features ?? null },
+        formats: {
+          features: d.features ?? null,
+          ...(d.trunks ? { trunks: d.trunks } : {}),
+          ...(d.tracks ? { tracks: d.tracks } : {}),
+          ...(d.assoc ? { assoc: d.assoc } : {}),
+        },
       },
       nextObj: d.next_obj ?? null,
     })),
@@ -123,6 +135,8 @@ const encodeClip = (c: Clip): object => {
     ["path", c.path],
     ["key", c.key],
     ["times", c.times],
+    ["track_times", c.trackTimes],
+    ["track_cuts", c.trackCuts],
     ["fps", c.timing.kind === "rate" ? c.timing.fps : undefined],
     ["stills", c.timing.kind === "stills" ? true : undefined],
     ["shape", c.shape],
@@ -142,5 +156,8 @@ export const metaText = (meta: SessionMeta, nextObj: number): string =>
       ["clips", meta.clips.map(encodeClip)],
       ["next_obj", nextObj],
       ["features", meta.formats.features ?? undefined],
+      ["trunks", meta.formats.trunks ?? undefined],
+      ["tracks", meta.formats.tracks ?? undefined],
+      ["assoc", meta.formats.assoc ?? undefined],
     ]),
   );

@@ -10,6 +10,8 @@ export type InitOptions = {
   runtime: RuntimeAssets; // absolute URLs
   session: SessionLocation;
   detector?: "fp32" | "fp16";
+  /** Video tracking with these graphs. Absent on the production path. */
+  tracker?: "fp32" | "fp16";
   featureCacheMB?: number;
   /** Save vision features in the session folder. When off, features stay in RAM and get re-encoded on reopen. */
   persistFeatures?: boolean;

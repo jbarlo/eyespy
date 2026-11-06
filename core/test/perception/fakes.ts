@@ -93,6 +93,9 @@ export class FakeFrames implements FrameImages {
   ref(i: FrameNo) {
     return this.live.includes(i) ? ok(refOf(i)) : err({ kind: "no-keyframe" as const, frame: i });
   }
+  trackRef(i: FrameNo) {
+    return this.live.includes(i) ? refOf(i) : null;
+  }
   image(i: FrameNo) {
     this.reads.push(i);
     if (!this.live.includes(i)) return errAsync({ kind: "no-keyframe" as const, frame: i });

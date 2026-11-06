@@ -19,8 +19,9 @@ import type { CacheStats, PerceptionError, Provenance } from "../perception/inde
 import type { Box } from "../pixels/index.ts";
 import type { Clock, HostFailure, Logger, Timers } from "../ports/index.ts";
 import type { RenderError } from "../render/index.ts";
+import type { TrackingError } from "../tracking/index.ts";
 import type { VideoError } from "../video/index.ts";
-import type { ClipKey, FrameNo } from "../video/pure.ts";
+import type { ClipKey, FrameNo, TrackSlot } from "../video/pure.ts";
 import type { SessionDeps, SessionMeta } from "./ports.ts";
 import type { Config, ConfigKey, Ctx } from "./pure.ts";
 
@@ -37,10 +38,22 @@ type SessionOwnError =
   | { readonly kind: "no-frames" }
   | { readonly kind: "region-too-small"; readonly w: number; readonly h: number; readonly min: number }
   | { readonly kind: "missing-heatmap"; readonly ref: HeatmapRef }
+  | { readonly kind: "tracking-off" }
+  | { readonly kind: "no-track"; readonly id: string }
+  | { readonly kind: "clip-has-tracks"; readonly clip: ClipKey }
+  /** A saved track's files don't match its index. */
+  | { readonly kind: "track-memory-missing"; readonly track: string }
   | { readonly kind: "shutting-down" };
 
 export type SessionError =
-  SessionOwnError | VideoError | PerceptionError | DetectionsError | LabellingError | RenderError | HostFailure;
+  | SessionOwnError
+  | VideoError
+  | PerceptionError
+  | TrackingError
+  | DetectionsError
+  | LabellingError
+  | RenderError
+  | HostFailure;
 
 type Op<Req, Reply> = (ctx: Ctx, req: Req) => ResultAsync<Reply, SessionError>;
 
@@ -100,6 +113,18 @@ export type ClipInfo = {
   readonly frame_bytes: number;
   readonly feature_bytes: number;
   readonly removed?: number;
+  /** With tracking on. */
+  readonly tracking?: {
+    /** Places on the clip's tracking grid. */
+    readonly frames: number;
+    /** No frames between the keyframes, so tracks would jump from keyframe to keyframe. */
+    readonly keyframes_only: boolean;
+    /** Whether `track.prepare` can give it frames: a video can, photos can't. */
+    readonly can_prepare: boolean;
+    readonly frame_bytes: number;
+    readonly trunk_bytes: number;
+    readonly track_bytes: number;
+  };
 };
 export type ClipsListReply = { readonly clips: readonly ClipInfo[] };
 export type ClipsRemoveReq = { readonly clip: string };
@@ -308,6 +333,117 @@ export type ManifestReply = {
   readonly image: Locator | null;
 };
 
+export type TrackStartReq = {
+  /** The detections that seed the tracks. One with a track already restarts it, keeping its frames. */
+  readonly ids: readonly string[];
+  /** Run these before every other track. */
+  readonly first?: boolean | null;
+};
+export type TrackIdsReq = { readonly ids?: readonly string[] | null };
+export type TrackPrioritiseReq = { readonly ids: readonly string[] };
+export type TrackSummary = {
+  readonly id: string;
+  readonly det: DetId;
+  readonly clip: ClipKey;
+  /** The object holding the seed detection now. */
+  readonly object?: Owner;
+  readonly seed_at: number;
+  readonly state: "active" | "cancelled" | "failed";
+  readonly failure: string | null;
+  readonly priority: number;
+  /** The frames the two legs have reached. */
+  readonly forward: number;
+  readonly reverse: number;
+  /** Frames covered, of `total` on the grid in its shot. */
+  readonly done: number;
+  readonly total: number;
+  readonly finished: boolean;
+  /** A leg with work left is skipping frames until the object is back. */
+  readonly parked: boolean;
+  /** Covered frames no one looked at, which `done` includes. */
+  readonly skipped: number;
+  /** Where the object was on a frame, once seeded: the first and last place, and how many it was on. */
+  readonly seen: { readonly first: number; readonly last: number; readonly count: number } | null;
+};
+export type TrackStatusReply = {
+  readonly paused: boolean;
+  readonly tracks: readonly TrackSummary[];
+  /** Keyframes whose detections wait for association. */
+  readonly waiting: number;
+};
+export type TrackAutoReq = FrameSpecReq & { readonly threshold?: number | null };
+/** A track as a review shows it. It only proposes: tracks go to objects when the user says so. */
+export type TrackProposal = {
+  readonly track: string;
+  readonly clip: ClipKey;
+  readonly seed_at: number;
+  readonly state: "active" | "cancelled" | "failed";
+  readonly finished: boolean;
+  readonly auto: boolean;
+  /** The object holding the seed detection now. */
+  readonly object?: Owner;
+  /** Its detections, the seed first, and how each came to it. */
+  readonly dets: readonly {
+    readonly id: DetId;
+    readonly how: "seed" | "match" | "dup" | "small" | "over";
+    readonly prompt: string;
+    readonly score: number;
+    readonly frame: FrameNo;
+  }[];
+  /** The best score among its detections. */
+  readonly score: number;
+  /** Where the object was on a frame: first and last place on the grid and how many. Null before its seed. */
+  readonly frames: { readonly first: number; readonly last: number; readonly count: number } | null;
+  /** Tracks whose masks agreed with this one, and on which frames: a merge suggestion, not a merge. */
+  readonly converged_with: readonly {
+    readonly track: string;
+    readonly frames: number;
+    readonly first: number;
+    readonly last: number;
+  }[];
+};
+export type TrackProposalsReply = {
+  /** Tracks likely to be one object are together. Most groups hold one. */
+  readonly groups: readonly { readonly tracks: readonly TrackProposal[] }[];
+  /** Keyframes whose detections wait for association. */
+  readonly waiting: number;
+  /** Detections the max-tracks guard left without a track. */
+  readonly left_out: readonly DetId[];
+  /** How often a track looked like it held a detection but scored too low to count. */
+  readonly weak_covers: number;
+};
+export type TrackPrepareReq = {
+  /** The clip's video, picked again: a browser can't read it after the tab that added it has gone. */
+  readonly video: string;
+  readonly clip: string;
+};
+export type TrackPrepareReply = { readonly clip: ClipKey; readonly frames: number; readonly cuts: readonly number[] };
+export type TrackFramesReq = { readonly clip: string };
+export type TrackFramesReply = {
+  readonly clip: ClipKey;
+  /** `image` is how to read the frame's picture, as data.frames gives it. */
+  readonly frames: readonly (TrackSlot & { readonly image: string })[];
+  /** The times of each new shot's first frame. A track stays inside one shot. */
+  readonly cuts: readonly number[];
+};
+export type TrackMasksReq = { readonly clip: string; readonly at: number };
+export type TrackMasksReply = {
+  readonly clip: ClipKey;
+  readonly at: number;
+  readonly t: number;
+  readonly keyframe: FrameNo | null;
+  /** MASK_SIZE² masks stretched over the frame. */
+  readonly masks: readonly {
+    readonly track: string;
+    readonly det: DetId;
+    readonly score: number;
+    readonly iou: number;
+    readonly mask: DataMask;
+  }[];
+  /** Tracks that were parked on this frame, so nothing looked for the object here. A miss is an empty mask above. */
+  readonly parked: readonly string[];
+};
+
 /** Only the actor (Engine) calls in, one op at a time. */
 export interface Session {
   readonly videos: {
@@ -364,12 +500,39 @@ export interface Session {
     readonly manifest: Op<ManifestReq, ManifestReply>;
   };
 
+  /** Video tracking. Each op gives `tracking-off` unless tracking was turned on when composing. */
+  readonly track: {
+    readonly start: Op<TrackStartReq, TrackStatusReply>;
+    /**
+     * Queues tracks for the detections of these keyframes, all by default, that no track holds yet, behind any requested
+     * track and up to auto_tracks per clip. They seed once the tracks of their shot have reached their frame.
+     */
+    readonly auto: Op<TrackAutoReq, TrackStatusReply>;
+    /** What a review shows of the tracks, grouped by likely object. */
+    readonly proposals: Op<Record<never, never>, TrackProposalsReply>;
+    readonly prioritise: Op<TrackPrioritiseReq, TrackStatusReply>;
+    /** No tracking unit runs from here on, also after a reload, until `resume`. */
+    readonly pause: Op<Record<never, never>, TrackStatusReply>;
+    readonly resume: Op<Record<never, never>, TrackStatusReply>;
+    /** Takes tracks out of the queue, all of them by default. Finished frames stay. */
+    readonly cancel: Op<TrackIdsReq, TrackStatusReply>;
+    readonly status: Op<Record<never, never>, TrackStatusReply>;
+    /** Gives a clip with only its keyframes a tracking grid. A clip with tracks already is refused. */
+    readonly prepare: Op<TrackPrepareReq, TrackPrepareReply>;
+    /** A clip's tracking grid. */
+    readonly frames: Op<TrackFramesReq, TrackFramesReply>;
+    /** Every track's mask on a place on the grid. */
+    readonly masks: Op<TrackMasksReq, TrackMasksReply>;
+  };
+
   /** The saved config. Ctx is built from it plus the request's overrides. */
   config(): Config;
   meta(): SessionMeta;
   /** One unit of background work. False when idle. */
   background(): ResultAsync<boolean, SessionError>;
   pending(): readonly FrameNo[];
+  /** Whether a tracking unit is waiting. */
+  tracking(): boolean;
 }
 
 /** Opens a session over records already loaded. */

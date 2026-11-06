@@ -45,6 +45,7 @@ export class OrtRuntime implements ModelRuntime {
         for (const [k, v] of Object.entries(r)) out[k] = fromOrt(k, v);
         return out;
       },
+      release: () => s.release(),
     };
   }
 

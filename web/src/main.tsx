@@ -15,11 +15,12 @@ declare const __EYESPY_SAM_LICENSE_SHA256__: string;
 
 function start() {
   const q = new URLSearchParams(location.search);
-  const { models, runtime } = pageParams(location.search);
+  const { models, runtime, tracker } = pageParams(location.search);
   const events = createEventLog();
   const engine = createEngine({
     models,
     runtime,
+    tracker,
     host: { eyespy: __EYESPY_REV__ },
     tap: (e) => events.push(e),
   });
@@ -36,6 +37,7 @@ function start() {
     query: { get: (k) => q.get(k) },
     clock: browserClock,
     host: browserHost,
+    tracking: tracker !== undefined,
     samLicense: __EYESPY_SAM_LICENSE_SHA256__,
   });
   installAutomation(window, app, events.events);

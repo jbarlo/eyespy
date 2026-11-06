@@ -3,7 +3,7 @@
  * ORT gets the wasm as bytes (env.wasm.wasmBinary), so it doesn't fetch it again per load.
  */
 import * as ort from "onnxruntime-web/webgpu";
-import type { Model, ModelRuntime, Tensor } from "eyespy-core/ports";
+import type { ChainStep, Model, ModelChain, ModelRuntime, Tensor } from "eyespy-core/ports";
 import type { ModelEntry, ModelManifest } from "../manifest.ts";
 import type { DownloadCache } from "./cache.ts";
 import { installPortableWgsl } from "./wgsl.ts";
@@ -64,6 +64,47 @@ export class WebModelRuntime implements ModelRuntime {
         for (const [k, v] of Object.entries(r))
           out[k] = { type: v.type as Tensor["type"], data: v.data as Tensor["data"], dims: [...v.dims] };
         return out;
+      },
+      release: () => s.release(),
+    };
+  }
+
+  /**
+   * The steps as sessions that keep their outputs on the GPU, so that nothing goes back to host memory between them.
+   * After each step the queue has to drain, which leaves the GPU to the page between steps.
+   */
+  async loadChain(steps: readonly ChainStep[]): Promise<ModelChain> {
+    await this.ensureOrt();
+    const sessions: ort.InferenceSession[] = [];
+    for (const [k, step] of steps.entries()) {
+      const last = k === steps.length - 1;
+      sessions.push(
+        await ort.InferenceSession.create(await this.bytes(step.file), {
+          executionProviders: ["webgpu"],
+          graphOptimizationLevel: "all",
+          ...(last ? {} : { preferredOutputLocation: "gpu-buffer" as const }),
+        }),
+      );
+    }
+    return {
+      run: async (first) => {
+        let x = new ort.Tensor(first.type, first.data, first.dims);
+        const device = (await ort.env.webgpu.device) as { queue: { onSubmittedWorkDone(): Promise<void> } };
+        for (const [k, step] of steps.entries()) {
+          const out = await sessions[k]!.run({ [step.input]: x });
+          const y = out[step.output];
+          if (!y) throw new Error(`${step.file} has no output ${step.output}`);
+          if (x.location === "gpu-buffer") x.dispose();
+          x = y;
+          await device.queue.onSubmittedWorkDone();
+        }
+        const data = (await x.getData()) as unknown as ArrayBufferView;
+        // ORT gives fp16 as a Float16Array where the browser has one. The port carries its bits as a Uint16Array.
+        const bits = new Uint16Array(data.buffer, data.byteOffset, data.byteLength / 2);
+        return { type: "float16", data: bits, dims: [...x.dims] };
+      },
+      release: async () => {
+        for (const s of sessions) await s.release();
       },
     };
   }

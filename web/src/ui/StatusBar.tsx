@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { currentTask } from "../state/index.ts";
 import { fmtBytes } from "./common.tsx";
-import { useActions, useSlice } from "./context.tsx";
+import { useActions, useApp, useSlice } from "./context.tsx";
+import { TrackingStat } from "./panels/Tracking.tsx";
 import { HELP } from "./help.ts";
 
 export function StatusBar() {
   const a = useActions();
+  const app = useApp();
   const st = useSlice("engine", (s) => s.status);
   const phase = useSlice("engine", (s) => s.phase);
   const device = useSlice("engine", (s) => s.session?.info.device);
@@ -63,6 +65,7 @@ export function StatusBar() {
           )}
         </span>
       )}
+      {app.tracking && <TrackingStat />}
       <span className="grow" />
       {st && (
         <span className="muted">

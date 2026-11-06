@@ -15,6 +15,7 @@ test("args: defaults, and flags over env", () => {
     featureCacheMB: undefined,
     featureDiskMB: null,
     profile: false,
+    tracker: false,
   });
   const env = { EYESPY_MODELS: "/m", EYESPY_DETECTOR: "fp16", EYESPY_FEATURE_CACHE_MB: "512", EYESPY_PROFILE: "1" };
   assert.deepEqual(parse(["--session", "/s", "--idle-minutes", "0.5", "--cpu"], env)._unsafeUnwrap(), {
@@ -26,6 +27,7 @@ test("args: defaults, and flags over env", () => {
     featureCacheMB: 512,
     featureDiskMB: null,
     profile: true,
+    tracker: false,
   });
   const flags = parse(["--session", "/s", "--models", "/n", "--detector", "fp32"], env)._unsafeUnwrap();
   assert.equal(flags.models, "/n");

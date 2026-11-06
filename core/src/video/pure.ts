@@ -24,8 +24,54 @@ export const isClipKey = (s: string): s is ClipKey => /^[0-9a-f]{12}$/.test(s);
 export const placeOf = (f: { readonly t: number; readonly photo?: boolean }): string =>
   f.photo ? `photo ${f.t}` : `${f.t.toFixed(1)}s`;
 
-/** A frame as the session folder files it, by clip and the keyframe's index within the clip. */
+/**
+ * A frame as the session folder files it, by clip and the frame's index within the clip. For a keyframe's JPEG and
+ * features that is its keyframe index. For tracking data it is its position on the clip's tracking grid.
+ */
 export type FrameRef = { readonly clipKey: ClipKey; readonly index: number };
+
+/** A place on a clip's tracking grid: its position, its time, and the keyframe there, if one is. */
+export type TrackSlot = { readonly at: number; readonly t: number; readonly keyframe: FrameNo | null };
+
+/**
+ * The times of a tracking grid: `fps` a second over the clip, and every keyframe. A sample within a quarter step of a
+ * keyframe gives way to it, so that the steps stay about even. Times have 2 decimals, as keyframe times do.
+ *
+ * A cut at time c lies somewhere between the stream frames at c - cutStep and c. Both of them join the grid, and a
+ * sample between them goes, as nothing tells which shot it shows.
+ */
+export const trackGridTimes = (
+  keyframes: readonly number[],
+  duration: number,
+  fps: number,
+  cuts: readonly number[] = [],
+  cutStep = 0,
+): readonly number[] => {
+  const count = Math.max(0, Math.ceil(duration * fps - 1e-9));
+  const samples = Array.from({ length: count }, (_, k) => Math.round((k / fps) * 100) / 100);
+  const edges = cuts.flatMap((c) => [Math.round((c - cutStep) * 100) / 100, c]);
+  const fixed = [...keyframes, ...edges];
+  const free = samples.filter(
+    (t) => !fixed.some((f) => Math.abs(f - t) < 0.25 / fps) && !cuts.some((c) => t > c - cutStep && t < c),
+  );
+  return [...new Set([...fixed, ...free])].toSorted((a, b) => a - b);
+};
+
+/**
+ * The stretch of a tracking grid between the cuts around position `at`, both ends included. `cuts` are the times of
+ * each new shot's first frame, so a shot ends on the grid frame before such a time. A track's legs stay inside it.
+ */
+export const shotAround = (
+  times: readonly number[],
+  cuts: readonly number[],
+  at: number,
+): { readonly first: number; readonly last: number } => {
+  const t = times[at] ?? 0;
+  const from = Math.max(-Infinity, ...cuts.filter((c) => c <= t));
+  const to = Math.min(Infinity, ...cuts.filter((c) => c > t));
+  const inside = times.flatMap((x, k) => (x >= from && x < to ? [k] : []));
+  return { first: inside[0] ?? at, last: inside.at(-1) ?? at };
+};
 
 /** A removed clip's tombstone. `at` is seconds since the epoch to 3 decimals (session.json `removed`). */
 type Tombstone = { readonly at: number };
@@ -49,6 +95,14 @@ export type Clip = {
   readonly captured: string | null;
   /** The keyframe_thresh the clip was picked with, or null if session.json doesn't record it. */
   readonly keyframeThresh: number | null;
+  /**
+   * The clip's tracking grid in time order, every keyframe included, or absent for a clip added without tracking. It
+   * stays with the clip, so a revived clip and a later change of the rate keep a track's frame positions meaning the
+   * same frames.
+   */
+  readonly trackTimes?: readonly number[];
+  /** The times of each new shot's first frame, found with the tracking grid and kept with it. */
+  readonly trackCuts?: readonly number[];
   /** Set while the clip is removed. */
   readonly removed: Tombstone | null;
   /**
@@ -63,6 +117,8 @@ export type FrameSlot = { readonly clip: Clip; readonly index: number; readonly 
 /** `frame` is any number the caller had. It is not a keyframe of this session, or it belongs to a removed clip. */
 export type NoKeyframe = { readonly kind: "no-keyframe"; readonly frame: number };
 type MissingFrameFile = { readonly kind: "missing-frame-file"; readonly frame: FrameNo };
+/** A tracking frame's JPEG is gone from the session folder. */
+export type MissingTrackFrame = { readonly kind: "missing-track-frame"; readonly clip: ClipKey; readonly at: number };
 /** Reads a frame image. Perception's and render's frame ports use this shape, so compose passes video in as is. */
 export type FrameAccessError = NoKeyframe | MissingFrameFile | HostFailure;
 

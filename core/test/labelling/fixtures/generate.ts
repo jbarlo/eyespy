@@ -80,14 +80,23 @@ async function open(host: FakeHost) {
   const session = (
     await createSession(
       {
-        modules: { video, perception, detections, labelling, render: createRenderer({ frames: video, text: codec }) },
+        modules: {
+          video,
+          perception,
+          detections,
+          labelling,
+          render: createRenderer({ frames: video, text: codec }),
+          tracking: null,
+        },
         stores: {
           meta: folder.meta,
           detections: folder.detections,
           heatmaps: folder.heatmaps,
           outputs: folder.outputs,
           frameFiles: folder.frames,
+          tracks: folder.tracks,
           featureBytes: (r) => folder.features.size(r),
+          trackingBytes: (c, t) => folder.trackingBytes(c, t),
           removeClipFiles: (k) => folder.removeClipFiles(k),
         },
         host: { codec, clock, logger, info: {}, root: folder.root },

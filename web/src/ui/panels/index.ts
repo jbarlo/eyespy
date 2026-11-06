@@ -7,6 +7,7 @@ import { HistoryPanel } from "./History.tsx";
 import { LayersPanel } from "./Layers.tsx";
 import { ObjectsPanel } from "./Objects.tsx";
 import { PropertiesPanel } from "./Properties.tsx";
+import { TrackingPanel } from "./Tracking.tsx";
 import { TriagePanel } from "./Triage.tsx";
 import { VideosPanel } from "./Videos.tsx";
 
@@ -14,6 +15,7 @@ export { ObjectsDatalist } from "./Objects.tsx";
 
 export const PANELS = [
   { id: "properties", Panel: PropertiesPanel },
+  { id: "tracking", Panel: TrackingPanel },
   { id: "triage", Panel: TriagePanel },
   { id: "objects", Panel: ObjectsPanel },
   { id: "videos", Panel: VideosPanel },

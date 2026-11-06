@@ -4,6 +4,7 @@ import { objColor, objName } from "../../../state/index.ts";
 import { Crop, ObjName } from "../../common.tsx";
 import { useActions, useDerived, useSlice } from "../../context.tsx";
 import { HELP } from "../../help.ts";
+import { TrackNote } from "../Tracking.tsx";
 
 /** One crop per frame: the best-scoring member, in frame order. */
 const gallery = (members: readonly Det[]) =>
@@ -38,6 +39,7 @@ export function ObjectProps({ oid }: { readonly oid: string }) {
           </>
         )}
       </p>
+      <TrackNote dets={o.members} />
       <form
         className="inline"
         onSubmit={(e) => {

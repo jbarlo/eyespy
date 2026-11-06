@@ -6,7 +6,7 @@
  * times set it. Files are keyed by FrameRef, so a file whose frame is not live, or a stale one in an untrusted
  * store, still counts and can be evicted.
  */
-import type { FrameNo, FrameRef } from "../../../video/pure.ts";
+import type { ClipKey, FrameNo, FrameRef } from "../../../video/pure.ts";
 
 export type DiskFile = {
   readonly ref: FrameRef;
@@ -63,6 +63,9 @@ export class DiskLedger {
     const old = this.files.get(id);
     if (old) this.total -= old.bytes;
     this.files.delete(id);
+  }
+  dropClip(key: ClipKey): void {
+    for (const f of [...this.files.values()]) if (f.ref.clipKey === key) this.drop(f.ref);
   }
   dropFrames(frames: ReadonlySet<FrameNo>): void {
     for (const f of [...this.files.values()]) if (f.frame !== null && frames.has(f.frame)) this.drop(f.ref);

@@ -150,7 +150,12 @@ class EngineImpl implements Engine {
   /** Exits once no request has arrived for idle_minutes and background encoding has finished. */
   private checkIdle(): void {
     const idle = this.host.clock.now() - this.lastRequest;
-    if (idle > this.idleMinutes * 60_000 && !this.inflight && !this.session.pending().length) {
+    if (
+      idle > this.idleMinutes * 60_000 &&
+      !this.inflight &&
+      !this.session.pending().length &&
+      !this.session.tracking()
+    ) {
       this.host.logger.log(`idle for ${Math.round(idle / 60_000)} min, exiting`);
       this.shutdown();
     }

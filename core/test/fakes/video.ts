@@ -97,9 +97,15 @@ export class FakeVideo implements ClipSource {
     this.streamed.push(clip.path);
     this.rates.push(fps);
     const n = Math.floor(clip.duration * fps) + 1;
-    const tex = noise(w * h, 0x9e3779b9 ^ (no * 7919));
+    const textures = new Map<number, Uint8Array>();
+    const texture = (shot: number) => {
+      const made = textures.get(shot) ?? noise(w * h, 0x9e3779b9 ^ (no * 7919) ^ (shot * 104729));
+      textures.set(shot, made);
+      return made;
+    };
     const out = new Uint8Array(n * w * h);
     for (let i = 0; i < n; i++) {
+      const tex = texture((clip.cuts ?? []).filter((c) => c <= i / fps).length);
       const shift = Math.round(i * clip.pan) % w;
       for (let y = 0; y < h; y++)
         for (let x = 0; x < w; x++) out[i * w * h + y * w + x] = tex[y * w + ((x + shift) % w)] ?? 0;

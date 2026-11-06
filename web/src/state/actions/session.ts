@@ -21,6 +21,7 @@ import { sessionOf } from "./context.ts";
 import type { Ctx, Failure } from "./context.ts";
 import type { LicenceActions } from "./licence.ts";
 import type { Runner } from "./run.ts";
+import type { TrackingActions } from "./tracking.ts";
 import type { TriageActions } from "./triage.ts";
 
 const POLL_MS = 2500;
@@ -31,7 +32,13 @@ const NO_WEBGPU_ERROR = {
 } as const satisfies Record<Exclude<WebGpu, "available">, string>;
 const labelOf = (loc: SessionLocation) => ("opfs" in loc ? loc.opfs : loc.dir.name);
 
-export function createSessionActions(ctx: Ctx, r: Runner, triageActions: TriageActions, licence: LicenceActions) {
+export function createSessionActions(
+  ctx: Ctx,
+  r: Runner,
+  triageActions: TriageActions,
+  licence: LicenceActions,
+  tracking: Pick<TrackingActions, "startTracking" | "stopTracking">,
+) {
   const { engine, frames, detections, objects, selection, notices, settings, layers, triage } = ctx.stores;
   const { deps, assets } = ctx;
 
@@ -63,6 +70,7 @@ export function createSessionActions(ctx: Ctx, r: Runner, triageActions: TriageA
    */
   function closeSession() {
     poll.stop();
+    tracking.stopTracking();
     engine.getState().session?.dispose();
     assets.reset();
     const { clipsWatched } = frames.getState(); // the Videos panel stays open across sessions
@@ -194,6 +202,7 @@ export function createSessionActions(ctx: Ctx, r: Runner, triageActions: TriageA
     engine.setState({ phase: "ready" });
     void loadClips();
     startPolling();
+    tracking.startTracking();
     if (settings.getState().persisted === null) void requestPersist();
     return s.api;
   }

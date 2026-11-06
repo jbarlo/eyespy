@@ -70,17 +70,19 @@ type Stub = {
   /** What the next background unit returns (default: Ok(false), nothing to do). */
   next: () => ResultAsync<boolean, SessionError>;
   pending: FrameNo[];
+  tracking: boolean;
   units: number;
 };
 
 function stubEngine(idleMinutes = 30) {
-  const st: Stub = { next: () => okAsync(false), pending: [], units: 0 };
+  const st: Stub = { next: () => okAsync(false), pending: [], tracking: false, units: 0 };
   const session = {
     background: () => {
       st.units++;
       return st.next();
     },
     pending: () => st.pending,
+    tracking: () => st.tracking,
     config: () => DEFAULT_CONFIG,
     needsAppearanceMigration: () => false,
   } as unknown as Session;
@@ -154,6 +156,11 @@ test("idle exit: after idle_minutes without requests, once encoding is done and 
   st.pending = [fno(0)];
   timers.advance(5 * 60_000);
   assert.equal(exited(), 0, "frames still to encode");
+  st.pending = [];
+  st.tracking = true;
+  timers.advance(5 * 60_000);
+  assert.equal(exited(), 0, "tracking units still to run");
+  st.tracking = false;
   st.pending = [];
   // a request in flight (its job waits on `release`) keeps it alive however long it takes
   let release = () => {};

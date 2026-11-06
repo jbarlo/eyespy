@@ -33,20 +33,44 @@ const clipInfo = (k: Kit, c: Clip): ResultAsync<ClipInfo, SessionError> => {
               .andThen((frame) => k.stores.featureBytes(ref).map((feature) => ({ frame, feature }))),
           ),
       );
-  return bytes.map((sizes) => ({
-    key: c.key,
-    path: c.path,
-    name: c.path.split("/").at(-1) ?? c.path,
-    captured: c.captured,
-    keyframes: c.times.length,
-    frames: [fr[0] ?? null, fr.at(-1) ?? null] as const,
-    encoded: c.removed ? 0 : fr.filter((i) => perception.encoded(i)).length,
-    detections: dets.length,
-    objects: objs.size,
-    frame_bytes: sizes.reduce((a, s) => a + (s.frame ?? 0), 0),
-    feature_bytes: sizes.reduce((a, s) => a + (s.feature ?? 0), 0),
-    ...(c.removed ? { removed: c.removed.at } : {}),
-  }));
+  const tracking =
+    !k.modules.tracking || c.removed
+      ? okAsync(null)
+      : k.stores.trackingBytes(
+          c.key,
+          k.tracks
+            .index()
+            .tracks.filter((t) => t.clip === c.key)
+            .map((t) => t.id),
+        );
+  return bytes.andThen((sizes) =>
+    tracking.map((t) => ({
+      key: c.key,
+      path: c.path,
+      name: c.path.split("/").at(-1) ?? c.path,
+      captured: c.captured,
+      keyframes: c.times.length,
+      frames: [fr[0] ?? null, fr.at(-1) ?? null] as const,
+      encoded: c.removed ? 0 : fr.filter((i) => perception.encoded(i)).length,
+      detections: dets.length,
+      objects: objs.size,
+      frame_bytes: sizes.reduce((a, s) => a + (s.frame ?? 0), 0),
+      feature_bytes: sizes.reduce((a, s) => a + (s.feature ?? 0), 0),
+      ...(c.removed ? { removed: c.removed.at } : {}),
+      ...(t
+        ? {
+            tracking: {
+              frames: video.trackGrid(c.key).length,
+              keyframes_only: !c.trackTimes,
+              can_prepare: !c.trackTimes && c.timing.kind !== "stills",
+              frame_bytes: t.frames,
+              trunk_bytes: t.trunks,
+              track_bytes: t.tracks,
+            },
+          }
+        : {}),
+    })),
+  );
 };
 
 export const videos = (k: Kit): Session["videos"] => ({

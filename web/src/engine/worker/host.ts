@@ -80,6 +80,7 @@ export class EngineHost {
       },
       {
         detector: o.detector ?? "fp32",
+        ...(o.tracker ? { tracker: { precision: o.tracker } } : {}),
         featureCacheMB: o.featureCacheMB ?? 2048,
         persistFeatures: o.persistFeatures ?? true,
         featureDiskMB: o.featureDiskMB ?? null,

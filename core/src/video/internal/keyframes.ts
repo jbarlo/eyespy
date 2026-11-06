@@ -2,7 +2,7 @@
 import { ResultAsync } from "neverthrow";
 import type { ClipSource, HostFailure, Timing } from "../../ports/index.ts";
 import { hostFailure } from "../../ports/index.ts";
-import { pickTimes, streamHeight } from "./keyframes.kernel.ts";
+import { cutTimes, pickTimes, streamHeight } from "./keyframes.kernel.ts";
 
 const KEYFRAME_FPS = 5;
 const KEYFRAME_WIDTH = 360;
@@ -15,7 +15,39 @@ const KEYFRAME_WIDTH = 360;
 export const keyframeRate = (timing: Exclude<Timing, { kind: "stills" }>): number =>
   timing.kind === "rate" ? Math.min(timing.fps, KEYFRAME_FPS) : KEYFRAME_FPS;
 
-/** Keyframe times of `ref`, a w×h clip as opened, on its grey stream at `fps`. */
+/** How far apart the two frames of a cut are on the grey stream, in seconds. */
+export const CUT_STEP = 1 / KEYFRAME_FPS;
+
+/**
+ * Keyframe times of `ref`, a w×h clip as opened, on its grey stream at `fps`, and how long the stream lasted. With
+ * `withCuts` it also finds the cuts on that stream, which it can only do at KEYFRAME_FPS. A slower stream gives none.
+ */
+export const pickKeyframesTimed = (
+  reads: Pick<ClipSource, "grayStream">,
+  ref: string,
+  size: { readonly w: number; readonly h: number },
+  thresh: number,
+  fps = KEYFRAME_FPS,
+  width = KEYFRAME_WIDTH,
+  withCuts = false,
+): ResultAsync<
+  { readonly times: readonly number[]; readonly duration: number; readonly cuts: readonly number[] },
+  HostFailure
+> => {
+  const sh = streamHeight(size.w, size.h, width);
+  return ResultAsync.fromPromise(reads.grayStream(ref, fps, width, sh), (e) =>
+    hostFailure("video", "grayStream", e),
+  ).map((raw) => ({
+    times: pickTimes(raw, width, sh, thresh, fps),
+    duration: raw.length / (width * sh) / fps,
+    cuts: withCuts && fps === KEYFRAME_FPS ? cutTimes(raw, width, sh, fps) : [],
+  }));
+};
+
+/**
+ * The keyframe times alone.
+ * @internal
+ */
 export const pickKeyframes = (
   reads: Pick<ClipSource, "grayStream">,
   ref: string,
@@ -23,9 +55,5 @@ export const pickKeyframes = (
   thresh: number,
   fps = KEYFRAME_FPS,
   width = KEYFRAME_WIDTH,
-): ResultAsync<readonly number[], HostFailure> => {
-  const sh = streamHeight(size.w, size.h, width);
-  return ResultAsync.fromPromise(reads.grayStream(ref, fps, width, sh), (e) =>
-    hostFailure("video", "grayStream", e),
-  ).map((raw) => pickTimes(raw, width, sh, thresh, fps));
-};
+): ResultAsync<readonly number[], HostFailure> =>
+  pickKeyframesTimed(reads, ref, size, thresh, fps, width).map((r) => r.times);

@@ -9,7 +9,9 @@ import type {
   FrameRef,
   FrameSlot,
   FrameSpecError,
+  MissingTrackFrame,
   NoKeyframe,
+  TrackSlot,
 } from "./pure.ts";
 
 export type VideoOptions = {
@@ -22,12 +24,16 @@ export type VideoOptions = {
 export type VideoError =
   | FrameAccessError
   | FrameSpecError
+  | MissingTrackFrame
   | { readonly kind: "no-such-file"; readonly path: string }
   | { readonly kind: "clip-already-present"; readonly path: string }
   | { readonly kind: "no-clip"; readonly ref: string }
   | { readonly kind: "ambiguous-clip"; readonly ref: string; readonly keys: readonly ClipKey[] }
   | { readonly kind: "clip-already-removed"; readonly path: string }
-  | { readonly kind: "clip-no-keyframes"; readonly path: string };
+  | { readonly kind: "clip-no-keyframes"; readonly path: string }
+  /** A file picked to prepare a clip has other content than the clip. */
+  | { readonly kind: "other-video"; readonly path: string }
+  | { readonly kind: "clip-of-stills"; readonly path: string };
 
 export type AddedClip = {
   readonly clip: Clip;
@@ -68,13 +74,38 @@ export interface Video {
   image(i: FrameNo): ResultAsync<RGB, FrameAccessError>;
   forget(frames: readonly FrameNo[]): void;
   /**
+   * A clip's tracking grid. A clip added without tracking, or of stills, has only its keyframes. Tracking frames are
+   * no keyframes: they have no FrameNo, and nothing above lists them.
+   */
+  trackGrid(key: ClipKey): readonly TrackSlot[];
+  /** The times of each new shot's first frame in a clip. */
+  trackCuts(key: ClipKey): readonly number[];
+  /** The grid stretch between the cuts around a place on a clip's tracking grid, both ends included. */
+  trackShot(key: ClipKey, at: number): { readonly first: number; readonly last: number };
+  /** Where a keyframe's tracking data is filed, or null for no such keyframe. */
+  trackRef(i: FrameNo): FrameRef | null;
+  /**
+   * Gives a live clip that has only its keyframes a tracking grid at this rate, from its video file, which must be the
+   * same content. The keyframes keep their times and numbers, and the grid's JPEGs are stored now. Places on the grid
+   * change, so the caller makes sure nothing is filed under the old ones.
+   */
+  prepareTrack(ref: string, key: ClipKey, trackFps: number): ResultAsync<Clip, VideoError>;
+  /** A place on a clip's tracking grid, decoded. */
+  trackImage(key: ClipKey, at: number): ResultAsync<RGB, FrameAccessError | MissingTrackFrame>;
+  /**
    * Adds a clip at the end of the index and picks and stores its keyframes. `fps` is a folder of frames' rate,
    * omitted for photos or a video. A tombstone with the same content key is revived instead, and its missing frames
-   * are extracted again. A failure changes nothing, though frames already written stay.
+   * are extracted again. A failure changes nothing, though frames already written stay. `trackFps` also gives a new
+   * clip a tracking grid at that rate, with its JPEGs stored now, since a browser can read the video only while the
+   * picked file is at hand. A revived clip keeps the grid it had.
    */
   addClip(
     ref: string,
-    opts: { readonly keyframeThresh: number; readonly fps?: number | null },
+    opts: {
+      readonly keyframeThresh: number;
+      readonly fps?: number | null;
+      readonly trackFps?: number | null;
+    },
   ): ResultAsync<AddedClip, VideoError>;
   /**
    * Tombstones a clip. Every query then skips it, but it keeps its indices. `reserved` merges into `clip.reserved`,

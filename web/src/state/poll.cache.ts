@@ -4,7 +4,8 @@
  */
 import type { Clock } from "./ports.ts";
 
-export type Poller = { readonly start: (fn: () => void) => void; readonly stop: () => void };
+/** `fn` gets how many ticks came before this one. */
+export type Poller = { readonly start: (fn: (tick: number) => void) => void; readonly stop: () => void };
 
 export function createPoller(clock: Clock, ms: number): Poller {
   let cancel: (() => void) | null = null;
@@ -15,7 +16,8 @@ export function createPoller(clock: Clock, ms: number): Poller {
   return {
     start: (fn) => {
       stop();
-      cancel = clock.every(ms, fn);
+      let tick = 0;
+      cancel = clock.every(ms, () => fn(tick++));
     },
     stop,
   };

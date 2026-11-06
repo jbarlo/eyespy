@@ -4,7 +4,8 @@ import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
 import path from "node:path";
 import { test } from "node:test";
-import { PRODUCTION_MODELS, PRODUCTION_RUNTIME, localManifest } from "../src/engine/manifest.ts";
+import { MODEL_FILES } from "eyespy-core/perception/pure";
+import { PRODUCTION_MODELS, PRODUCTION_RUNTIME, localManifest, localTracker } from "../src/engine/manifest.ts";
 
 const ORT = path.join(import.meta.dirname, "../node_modules/onnxruntime-web");
 const installed = (JSON.parse(readFileSync(path.join(ORT, "package.json"), "utf8")) as { version: string }).version;
@@ -30,6 +31,24 @@ test("localManifest serves every production file by name from one base, with the
   assert.deepEqual(Object.keys(local), Object.keys(PRODUCTION_MODELS));
   for (const [name, e] of Object.entries(PRODUCTION_MODELS))
     assert.deepEqual(local[name], { ...e, url: `http://127.0.0.1:1234/models/${name}` });
+});
+
+test("the unpublished tracker graphs stay off the production manifest, and the dev one covers MODEL_FILES", () => {
+  const { tables, graphs } = MODEL_FILES.tracker;
+  const files = [
+    tables,
+    ...[graphs.fp16, graphs.fp32].flatMap((g) => [g.neck, g.maskEmbed, g.decoder, g.memenc, ...g.attention]),
+    ...MODEL_FILES.visionParts.parts,
+    MODEL_FILES.visionParts.neck,
+  ];
+  for (const f of files) assert.ok(!(f in PRODUCTION_MODELS), `${f} has no published URL yet`);
+  const local = localTracker("http://127.0.0.1:1234/models");
+  assert.deepEqual(Object.keys(local).toSorted(), files.toSorted());
+  for (const [name, e] of Object.entries(local)) {
+    assert.equal(e.url, `http://127.0.0.1:1234/models/${name}`);
+    assert.match(e.sha256, /^[0-9a-f]{64}$/, name);
+    assert.ok(Number.isInteger(e.bytes) && e.bytes > 0, name);
+  }
 });
 
 test("the production ORT wasm URL names the installed onnxruntime-web version", () => {

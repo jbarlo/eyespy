@@ -70,6 +70,7 @@ async function start(session: SessionLocation): Promise<EyespyApi> {
     models: params.models,
     runtime: params.runtime,
     detector: params.detector,
+    tracker: params.tracker,
     onEvent,
     host: { eyespy: __EYESPY_REV__ },
     samLicenseAgreed,

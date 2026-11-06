@@ -87,7 +87,10 @@
     "group_window": 8,
     "presence": 0.5,
     "active": 0.5,
-    "idle_minutes": 30
+    "idle_minutes": 30,
+    "track_fps": 2,
+    "track_recheck": 1.5,
+    "auto_tracks": 64
    },
    "defaults": {
     "keyframe_thresh": 0.4,
@@ -99,7 +102,10 @@
     "group_window": 8,
     "presence": 0.5,
     "active": 0.5,
-    "idle_minutes": 30
+    "idle_minutes": 30,
+    "track_fps": 2,
+    "track_recheck": 1.5,
+    "auto_tracks": 64
    }
   }
  },
@@ -13851,7 +13857,10 @@
      "group_window": 8,
      "presence": 0.5,
      "active": 0.5,
-     "idle_minutes": 30
+     "idle_minutes": 30,
+     "track_fps": 2,
+     "track_recheck": 1.5,
+     "auto_tracks": 64
     },
     "models": {
      "segmentation": {

@@ -19,6 +19,7 @@ export type ServerArgs = {
   /** Disk budget in MB for stored features; null means unlimited. */
   readonly featureDiskMB: number | null;
   readonly profile: boolean;
+  readonly tracker: boolean;
 };
 
 /** An unset or empty value is absent. */
@@ -38,6 +39,7 @@ const Flags = z.object({
   detector,
   cpu: z.boolean(),
   "feature-disk-mb": positive,
+  tracker: z.boolean().default(false),
 });
 
 /** Each flag's argument as USAGE shows it; null marks a boolean flag. */
@@ -48,6 +50,7 @@ const FLAG_ARG: Readonly<Record<keyof typeof Flags.shape, string | null>> = {
   detector: DETECTORS.join("|"),
   cpu: null,
   "feature-disk-mb": "N",
+  tracker: null,
 };
 /** The server's flags, in USAGE order. @internal */
 export const flagNames = Object.keys(Flags.shape) as (keyof typeof Flags.shape)[];
@@ -66,6 +69,7 @@ const Env = z.object({
   EYESPY_FEATURE_CACHE_MB: positive,
   EYESPY_FEATURE_DISK_MB: positive,
   EYESPY_PROFILE: text,
+  EYESPY_TRACKER: text,
 });
 
 /** The environment variables the server reads. @internal */
@@ -117,6 +121,7 @@ export function parseServerArgs(
       featureCacheMB: v.EYESPY_FEATURE_CACHE_MB,
       featureDiskMB: f["feature-disk-mb"] ?? v.EYESPY_FEATURE_DISK_MB ?? null,
       profile: v.EYESPY_PROFILE !== undefined,
+      tracker: f.tracker || v.EYESPY_TRACKER !== undefined,
     });
   });
 }

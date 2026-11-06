@@ -123,9 +123,18 @@ export const LAYER_HELP: Readonly<Record<LayerId, Help>> = {
 };
 
 /** The side panels, by id. */
-export type PanelId = "properties" | "triage" | "objects" | "videos" | "layers" | "frame-dets" | "history" | "console";
+export type PanelId =
+  "properties" | "triage" | "objects" | "videos" | "layers" | "frame-dets" | "history" | "console" | "tracking";
 
 export const PANEL_HELP: Readonly<Record<PanelId, Help>> = {
+  tracking: {
+    label: "Tracking",
+    tip: "Follows what a search found through the frames between keyframes, in the background. It can be paused or stopped.",
+    more:
+      "Tracking runs on your GPU whenever nothing else needs it, so searching and editing go ahead of it. What is finished " +
+      "is saved. A track is the tracker's best guess at where something went: it can jump onto a different object without " +
+      "warning, so check before relying on it. Analysed frames are stored per video, up to 4 GB a session, oldest deleted first, and removing a video deletes them.",
+  },
   properties: {
     label: "Properties",
     tip: "Whatever is selected: detections (assign, new object, reject, find similar), an object, or a region search.",

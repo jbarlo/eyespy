@@ -3,7 +3,7 @@
  * Without `samLicenseAgreed`, the worker refuses every SAM 3 file before a network fetch or an OPFS cache read, which
  * also covers models cached before a licence change. `sha256` is a manifest lookup, not a read, so it stays allowed.
  */
-import type { Model, ModelRuntime } from "eyespy-core/ports";
+import type { ChainStep, Model, ModelRuntime } from "eyespy-core/ports";
 import { SAM_LICENSE_REFUSED } from "../../protocol.ts";
 
 /**
@@ -25,6 +25,14 @@ export function guardSamModels(rt: Runtime, all: readonly string[], agreed: bool
       check(name);
       return rt.load(name);
     },
+    ...(rt.loadChain
+      ? {
+          loadChain: async (steps: readonly ChainStep[]) => {
+            for (const s of steps) check(s.file);
+            return rt.loadChain!(steps);
+          },
+        }
+      : {}),
     readText: async (name) => {
       check(name);
       return rt.readText(name);

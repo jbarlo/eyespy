@@ -74,17 +74,13 @@ function spectra(fft: FFT2, a: Uint8Array, passesA: number, b: Uint8Array, win: 
   return { A, B };
 }
 
-/**
- * The shift (dx, dy) between two frames given their spectra: the peak of the normalised cross-power spectrum's
- * inverse, refined by a 5×5 weighted centroid.
- */
-function phaseCorrelate(
+/** The inverse of the normalised cross-power spectrum of two frames given their spectra, its real part. */
+function correlation(
   fft: FFT2,
   A: { re: Float64Array; im: Float64Array },
   B: { re: Float64Array; im: Float64Array },
-): [number, number] {
-  const { w, h } = fft;
-  const n = w * h;
+): Float64Array {
+  const n = fft.w * fft.h;
   const re = new Float64Array(n),
     im = new Float64Array(n);
   for (let i = 0; i < n; i++) {
@@ -96,6 +92,21 @@ function phaseCorrelate(
     im[i] = mag > 0 ? q / mag : 0;
   }
   fft.run(re, im, true);
+  return re;
+}
+
+/**
+ * The shift (dx, dy) between two frames given their spectra: the peak of the normalised cross-power spectrum's
+ * inverse, refined by a 5×5 weighted centroid.
+ */
+function phaseCorrelate(
+  fft: FFT2,
+  A: { re: Float64Array; im: Float64Array },
+  B: { re: Float64Array; im: Float64Array },
+): [number, number] {
+  const { w, h } = fft;
+  const n = w * h;
+  const re = correlation(fft, A, B);
   // fftShift (even sizes), then find the peak
   const C = new Float64Array(n);
   const cx = w >> 1,
@@ -173,6 +184,55 @@ export function pickTimes(raw: Uint8Array, width: number, sh: number, thresh: nu
     }
   }
   return picks.map((p) => Math.round((p / fps) * 100) / 100);
+}
+
+/** Below this phase-correlation peak two frames have no picture in common at any shift. */
+const CUT_PEAK = 0.03;
+/** Above this mean absolute luma difference two frames look different. Moving cameras stayed below it. */
+const CUT_MAD = 60;
+
+/** The mean absolute difference of two grey frames. */
+function meanAbsDiff(a: Uint8Array, b: Uint8Array): number {
+  let s = 0;
+  for (let i = 0; i < a.length; i++) s += Math.abs(a[i]! - b[i]!);
+  return s / a.length;
+}
+
+/**
+ * The cut signal of each pair of neighbouring frames. `peak` is the highest value of the phase correlation with a plain
+ * Hann window on each frame, which is not the picker's windowing. It costs an FFT, so it is only made where the
+ * difference already says a cut might be there, and is null elsewhere.
+ * @internal
+ */
+export function cutSignals(
+  raw: Uint8Array,
+  width: number,
+  sh: number,
+): readonly { readonly at: number; readonly mad: number; readonly peak: number | null }[] {
+  const size = width * sh;
+  const n = Math.floor(raw.length / size);
+  const frame = (i: number) => raw.subarray(i * size, (i + 1) * size);
+  const win = hanning(width, sh).map((v) => v * v);
+  const fft = new FFT2(width, sh);
+  return Array.from({ length: Math.max(0, n - 1) }, (_, k) => {
+    const at = k + 1;
+    const mad = meanAbsDiff(frame(k), frame(at));
+    if (mad <= CUT_MAD) return { at, mad, peak: null };
+    const { A, B } = spectra(fft, frame(k), 1, frame(at), win);
+    // The inverse FFT doesn't scale, and the threshold is for a correlation that peaks at 1 for identical frames.
+    return { at, mad, peak: correlation(fft, A, B).reduce((m, v) => Math.max(m, v), -Infinity) / size };
+  });
+}
+
+/**
+ * Where the picture cuts to another shot, on a grey stream of 5 fps: the time of each first frame of a new shot, in
+ * seconds to 2 decimals. The thresholds were measured at that rate and don't hold at a wider spacing, where a moving
+ * camera alone gets past them.
+ */
+export function cutTimes(raw: Uint8Array, width: number, sh: number, fps: number): readonly number[] {
+  return cutSignals(raw, width, sh)
+    .filter((s) => s.peak !== null && s.peak < CUT_PEAK)
+    .map((s) => Math.round((s.at / fps) * 100) / 100);
 }
 
 /** Grey stream height for a w×h video at `width`, rounded to even, keeping the aspect ratio. */

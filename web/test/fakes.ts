@@ -72,6 +72,16 @@ export function fakeEngine(handlers: Handlers) {
             Promise.resolve(handlers.add?.({ video: f.name } as never, { path: "add", session: entry.n })),
             engineError,
           ) as ReturnType<EngineSession["addFile"]>,
+        prepareFile: (f, clip) =>
+          ResultAsync.fromPromise(
+            Promise.resolve(
+              handlers["track.prepare"]?.({ video: f.name, clip } as never, {
+                path: "track.prepare",
+                session: entry.n,
+              }),
+            ),
+            engineError,
+          ) as ReturnType<EngineSession["prepareFile"]>,
         api: {
           call: async (path: string, input: unknown) => handlers[path]?.(input as never, { path, session: entry.n }),
         } as never,
@@ -346,6 +356,7 @@ export function setup(
     query?: Record<string, string>;
     agreed?: boolean;
     webgpu?: WebGpu;
+    tracking?: boolean;
   } = {},
 ) {
   const engine = fakeEngine(o.handlers ?? sessionHandlers());
@@ -361,6 +372,7 @@ export function setup(
     query: { get: (k) => o.query?.[k] ?? null },
     clock: clock.clock,
     host,
+    tracking: o.tracking ?? false,
     samLicense: SAM_SHA,
   });
   return { app, engine, clock, storage, img, host };

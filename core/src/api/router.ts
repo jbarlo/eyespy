@@ -120,6 +120,20 @@ export const appRouter = t.router({
   redo: op({}, (s, c) => s.label.redo(c, {})),
   gaps: op({ frames }, (s, c, i) => s.look.gaps(c, i)),
   manifest: op({ crops }, (s, c, i) => s.export.manifest(c, i)),
+  /** Video tracking, with tracking on. Units run in the background, one object on one frame. */
+  track: t.router({
+    start: op({ ids, first: flag }, (s, c, i) => s.track.start(c, i)),
+    auto: op({ frames, threshold }, (s, c, i) => s.track.auto(c, i)),
+    proposals: op({}, (s, c) => s.track.proposals(c, {})),
+    prioritise: op({ ids }, (s, c, i) => s.track.prioritise(c, i)),
+    pause: op({}, (s, c) => s.track.pause(c, {})),
+    resume: op({}, (s, c) => s.track.resume(c, {})),
+    cancel: op({ ids: z.array(z.string()).readonly().nullish() }, (s, c, i) => s.track.cancel(c, i)),
+    status: op({}, (s, c) => s.track.status(c, {})),
+    prepare: op({ video: z.string(), clip: z.string().min(1) }, (s, c, i) => s.track.prepare(c, i)),
+    frames: op({ clip: z.string().min(1) }, (s, c, i) => s.track.frames(c, i)),
+    masks: op({ clip: z.string().min(1), at: z.number().int().nonnegative() }, (s, c, i) => s.track.masks(c, i)),
+  }),
   shutdown: t.procedure.mutation(({ ctx }) => {
     setTimeout(() => ctx.engine.shutdown(), 50); // send the reply first
     return { ok: true as const };

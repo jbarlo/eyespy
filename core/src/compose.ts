@@ -22,6 +22,8 @@ import { createEngine, createSession } from "./session/index.ts";
 import type { Engine, EngineOptions, Session, SessionError, SessionOptions } from "./session/index.ts";
 import { createSessionFolder } from "./storage/index.ts";
 import type { StorageError } from "./storage/index.ts";
+import { createTracking } from "./tracking/index.ts";
+import type { Tracking, TrackingOptions } from "./tracking/index.ts";
 import { createVideo } from "./video/index.ts";
 
 export type HostPorts = {
@@ -40,7 +42,13 @@ export type ComposeOptions = Pick<
   PerceptionOptions,
   "detector" | "featureCacheMB" | "persistFeatures" | "featureDiskMB"
 > &
-  SessionOptions;
+  SessionOptions & {
+    /**
+     * Turns on video tracking and the vision parts it reads. Absent on every production path, where no tracker or
+     * vision part file is loaded or asked for.
+     */
+    readonly tracker?: TrackingOptions & { readonly trunkDiskMB?: number };
+  };
 export type ComposeError = StorageError | SessionError;
 
 export type ComposeSession = (ports: HostPorts, opts: ComposeOptions) => ResultAsync<Session, ComposeError>;
@@ -59,7 +67,7 @@ export const composeSession: ComposeSession = (ports, opts) => {
       { clips: records.meta.clips },
     );
     const perception = createPerception(
-      { runtime, features: folder.features, frames: video, clock, logger },
+      { runtime, features: folder.features, trunks: folder.trunks, frames: video, clock, logger },
       {
         detector: opts.detector,
         featureCacheMB: opts.featureCacheMB,
@@ -67,6 +75,9 @@ export const composeSession: ComposeSession = (ports, opts) => {
         featureDiskMB: opts.featureDiskMB,
         storedFeatureFormat: records.meta.formats.features,
         profile: opts.profile,
+        visionParts: opts.tracker !== undefined,
+        ...(opts.tracker?.trunkDiskMB === undefined ? {} : { trunkDiskMB: opts.tracker.trunkDiskMB }),
+        storedTrunkFormat: records.meta.formats.trunks ?? null,
       },
     );
     const detections = createDetections({
@@ -81,14 +92,23 @@ export const composeSession: ComposeSession = (ports, opts) => {
     const render = createRenderer({ frames: video, text: codec });
     return createSession(
       {
-        modules: { video, perception, detections, labelling, render },
+        modules: {
+          video,
+          perception,
+          detections,
+          labelling,
+          render,
+          tracking: opts.tracker ? createTracking({ runtime, clock, logger }, opts.tracker) : null,
+        },
         stores: {
           meta: folder.meta,
           detections: folder.detections,
           heatmaps: folder.heatmaps,
           outputs: folder.outputs,
           frameFiles: folder.frames,
+          tracks: folder.tracks,
           featureBytes: (ref) => folder.features.size(ref),
+          trackingBytes: (clip, tracks) => folder.trackingBytes(clip, tracks),
           removeClipFiles: (key) => folder.removeClipFiles(key),
         },
         host: { codec, clock, logger, info, root: folder.root },
@@ -98,6 +118,15 @@ export const composeSession: ComposeSession = (ports, opts) => {
     );
   });
 };
+
+/**
+ * A tracker on its own, for the validation scripts.
+ * @internal
+ */
+export const composeTracking = (
+  { runtime, clock, logger }: Pick<HostPorts, "runtime" | "clock" | "logger">,
+  opts: TrackingOptions,
+): Tracking => createTracking({ runtime, clock, logger }, opts);
 
 export const composeEngine: ComposeEngine = (ports, opts) =>
   composeSession(ports, opts).map((session) =>

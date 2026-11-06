@@ -6,6 +6,8 @@ import type { ResultAsync } from "neverthrow";
 import { okAsync } from "neverthrow";
 import type { CreateSession, Session, SessionError } from "../types.ts";
 import { recoverRemovals } from "./clips.ts";
+import { track } from "./ops/track.ts";
+import { loadTracks, trackingWaits } from "./tracks.ts";
 import type { Kit } from "./context.ts";
 import { background } from "./features.ts";
 import { data } from "./ops/data.ts";
@@ -14,11 +16,12 @@ import { find } from "./ops/find.ts";
 import { label } from "./ops/label.ts";
 import { look } from "./ops/look.ts";
 import { videos } from "./ops/videos.ts";
-import { SessionState } from "./state.ts";
+import { SessionState, TrackBook } from "./state.ts";
 
 const open = (k: Kit): ResultAsync<void, SessionError> => {
   const { detections, perception, video, labelling } = k.modules;
-  return recoverRemovals(k)
+  return loadTracks(k)
+    .andThen(() => recoverRemovals(k))
     .andThen(() => perception.scanStore())
     .map(() => {
       k.host.logger.log(
@@ -28,7 +31,7 @@ const open = (k: Kit): ResultAsync<void, SessionError> => {
 };
 
 export const createSession: CreateSession = (deps, meta, opts) => {
-  const k: Kit = { ...deps, state: new SessionState(meta), opts };
+  const k: Kit = { ...deps, state: new SessionState(meta), tracks: new TrackBook(), opts };
   const session: Session = {
     videos: videos(k),
     find: find(k),
@@ -36,10 +39,12 @@ export const createSession: CreateSession = (deps, meta, opts) => {
     label: label(k),
     data: data(k),
     export: exportOps(k),
+    track: track(k),
     config: () => k.state.config(),
     meta: () => k.state.meta(k.modules.video.clips()),
     background: () => background(k),
     pending: () => k.modules.perception.pending(),
+    tracking: () => trackingWaits(k),
   };
   return open(k).andThen(() => okAsync(session));
 };

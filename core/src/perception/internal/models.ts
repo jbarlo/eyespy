@@ -7,7 +7,7 @@ import { err, ok, ResultAsync, type Result } from "neverthrow";
 import type { Clock, Feeds, HostFailure, Logger, Model, ModelRuntime } from "../../ports/index.ts";
 import { hostFailure } from "../../ports/index.ts";
 import type { PerceptionError } from "../types.ts";
-import { Memo } from "./memo.cache.ts";
+import { Memo } from "../../railway/index.ts";
 
 /**
  * The internal port sam/ and dino/ use to run models. Failures are HostFailures typed as the PerceptionError they

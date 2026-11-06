@@ -10,7 +10,9 @@ import { memo } from "./memo.cache.ts";
 import { objColor, REJECT_COLOR, REJECTED, TODO_COLOR } from "./objects.ts";
 import { keepMap, sameData, sameRefs } from "./share.ts";
 import type { Stores } from "./stores.ts";
-import type { Det, Frame, Layers, Mask, Obj, Visible } from "./types.ts";
+import { rleBox, unsureAt } from "./tracking.ts";
+import type { TrackDraw, TrackMasks, TrackProposals, TrackSlot, TrackStatus } from "./tracking.ts";
+import type { Det, Frame, Layers, Mask, Obj, Rle, Visible } from "./types.ts";
 
 /** A store reference's key ("clips/..." for "eyespy-store:clips/..."), or null for anything else. */
 export const refKey = (ref: string | null | undefined): string | null =>
@@ -119,6 +121,55 @@ export function computePresence(
   return new Set((o?.members ?? []).flatMap((m) => dets.get(m)?.frame ?? []));
 }
 
+/** The place on a clip's tracking grid being shown. */
+export type TrackPlace = {
+  readonly clip: string;
+  readonly at: number;
+  readonly slot: TrackSlot;
+  readonly count: number;
+  /** Between keyframes: no detections here, only tracked masks. */
+  readonly between: boolean;
+};
+
+/** The tracked masks to draw on a place: not empty ones (a look that missed), and not rejected detections' tracks. */
+function computeTrackDraws(
+  place: TrackPlace | null,
+  show: boolean,
+  masks: TrackMasks | null,
+  status: TrackStatus | null,
+  proposals: TrackProposals | null,
+  dets: ReadonlyMap<string, Det>,
+  objs: ReadonlyMap<string, Obj>,
+  ids: readonly string[],
+): readonly TrackDraw[] {
+  if (!place || !show || !masks || masks.clip !== place.clip || masks.at !== place.at) return NO_DRAWS;
+  return masks.masks.flatMap((m): readonly TrackDraw[] => {
+    if (m.mask.format !== "rle" || m.score <= 0) return [];
+    const rle: Rle = m.mask;
+    const box = rleBox(rle.counts, rle.w);
+    const t = status?.tracks.find((x) => x.id === m.track);
+    if (!box || t?.object === REJECTED) return [];
+    const o = t?.object ? objs.get(t.object) : undefined;
+    const name = o?.label || t?.object || dets.get(m.det)?.prompt || "tracked";
+    return [
+      {
+        id: `${m.track}@${place.at}`,
+        track: m.track,
+        det: m.det,
+        rle,
+        color: objColor(t?.object ?? m.track),
+        unsure: unsureAt(proposals, m.track, place.at, m.score),
+        score: m.score,
+        label: name,
+        box,
+        selected: ids.includes(m.det),
+      },
+    ];
+  });
+}
+
+const NO_DRAWS: readonly TrackDraw[] = [];
+
 export function createSelectors(s: Stores) {
   const frames = () => s.frames.getState();
   const dets = () => s.detections.getState();
@@ -131,6 +182,21 @@ export function createSelectors(s: Stores) {
   const objById = memo(() => [s.objects.getState().objects], byId);
   const focusObj = memo(() => [s.selection.getState().obj, s.selection.getState().ids, detById()], computeFocus);
   const frameMasks = memo(() => [detsByFrame().get(frames().current), dets().masks], masksFor, keepMasks);
+  const currentFrame = memo(
+    () => [frameByNo(), frames().current],
+    (m, cur): Frame | null => m.get(cur) ?? null,
+  );
+  const trackPlace = memo(
+    () => [currentFrame(), s.tracking.getState().grids, s.tracking.getState().at],
+    (f, grids, at): TrackPlace | null => {
+      const grid = f ? grids.get(f.clipKey) : undefined;
+      if (!f || !grid) return null;
+      const slot = at === null ? grid.frames.find((x) => x.keyframe === f.frame) : grid.frames[at];
+      return slot
+        ? { clip: f.clipKey, at: slot.at, slot, count: grid.frames.length, between: slot.keyframe === null }
+        : null;
+    },
+  );
   return {
     frameByNo,
     /** Position of the current keyframe in `frames` (slider, stepping), -1 if none. */
@@ -138,10 +204,22 @@ export function createSelectors(s: Stores) {
       () => [frames().frames, frames().current],
       (fr, cur) => fr.findIndex((f) => f.frame === cur),
     ),
-    currentFrame: memo(
-      () => [frameByNo(), frames().current],
-      (m, cur): Frame | null => m.get(cur) ?? null,
-    ),
+    currentFrame,
+    trackPlace,
+    /** The tracked masks on the shown place. */
+    trackDraws: memo(() => {
+      const t = s.tracking.getState();
+      return [
+        trackPlace(),
+        t.show,
+        t.masks,
+        t.status,
+        t.proposals,
+        detById(),
+        objById(),
+        s.selection.getState().ids,
+      ] as const;
+    }, computeTrackDraws),
     detById,
     detsByFrame,
     objById,

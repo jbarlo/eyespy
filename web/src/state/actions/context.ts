@@ -11,6 +11,8 @@ export type StateDeps = {
   readonly query: Query;
   readonly clock: Clock;
   readonly host: Host;
+  /** Whether the engine was opened with video tracking (`?models=<base>&tracker`). */
+  readonly tracking: boolean;
   /** sha256 of the SAM License text this build ships. */
   readonly samLicense: string;
 };

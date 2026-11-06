@@ -8,7 +8,13 @@ import type { ViewActions } from "./view.ts";
 
 export type FindResult = { readonly hits: number; readonly frames: number; readonly cancelled: boolean };
 
-export function createFindActions(ctx: Ctx, r: Runner, view: ViewActions, refresh: () => Promise<void>) {
+export function createFindActions(
+  ctx: Ctx,
+  r: Runner,
+  view: ViewActions,
+  refresh: () => Promise<void>,
+  afterFind: (frames: readonly number[]) => Promise<void>,
+) {
   const { frames, layers, detections } = ctx.stores;
 
   /** `scope`: "frame", "all" or a spec like "0-5,9". */
@@ -45,6 +51,7 @@ export function createFindActions(ctx: Ctx, r: Runner, view: ViewActions, refres
     const out = await step(0, 0);
     await refresh();
     task.end();
+    await afterFind(list);
     return { hits: out.hits, frames: list.length, cancelled: out.cancelled };
   }
 
