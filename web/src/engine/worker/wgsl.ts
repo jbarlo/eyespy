@@ -3,12 +3,15 @@
  * means the same, so every browser runs it, not only the one that needs it.
  */
 
-// FIXME: Firefox's shader compiler (naga) types `bitcast<vec2<f16>>(u32)` as f32 and rejects the shader
-// (https://github.com/gfx-rs/wgpu/issues/8896), which breaks ORT's f16 Pad. Remove this rewrite once Firefox ships a
-// naga with that fixed.
+// FIXME: Firefox's shader compiler (naga) types `bitcast<vec2<f16>>(x)` as f32 and rejects the shader
+// (https://github.com/gfx-rs/wgpu/issues/8896), which breaks ORT's f16 Pad and Clip. Remove this rewrite once Firefox
+// ships a naga with that fixed.
 const BITCAST = "bitcast<vec2<f16>>(";
 
-/** `bitcast<vec2<f16>>(x)` as `vec2<f16>(unpack2x16float(x))`: the same two halves of x. @internal */
+/**
+ * `bitcast<vec2<f16>>(x)` as `vec2<f16>(unpack2x16float(bitcast<u32>(x)))`: the same two halves of x. unpack2x16float
+ * takes only a u32, and x isn't always one: ORT's Pad passes a u32, its Clip an f32. @internal
+ */
 export function portableWgsl(code: string): string {
   let out = "";
   let i = 0;
@@ -18,7 +21,7 @@ export function portableWgsl(code: string): string {
     let j = start;
     for (; j < code.length && depth > 0; j++) depth += code[j] === "(" ? 1 : code[j] === ")" ? -1 : 0;
     if (depth > 0) break;
-    out += `${code.slice(i, at)}vec2<f16>(unpack2x16float(${code.slice(start, j - 1)}))`;
+    out += `${code.slice(i, at)}vec2<f16>(unpack2x16float(bitcast<u32>(${code.slice(start, j - 1)})))`;
     i = j;
   }
   return out + code.slice(i);
